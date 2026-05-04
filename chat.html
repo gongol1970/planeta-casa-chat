@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat Planeta Casa</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .chat {
+      max-width: 650px;
+      margin: auto;
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #222;
+    }
+
+    #mensajes {
+      height: 430px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 12px;
+      border-radius: 8px;
+      background: #fafafa;
+      margin-bottom: 12px;
+    }
+
+    .msg {
+      margin: 8px 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      max-width: 85%;
+      white-space: pre-wrap;
+      line-height: 1.35;
+    }
+
+    .cliente {
+      background: #d9fdd3;
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .bot {
+      background: #eeeeee;
+      margin-right: auto;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #111;
+      color: white;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    button:hover {
+      background: #333;
+    }
+
+    .estado {
+      font-size: 13px;
+      color: #777;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat">
+  <h2>Chat Planeta Casa</h2>
+  <div class="estado" id="estado">Listo para probar</div>
+
+  <div id="mensajes"></div>
+
+  <div class="input-row">
+    <input id="mensaje" placeholder="Escribí como cliente..." onkeydown="if(event.key==='Enter') enviar()" />
+    <button onclick="enviar()">Enviar</button>
+  </div>
+</div>
+
+<script>
+  const API_URL = "https://planeta-casa-erp.onrender.com/chat";
+  let sessionId = localStorage.getItem("planeta_session_id") || null;
+
+  function agregarMensaje(texto, tipo) {
+    const contenedor = document.getElementById("mensajes");
+    const div = document.createElement("div");
+    div.className = "msg " + tipo;
+    div.textContent = texto;
+    contenedor.appendChild(div);
+    contenedor.scrollTop = contenedor.scrollHeight;
+  }
+
+  async function enviar() {
+    const input = document.getElementById("mensaje");
+    const estado = document.getElementById("estado");
+    const texto = input.value.trim();
+
+    if (!texto) return;
+
+    agregarMensaje(texto, "cliente");
+    input.value = "";
+    estado.textContent = "Pensando...";
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          mensaje: texto,
+          session_id: sessionId
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.session_id) {
+        sessionId = data.session_id;
+        localStorage.setItem("planeta_session_id", sessionId);
+      }
+
+      agregarMensaje(data.respuesta || "Sin respuesta", "bot");
+
+      if (data.derivado) {
+        estado.textContent = "Derivado a asesor";
+      } else {
+        estado.textContent = "Listo para probar";
+      }
+
+    } catch (error) {
+      agregarMensaje("Error conectando con el bot.", "bot");
+      estado.textContent = "Error";
+      console.error(error);
+    }
+  }
+
+  agregarMensaje("Hola, soy el bot de prueba de Planeta Casa. Escribí una consulta.", "bot");
+</script>
+
+</body>
+</html>
