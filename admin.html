@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Planeta Casa</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f4; color: #222; }
+    header { background: #111; color: white; padding: 18px 22px; }
+    main { max-width: 1200px; margin: 20px auto; padding: 0 14px; }
+    .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    input, select, button { padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
+    input { min-width: 260px; }
+    button { background: #111; color: white; border: 0; cursor: pointer; }
+    button:hover { background: #333; }
+    .status { font-size: 14px; color: #555; margin-top: 8px; }
+    table { border-collapse: collapse; width: 100%; background: white; font-size: 13px; }
+    th, td { border-bottom: 1px solid #eee; padding: 8px; text-align: left; vertical-align: top; }
+    th { position: sticky; top: 0; background: #222; color: white; }
+    .table-wrap { max-height: 620px; overflow: auto; border: 1px solid #ddd; border-radius: 10px; }
+    .pill { display: inline-block; background: #eee; padding: 4px 8px; border-radius: 999px; margin-right: 6px; }
+    .error { color: #b00020; font-weight: bold; }
+    .ok { color: #0a7a20; font-weight: bold; }
+    a { color: #0645ad; }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Admin Planeta Casa</h2>
+    <div>Visor simple de productos y envíos</div>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="row">
+        <input id="apiUrl" value="https://planeta-casa-erp.onrender.com" />
+        <input id="token" type="password" placeholder="ADMIN_TOKEN" />
+        <button onclick="guardar()">Guardar</button>
+        <button onclick="cargarResumen()">Probar conexión</button>
+      </div>
+      <div id="estado" class="status">Cargá tu token admin y probá conexión.</div>
+    </section>
+
+    <section class="card">
+      <div class="row">
+        <button onclick="cargarProductos()">Ver productos</button>
+        <button onclick="cargarEnvios()">Ver envíos AMBA</button>
+        <input id="busqueda" placeholder="Buscar producto, categoría, SKU, etc." />
+        <button onclick="cargarProductos()">Buscar</button>
+      </div>
+      <div id="resumen" class="status"></div>
+    </section>
+
+    <section class="card">
+      <div id="tabla"></div>
+    </section>
+  </main>
+
+<script>
+function getApiUrl() {
+  return document.getElementById('apiUrl').value.replace(/\/$/, '');
+}
+function getToken() {
+  return document.getElementById('token').value.trim();
+}
+function guardar() {
+  localStorage.setItem('admin_api_url', getApiUrl());
+  localStorage.setItem('admin_token', getToken());
+  estado('Guardado en este navegador.', true);
+}
+function cargarGuardado() {
+  const api = localStorage.getItem('admin_api_url');
+  const tok = localStorage.getItem('admin_token');
+  if (api) document.getElementById('apiUrl').value = api;
+  if (tok) document.getElementById('token').value = tok;
+}
+function estado(txt, ok=false) {
+  const el = document.getElementById('estado');
+  el.innerHTML = ok ? `<span class="ok">${txt}</span>` : txt;
+}
+function error(txt) {
+  document.getElementById('estado').innerHTML = `<span class="error">${txt}</span>`;
+}
+async function pedir(path) {
+  const token = encodeURIComponent(getToken());
+  const sep = path.includes('?') ? '&' : '?';
+  const url = `${getApiUrl()}${path}${sep}token=${token}`;
+  const res = await fetch(url);
+  return await res.json();
+}
+async function cargarResumen() {
+  try {
+    const data = await pedir('/admin/resumen');
+    if (!data.ok) return error(data.error || 'Error');
+    estado('Conexión OK.', true);
+    document.getElementById('resumen').innerHTML = `
+      <span class="pill">Productos: ${data.productos_en_memoria}</span>
+      <span class="pill">Envíos AMBA: ${data.envios_amba_en_memoria}</span>
+      <span class="pill">Modelo: ${data.modelo}</span>`;
+  } catch (e) {
+    error('No pude conectar. Revisá backend, CORS o token.');
+  }
+}
+async function cargarProductos() {
+  try {
+    estado('Cargando productos...');
+    const q = encodeURIComponent(document.getElementById('busqueda').value.trim());
+    const path = q ? `/admin/productos?q=${q}&limit=1000` : '/admin/productos?limit=1000';
+    const data = await pedir(path);
+    if (!data.ok) return error(data.error || 'Error');
+    estado('Productos cargados.', true);
+    document.getElementById('resumen').innerHTML = `<span class="pill">Tabla: ${data.tabla}</span><span class="pill">Filas: ${data.total}</span>`;
+    renderTabla(data.items, ['id','nombre','variante','categoria','precio','stock','visible','peso','url']);
+  } catch(e) { error('Error cargando productos.'); }
+}
+async function cargarEnvios() {
+  try {
+    estado('Cargando envíos...');
+    const data = await pedir('/admin/envios');
+    if (!data.ok) return error(data.error || 'Error');
+    estado('Envíos cargados.', true);
+    document.getElementById('resumen').innerHTML = `<span class="pill">Tabla: ${data.tabla}</span><span class="pill">Filas: ${data.total}</span>`;
+    renderTabla(data.items, ['id','zona','precio','activo','created_at']);
+  } catch(e) { error('Error cargando envíos.'); }
+}
+function renderTabla(items, preferidas) {
+  const cont = document.getElementById('tabla');
+  if (!items || items.length === 0) { cont.innerHTML = '<p>No hay datos.</p>'; return; }
+  const todas = [...new Set(items.flatMap(obj => Object.keys(obj)))];
+  const cols = [...preferidas.filter(c => todas.includes(c)), ...todas.filter(c => !preferidas.includes(c))];
+  let html = '<div class="table-wrap"><table><thead><tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+  for (const item of items) {
+    html += '<tr>' + cols.map(c => `<td>${formatear(item[c], c)}</td>`).join('') + '</tr>';
+  }
+  html += '</tbody></table></div>';
+  cont.innerHTML = html;
+}
+function formatear(v, col) {
+  if (v === null || v === undefined) return '';
+  if (col === 'url' && String(v).startsWith('http')) return `<a href="${v}" target="_blank">abrir</a>`;
+  if (typeof v === 'object') return `<pre>${JSON.stringify(v, null, 2)}</pre>`;
+  let s = String(v);
+  if (s.length > 180) s = s.slice(0, 180) + '...';
+  return s.replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+}
+cargarGuardado();
+</script>
+</body>
+</html>
