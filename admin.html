@@ -44,10 +44,12 @@
 
     <section class="card">
       <div class="row">
-        <button onclick="cargarProductos()">Ver productos</button>
+        <button onclick="cargarInventario()">Ver inventario</button>
+        <button onclick="cargarCatalogoBot()">Ver catálogo bot</button>
+        <button onclick="cargarListings()">Ver publicaciones</button>
         <button onclick="cargarEnvios()">Ver envíos AMBA</button>
         <input id="busqueda" placeholder="Buscar producto, categoría, SKU, etc." />
-        <button onclick="cargarProductos()">Buscar</button>
+        <button onclick="buscarActual()">Buscar</button>
       </div>
       <div id="resumen" class="status"></div>
     </section>
@@ -102,18 +104,56 @@ async function cargarResumen() {
     error('No pude conectar. Revisá backend, CORS o token.');
   }
 }
-async function cargarProductos() {
+let vistaActual = 'inventario';
+
+async function buscarActual() {
+  if (vistaActual === 'catalogo') return cargarCatalogoBot();
+  if (vistaActual === 'listings') return cargarListings();
+  return cargarInventario();
+}
+
+async function cargarInventario() {
+  vistaActual = 'inventario';
   try {
-    estado('Cargando productos...');
+    estado('Cargando inventario...');
     const q = encodeURIComponent(document.getElementById('busqueda').value.trim());
-    const path = q ? `/admin/productos?q=${q}&limit=1000` : '/admin/productos?limit=1000';
+    const path = q ? `/admin/inventario?q=${q}&limit=1000` : '/admin/inventario?limit=1000';
     const data = await pedir(path);
     if (!data.ok) return error(data.error || 'Error');
-    estado('Productos cargados.', true);
+    estado('Inventario cargado.', true);
     document.getElementById('resumen').innerHTML = `<span class="pill">Tabla: ${data.tabla}</span><span class="pill">Filas: ${data.total}</span>`;
-    renderTabla(data.items, ['id','nombre','variante','categoria','precio','stock','visible','peso','url']);
-  } catch(e) { error('Error cargando productos.'); }
+    renderTabla(data.items, ['id','sku','name','variant_name','category','description','cost','stock','active','item_type','weight_kg','width_cm','height_cm','depth_cm']);
+  } catch(e) { error('Error cargando inventario.'); }
 }
+
+async function cargarCatalogoBot() {
+  vistaActual = 'catalogo';
+  try {
+    estado('Cargando catálogo del bot...');
+    const q = encodeURIComponent(document.getElementById('busqueda').value.trim());
+    const path = q ? `/debug/catalogo?q=${q}&limit=1000` : '/debug/catalogo?limit=1000';
+    const data = await pedir(path);
+    if (!data.ok) return error(data.error || 'Error');
+    estado('Catálogo del bot cargado.', true);
+    document.getElementById('resumen').innerHTML = `<span class="pill">Fuente: ${data.fuente}</span><span class="pill">Filas: ${data.total}</span>`;
+    renderTabla(data.items, ['sku','nombre','variante','categoria','precio','stock','visible','listing_activo','peso','url']);
+  } catch(e) { error('Error cargando catálogo del bot.'); }
+}
+
+async function cargarListings() {
+  vistaActual = 'listings';
+  try {
+    estado('Cargando publicaciones...');
+    const q = encodeURIComponent(document.getElementById('busqueda').value.trim());
+    const path = q ? `/admin/listings?q=${q}&limit=1000` : '/admin/listings?limit=1000';
+    const data = await pedir(path);
+    if (!data.ok) return error(data.error || 'Error');
+    estado('Publicaciones cargadas.', true);
+    document.getElementById('resumen').innerHTML = `<span class="pill">Tabla: ${data.tabla}</span><span class="pill">Filas: ${data.total}</span>`;
+    renderTabla(data.items, ['id','sku','marketplace','listing_type','price','stock','status','url','title','external_product_id','external_variant_id','external_full_id']);
+  } catch(e) { error('Error cargando publicaciones.'); }
+}
+
 async function cargarEnvios() {
   try {
     estado('Cargando envíos...');
