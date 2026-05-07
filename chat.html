@@ -42,6 +42,13 @@
       max-width: 85%;
       white-space: pre-wrap;
       line-height: 1.35;
+      word-break: break-word;
+    }
+
+    .msg a {
+      color: #0645ad;
+      text-decoration: underline;
+      font-weight: 600;
     }
 
     .cliente {
@@ -82,10 +89,27 @@
       background: #333;
     }
 
+    .estado-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
     .estado {
       font-size: 13px;
       color: #777;
-      margin-bottom: 8px;
+    }
+
+    .btn-secundario {
+      background: #666;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    .btn-secundario:hover {
+      background: #444;
     }
   </style>
 </head>
@@ -93,7 +117,11 @@
 
 <div class="chat">
   <h2>Chat Planeta Casa</h2>
-  <div class="estado" id="estado">Listo para probar</div>
+
+  <div class="estado-row">
+    <div class="estado" id="estado">Listo para probar</div>
+    <button class="btn-secundario" onclick="nuevaConversacion()">Nueva conversación</button>
+  </div>
 
   <div id="mensajes"></div>
 
@@ -104,14 +132,46 @@
 </div>
 
 <script>
-  const API_URL = "https://planeta-casa-erp.onrender.com/chat";
+  const API_BASE = "https://planeta-casa-erp.onrender.com";
+  const API_URL = API_BASE + "/chat";
+  const RESET_URL = API_BASE + "/reset";
+
   let sessionId = localStorage.getItem("planeta_session_id") || null;
+
+  function escaparHTML(texto) {
+    return String(texto)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function linkificar(texto) {
+    const seguro = escaparHTML(texto || "");
+
+    return seguro.replace(
+      /(https?:\/\/[^\s<]+)/g,
+      function(url) {
+        const limpio = url.replace(/[.,;:!?)]$/, "");
+        const sobrante = url.slice(limpio.length);
+        return `<a href="${limpio}" target="_blank" rel="noopener noreferrer">${limpio}</a>${sobrante}`;
+      }
+    );
+  }
 
   function agregarMensaje(texto, tipo) {
     const contenedor = document.getElementById("mensajes");
     const div = document.createElement("div");
+
     div.className = "msg " + tipo;
-    div.textContent = texto;
+
+    if (tipo === "bot") {
+      div.innerHTML = linkificar(texto);
+    } else {
+      div.textContent = texto;
+    }
+
     contenedor.appendChild(div);
     contenedor.scrollTop = contenedor.scrollHeight;
   }
@@ -159,6 +219,34 @@
       estado.textContent = "Error";
       console.error(error);
     }
+  }
+
+  async function nuevaConversacion() {
+    const estado = document.getElementById("estado");
+    estado.textContent = "Reiniciando conversación...";
+
+    try {
+      if (sessionId) {
+        await fetch(RESET_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            mensaje: "",
+            session_id: sessionId
+          })
+        });
+      }
+    } catch (error) {
+      console.warn("No se pudo avisar al backend para resetear, se limpia local igual.", error);
+    }
+
+    sessionId = null;
+    localStorage.removeItem("planeta_session_id");
+    document.getElementById("mensajes").innerHTML = "";
+    agregarMensaje("Hola, soy el bot de prueba de Planeta Casa. Escribí una consulta.", "bot");
+    estado.textContent = "Nueva conversación";
   }
 
   agregarMensaje("Hola, soy el bot de prueba de Planeta Casa. Escribí una consulta.", "bot");
