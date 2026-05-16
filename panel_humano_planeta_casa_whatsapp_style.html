@@ -22,6 +22,8 @@
       background: var(--bg);
       color: #111;
       height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
     }
@@ -77,10 +79,11 @@
     }
 
     .conv {
-      padding: 9px 10px;
+      padding: 8px 10px;
       border-bottom: 1px solid var(--border);
       cursor: pointer;
       background: white;
+      min-height: 74px;
     }
 
     .conv:hover, .conv.active { background: #e7f7f3; }
@@ -99,22 +102,32 @@
     }
 
     .status {
-      font-size: 11px;
+      font-size: 10px;
       border-radius: 999px;
-      padding: 2px 7px;
+      padding: 2px 6px;
       color: white;
       background: #667085;
       white-space: nowrap;
+      letter-spacing: .2px;
     }
 
     .status.BOT { background: #1570ef; }
     .status.HUMAN { background: #12b76a; }
+    .conv.human { background: #ecfdf3; }
+    .conv.human.active { background: #d1fadf; }
     .status.CLOSED { background: #667085; }
 
     .small {
       color: var(--muted);
       font-size: 11px;
       margin-top: 2px;
+      line-height: 1.22;
+    }
+
+    .conv-preview {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     #main {
@@ -233,16 +246,71 @@
     a { color: #056162; text-decoration: underline; }
 
     @media (max-width: 800px) {
+      body { height: 100dvh; }
+      header {
+        padding: 6px 8px;
+        gap: 6px;
+      }
+      header strong {
+        width: 100%;
+        font-size: 14px;
+      }
+      header input {
+        min-width: 0 !important;
+        width: calc(50% - 4px);
+        padding: 6px 7px;
+        font-size: 12px;
+      }
+      header button {
+        padding: 6px 8px;
+        font-size: 12px;
+      }
+
       #app { grid-template-columns: 1fr; }
 
       #sidebar {
-        max-height: 32vh;
+        height: 164px;
+        max-height: 164px;
         border-right: none;
         border-bottom: 1px solid var(--border);
+        flex: 0 0 164px;
       }
 
-      .msg { max-width: 92%; }
-      header strong { width: 100%; }
+      .conv {
+        min-height: 82px;
+        padding: 7px 10px;
+      }
+
+      .waid { font-size: 13px; }
+      .small { font-size: 10.5px; }
+      .status { font-size: 9px; padding: 2px 5px; }
+
+      #chatHeader {
+        padding: 6px 8px;
+        gap: 5px;
+      }
+      #chatTitle {
+        width: 100%;
+        font-size: 13px;
+      }
+      #chatHeader button {
+        padding: 6px 8px;
+        font-size: 12px;
+      }
+
+      #messages { padding: 8px 9px; gap: 5px; }
+      .msg { max-width: 92%; font-size: 14px; }
+
+      #composer {
+        position: sticky;
+        bottom: env(safe-area-inset-bottom);
+        padding: 7px;
+      }
+      #messageInput {
+        min-height: 36px;
+        max-height: 80px;
+        font-size: 14px;
+      }
     }
   </style>
 </head>
@@ -360,28 +428,77 @@ function renderConversations() {
     return;
   }
 
-  conversations.forEach(c => {
+  const visibles = conversations.filter(isRealConversation);
+
+  if (!visibles.length) {
+    list.innerHTML = `<div class="small" style="padding:14px">No hay conversaciones reales para mostrar.</div>`;
+    return;
+  }
+
+  visibles.forEach(c => {
     const div = document.createElement("div");
-    div.className = "conv" + (currentConversation && currentConversation.id === c.id ? " active" : "");
+    const status = String(c.status || "").toUpperCase();
+    div.className = "conv" +
+      (status === "HUMAN" ? " human" : "") +
+      (currentConversation && currentConversation.id === c.id ? " active" : "");
     div.onclick = () => selectConversation(c);
+
+    const title = c.customer_name || formatPhone(c.wa_id);
+    const assigned = c.assigned_to || "-";
+    const date = fmtShortDate(c.last_message_at);
 
     div.innerHTML = `
       <div class="conv-top">
-        <div class="waid">${escapeHtml(c.customer_name || c.wa_id)}</div>
-        <span class="status ${escapeHtml(c.status)}">${escapeHtml(c.status)}</span>
+        <div class="waid">${escapeHtml(title)}</div>
+        <span class="status ${escapeHtml(status)}">${escapeHtml(status || "BOT")}</span>
       </div>
-      <div class="small">${escapeHtml(c.wa_id)}</div>
-      <div class="small">Asignado: ${escapeHtml(c.assigned_to || "-")}</div>
-      <div class="small">${fmtDate(c.last_message_at)}</div>
+      <div class="small conv-preview">${escapeHtml(formatPhone(c.wa_id))}</div>
+      <div class="small conv-preview">Asignado: ${escapeHtml(assigned)}</div>
+      <div class="small conv-preview">${escapeHtml(date)}</div>
     `;
     list.appendChild(div);
   });
 }
 
+function isRealConversation(c) {
+  if (!c) return false;
+  const wa = String(c.wa_id || "").trim();
+  if (!wa) return false;
+
+  // Evita chats fantasmas típicos generados por eventos internos/statuses.
+  const upper = wa.toUpperCase();
+  if (["BOT", "SYSTEM", "STATUS", "UNKNOWN", "NULL", "NONE", "UNDEFINED"].includes(upper)) return false;
+
+  // WhatsApp real suele venir numérico internacional. Si no es numérico, solo lo dejamos si tiene nombre/última fecha.
+  const numericLike = /^\d{8,18}$/.test(wa);
+  if (!numericLike && !c.customer_name && !c.last_message_at) return false;
+
+  return true;
+}
+
+function formatPhone(wa) {
+  const s = String(wa || "").trim();
+  if (!s) return "";
+  if (/^\d{10,18}$/.test(s)) return "+" + s;
+  return s;
+}
+
+function fmtShortDate(s) {
+  if (!s) return "";
+  try {
+    return new Date(s).toLocaleString("es-AR", {
+      day: "2-digit",
+      month: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  } catch { return s; }
+}
+
 function selectConversation(c) {
   currentConversation = c;
   renderConversations();
-  document.getElementById("chatTitle").innerText = `${c.customer_name || c.wa_id} · ${c.status}`;
+  document.getElementById("chatTitle").innerText = `${c.customer_name || formatPhone(c.wa_id)} · ${c.status}`;
   loadMessages(c.id);
 }
 
@@ -396,7 +513,7 @@ async function loadMessages(conversationId, showErrors = true) {
     if (data.conversation) {
       currentConversation = data.conversation;
       document.getElementById("chatTitle").innerText =
-        `${currentConversation.customer_name || currentConversation.wa_id} · ${currentConversation.status}`;
+        `${currentConversation.customer_name || formatPhone(currentConversation.wa_id)} · ${currentConversation.status}`;
     }
 
     renderMessages(data.items || []);
