@@ -330,7 +330,77 @@ async function probar() {
     setEstado('No pude conectar al ERP Admin.', 'bad');
   }
 }
+
+function resetCombosView() {
+  selectedBundle = null;
+  selectedComponent = null;
+  const ids = ['bundleSearch','componentSearch'];
+  for (const id of ids) {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  }
+  const qty = document.getElementById('componentQty');
+  if (qty) qty.value = 1;
+  for (const id of ['bundleResults','componentResults']) {
+    const el = document.getElementById(id);
+    if (el) { el.classList.add('hidden'); el.innerHTML = ''; }
+  }
+  const bs = document.getElementById('bundleSelected');
+  const cs = document.getElementById('componentSelected');
+  if (bs) bs.innerHTML = '<span class="muted">Ninguno.</span>';
+  if (cs) cs.innerHTML = '<span class="muted">Ninguno.</span>';
+  const sum = document.getElementById('comboSummary');
+  const tbl = document.getElementById('comboTable');
+  if (sum) sum.innerHTML = '';
+  if (tbl) tbl.innerHTML = '';
+}
+
+function resetVentaView() {
+  selectedSale = null;
+  const search = document.getElementById('saleSkuSearch');
+  const results = document.getElementById('saleResults');
+  const selected = document.getElementById('saleSelected');
+  const result = document.getElementById('saleResult');
+  const qty = document.getElementById('saleQty');
+  if (search) search.value = '';
+  if (results) { results.classList.add('hidden'); results.innerHTML = ''; }
+  if (selected) selected.innerHTML = '<span class="muted">Ninguno.</span>';
+  if (result) result.innerHTML = '';
+  if (qty) qty.value = 1;
+  generarOrderIdTest();
+}
+
+function resetStockView() {
+  selectedStock = null;
+  const search = document.getElementById('stockSearch');
+  const results = document.getElementById('stockResults');
+  const selected = document.getElementById('stockSelected');
+  const result = document.getElementById('stockResult');
+  const newStock = document.getElementById('newStock');
+  if (search) search.value = '';
+  if (results) { results.classList.add('hidden'); results.innerHTML = ''; }
+  if (selected) selected.innerHTML = '<span class="muted">Ninguno.</span>';
+  if (result) result.innerHTML = '';
+  if (newStock) newStock.value = 0;
+}
+
+function resetMovsView() {
+  const sku = document.getElementById('movSku');
+  const table = document.getElementById('movTable');
+  if (sku) sku.value = '';
+  if (table) table.innerHTML = '';
+}
+
+function resetView(name) {
+  if (name === 'combos') resetCombosView();
+  if (name === 'venta') resetVentaView();
+  if (name === 'stock') resetStockView();
+  if (name === 'movs') resetMovsView();
+  limpiarEstado();
+}
+
 function showTab(name) {
+  resetView(name);
   for (const n of ['combos','venta','stock','movs']) {
     document.getElementById('view-' + n).classList.toggle('hidden', n !== name);
     document.getElementById('tab-' + n).classList.toggle('active', n === name);
