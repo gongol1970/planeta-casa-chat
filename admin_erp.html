@@ -84,6 +84,10 @@
     .result-item strong { display: block; }
     .small { font-size: 12px; }
     code { background: #f2f4f7; padding: 2px 5px; border-radius: 5px; }
+    .section-title { margin: 18px 0 8px; font-size: 18px; }
+    .divider { height: 1px; background: #eaecf0; margin: 18px 0; }
+    .combo-actions { margin-top: 12px; }
+    .component-panel { background: #fbfcfe; border: 1px solid #eaecf0; border-radius: 12px; padding: 14px; margin-top: 14px; }
   </style>
 </head>
 <body>
@@ -131,45 +135,53 @@
         El componente también se elige desde inventario. No se permite SKU escrito “a mano” sin validación.
       </p>
 
+      <h3 class="section-title">1. Elegir combo</h3>
       <div class="grid">
         <div class="col-6">
           <label>Buscar SKU combo / variante vendible</label>
-          <input id="bundleSearch" placeholder="Ej: PCCOMBO2_12, kit reparación..." oninput="debouncedSearch('bundle')" />
+          <input id="bundleSearch" placeholder="Ej: PCCOMBO2_12, kit reparación..." oninput="onBundleTyping()" />
           <div id="bundleResults" class="result-list hidden"></div>
         </div>
         <div class="col-6">
           <label>Combo seleccionado</label>
           <div id="bundleSelected" class="selected-box muted">Ninguno.</div>
         </div>
-
-        <div class="col-6">
-          <label>Buscar SKU componente</label>
-          <input id="componentSearch" placeholder="Ej: PCBRUNIDOR, suela 12mm..." oninput="debouncedSearch('component')" />
-          <div id="componentResults" class="result-list hidden"></div>
-        </div>
-        <div class="col-3">
-          <label>Cantidad del componente</label>
-          <input id="componentQty" type="number" step="0.01" min="0.01" value="1" />
-        </div>
-        <div class="col-3">
-          <label>&nbsp;</label>
-          <button onclick="agregarComponente()">Agregar / actualizar</button>
-        </div>
-
-        <div class="col-12">
-          <label>Componente seleccionado</label>
-          <div id="componentSelected" class="selected-box muted">Ninguno.</div>
-        </div>
       </div>
 
-      <div class="row" style="margin-top:12px">
+      <div class="row combo-actions">
         <button class="secondary" style="width:auto" onclick="cargarComboActual()">Ver combo actual</button>
         <button class="secondary" style="width:auto" onclick="listarCombos()">Listar combos cargados</button>
         <button class="warn" style="width:auto" onclick="recalcularCombo()">Recalcular stock combo</button>
+        <button class="secondary" style="width:auto" onclick="limpiarComboForm()">Limpiar selección</button>
       </div>
 
       <div id="comboSummary" class="status"></div>
       <div id="comboTable" style="margin-top:12px"></div>
+
+      <div class="divider"></div>
+
+      <div class="component-panel">
+        <h3 class="section-title" style="margin-top:0">2. Agregar componente al combo seleccionado</h3>
+        <div class="grid">
+          <div class="col-6">
+            <label>Buscar SKU componente</label>
+            <input id="componentSearch" placeholder="Ej: PCBRUNIDOR, suela 12mm..." oninput="debouncedSearch('component')" />
+            <div id="componentResults" class="result-list hidden"></div>
+          </div>
+          <div class="col-3">
+            <label>Cantidad del componente</label>
+            <input id="componentQty" type="number" step="0.01" min="0.01" value="1" />
+          </div>
+          <div class="col-3">
+            <label>&nbsp;</label>
+            <button onclick="agregarComponente()">Agregar / actualizar</button>
+          </div>
+          <div class="col-12">
+            <label>Componente seleccionado</label>
+            <div id="componentSelected" class="selected-box muted">Ninguno.</div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section id="view-venta" class="card hidden">
@@ -324,6 +336,38 @@ function showTab(name) {
     document.getElementById('tab-' + n).classList.toggle('active', n === name);
   }
 }
+
+function clearComponentSelection() {
+  selectedComponent = null;
+  const cs = document.getElementById('componentSearch');
+  const cr = document.getElementById('componentResults');
+  const csel = document.getElementById('componentSelected');
+  const qty = document.getElementById('componentQty');
+  if (cs) cs.value = '';
+  if (cr) { cr.classList.add('hidden'); cr.innerHTML = ''; }
+  if (csel) csel.innerHTML = '<span class="muted">Ninguno.</span>';
+  if (qty) qty.value = 1;
+}
+function limpiarComboForm() {
+  selectedBundle = null;
+  clearComponentSelection();
+  const bs = document.getElementById('bundleSearch');
+  const br = document.getElementById('bundleResults');
+  if (bs) bs.value = '';
+  if (br) { br.classList.add('hidden'); br.innerHTML = ''; }
+  document.getElementById('bundleSelected').innerHTML = '<span class="muted">Ninguno.</span>';
+  document.getElementById('comboSummary').innerHTML = '';
+  document.getElementById('comboTable').innerHTML = '';
+}
+function onBundleTyping() {
+  selectedBundle = null;
+  clearComponentSelection();
+  document.getElementById('bundleSelected').innerHTML = '<span class="muted">Ninguno.</span>';
+  document.getElementById('comboSummary').innerHTML = '';
+  document.getElementById('comboTable').innerHTML = '';
+  debouncedSearch('bundle');
+}
+
 function debouncedSearch(kind) {
   clearTimeout(timers[kind]);
   timers[kind] = setTimeout(() => searchInventory(kind), 250);
@@ -384,9 +428,12 @@ async function searchInventory(kind) {
 function selectItem(kind, item) {
   if (kind === 'bundle') {
     selectedBundle = item;
+    clearComponentSelection();
     document.getElementById('bundleSelected').innerHTML = renderSelected(item);
     document.getElementById('bundleResults').classList.add('hidden');
     document.getElementById('bundleSearch').value = item.sku;
+    document.getElementById('comboSummary').innerHTML = '';
+    document.getElementById('comboTable').innerHTML = '';
     cargarComboActual();
   }
   if (kind === 'component') {
@@ -592,8 +639,13 @@ function renderSaleResult(data) {
   html += '</tbody></table></div>';
 
   if (data.affected_bundles && data.affected_bundles.length) {
-    html += '<h3>Combos recalculados</h3><div class="table-wrap"><table><thead><tr><th>SKU</th><th>Anterior</th><th>Nuevo</th><th>Cambió</th></tr></thead><tbody>';
+    const seenBundles = {};
     for (const b of data.affected_bundles) {
+      seenBundles[b.sku || ''] = b;
+    }
+    const uniqueBundles = Object.values(seenBundles);
+    html += '<h3>Combos recalculados</h3><div class="table-wrap"><table><thead><tr><th>SKU</th><th>Anterior</th><th>Nuevo</th><th>Cambió</th></tr></thead><tbody>';
+    for (const b of uniqueBundles) {
       html += `<tr><td>${escapeHtml(b.sku || '')}</td><td>${b.old_stock}</td><td>${b.new_stock}</td><td>${b.changed ? 'sí' : 'no'}</td></tr>`;
     }
     html += '</tbody></table></div>';
