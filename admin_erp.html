@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ERP Admin Planeta Casa</title>
+  <style>
+    :root {
+      --bg: #f3f5f7;
+      --card: #fff;
+      --ink: #1f2937;
+      --muted: #667085;
+      --border: #d0d5dd;
+      --dark: #111827;
+      --ok: #067647;
+      --bad: #b42318;
+      --warn: #b54708;
+      --soft: #eef4ff;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: var(--ink); }
+    header { background: var(--dark); color: #fff; padding: 18px 22px; }
+    header h1 { font-size: 22px; margin: 0 0 4px 0; }
+    header div { color: #d1d5db; font-size: 14px; }
+    main { max-width: 1280px; margin: 18px auto; padding: 0 14px 40px; }
+    .card { background: var(--card); border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.06); border: 1px solid #eaecf0; }
+    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
+    .col-3 { grid-column: span 3; }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-8 { grid-column: span 8; }
+    .col-12 { grid-column: span 12; }
+    @media (max-width: 900px) {
+      .col-3, .col-4, .col-6, .col-8 { grid-column: span 12; }
+    }
+    label { display: block; font-size: 13px; font-weight: bold; color: #344054; margin-bottom: 5px; }
+    input, select, button, textarea {
+      width: 100%;
+      padding: 10px 11px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      background: #fff;
+    }
+    button { background: var(--dark); color: white; border: 0; cursor: pointer; font-weight: bold; }
+    button:hover { background: #374151; }
+    button.secondary { background: #fff; color: var(--dark); border: 1px solid var(--border); }
+    button.danger { background: var(--bad); }
+    button.ok { background: var(--ok); }
+    button.warn { background: var(--warn); }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tab { padding: 10px 14px; border-radius: 999px; border: 1px solid var(--border); background: #fff; color: var(--ink); cursor: pointer; }
+    .tab.active { background: var(--dark); color: #fff; border-color: var(--dark); }
+    .status { font-size: 14px; color: var(--muted); margin-top: 8px; min-height: 22px; }
+    .oktxt { color: var(--ok); font-weight: bold; }
+    .badtxt { color: var(--bad); font-weight: bold; }
+    .warntxt { color: var(--warn); font-weight: bold; }
+    .pill { display: inline-block; background: #f2f4f7; padding: 5px 9px; border-radius: 999px; margin: 3px; font-size: 13px; }
+    .pill.ok { background: #ecfdf3; color: var(--ok); }
+    .pill.bad { background: #fef3f2; color: var(--bad); }
+    .pill.info { background: var(--soft); color: #3538cd; }
+    table { border-collapse: collapse; width: 100%; background: white; font-size: 13px; }
+    th, td { border-bottom: 1px solid #eaecf0; padding: 8px; text-align: left; vertical-align: top; }
+    th { position: sticky; top: 0; background: #1f2937; color: white; z-index: 1; }
+    .table-wrap { max-height: 520px; overflow: auto; border: 1px solid #eaecf0; border-radius: 10px; }
+    .muted { color: var(--muted); }
+    .hidden { display: none; }
+    .selected-box { border: 1px solid var(--border); border-radius: 10px; padding: 10px; background: #f9fafb; min-height: 42px; }
+    .result-list {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      max-height: 220px;
+      overflow-y: auto;
+      background: #fff;
+    }
+    .result-item {
+      padding: 10px;
+      border-bottom: 1px solid #eaecf0;
+      cursor: pointer;
+    }
+    .result-item:hover { background: #f9fafb; }
+    .result-item strong { display: block; }
+    .small { font-size: 12px; }
+    code { background: #f2f4f7; padding: 2px 5px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ERP Admin Planeta Casa</h1>
+    <div>Standalone. No toca el bot ni app_v2.py.</div>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="grid">
+        <div class="col-6">
+          <label>API ERP</label>
+          <input id="apiUrl" value="http://localhost:8010" />
+        </div>
+        <div class="col-4">
+          <label>ADMIN_TOKEN</label>
+          <input id="token" type="password" placeholder="Pegá el token admin" />
+        </div>
+        <div class="col-2">
+          <label>&nbsp;</label>
+          <button onclick="guardar()">Guardar</button>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="secondary" style="width:auto" onclick="probar()">Probar conexión</button>
+        <button class="secondary" style="width:auto" onclick="limpiarEstado()">Limpiar mensaje</button>
+      </div>
+      <div id="estado" class="status">Cargá API y token.</div>
+    </section>
+
+    <section class="card">
+      <div class="tabs">
+        <button class="tab active" id="tab-combos" onclick="showTab('combos')">Combos</button>
+        <button class="tab" id="tab-venta" onclick="showTab('venta')">Simular / registrar venta</button>
+        <button class="tab" id="tab-stock" onclick="showTab('stock')">Stock</button>
+        <button class="tab" id="tab-movs" onclick="showTab('movs')">Movimientos</button>
+      </div>
+    </section>
+
+    <section id="view-combos" class="card">
+      <h2>ABM de combos</h2>
+      <p class="muted">
+        Regla: el combo se arma sobre el <b>SKU vendible</b>, por ejemplo <code>PCCOMBO2_12</code> o <code>PCCOMBO2_13</code>.
+        El componente también se elige desde inventario. No se permite SKU escrito “a mano” sin validación.
+      </p>
+
+      <div class="grid">
+        <div class="col-6">
+          <label>Buscar SKU combo / variante vendible</label>
+          <input id="bundleSearch" placeholder="Ej: PCCOMBO2_12, kit reparación..." oninput="debouncedSearch('bundle')" />
+          <div id="bundleResults" class="result-list hidden"></div>
+        </div>
+        <div class="col-6">
+          <label>Combo seleccionado</label>
+          <div id="bundleSelected" class="selected-box muted">Ninguno.</div>
+        </div>
+
+        <div class="col-6">
+          <label>Buscar SKU componente</label>
+          <input id="componentSearch" placeholder="Ej: PCBRUNIDOR, suela 12mm..." oninput="debouncedSearch('component')" />
+          <div id="componentResults" class="result-list hidden"></div>
+        </div>
+        <div class="col-3">
+          <label>Cantidad del componente</label>
+          <input id="componentQty" type="number" step="0.01" min="0.01" value="1" />
+        </div>
+        <div class="col-3">
+          <label>&nbsp;</label>
+          <button onclick="agregarComponente()">Agregar / actualizar</button>
+        </div>
+
+        <div class="col-12">
+          <label>Componente seleccionado</label>
+          <div id="componentSelected" class="selected-box muted">Ninguno.</div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button class="secondary" style="width:auto" onclick="cargarComboActual()">Ver combo actual</button>
+        <button class="secondary" style="width:auto" onclick="listarCombos()">Listar combos cargados</button>
+        <button class="warn" style="width:auto" onclick="recalcularCombo()">Recalcular stock combo</button>
+      </div>
+
+      <div id="comboSummary" class="status"></div>
+      <div id="comboTable" style="margin-top:12px"></div>
+    </section>
+
+    <section id="view-venta" class="card hidden">
+      <h2>Simular / registrar venta</h2>
+      <p class="muted">
+        Primero usá <b>dry run</b>. Si el SKU vendido es combo, descuenta sus componentes.
+        Si es producto simple, descuenta ese SKU.
+      </p>
+
+      <div class="grid">
+        <div class="col-3">
+          <label>Canal</label>
+          <select id="saleChannel">
+            <option value="TEST">TEST</option>
+            <option value="ML">ML</option>
+            <option value="TN">TN</option>
+            <option value="MANUAL">MANUAL</option>
+          </select>
+        </div>
+        <div class="col-5">
+          <label>ID orden externa</label>
+          <input id="saleOrderId" placeholder="Ej: TEST-001 / id ML / id TN" />
+        </div>
+        <div class="col-4">
+          <label>Cantidad vendida</label>
+          <input id="saleQty" type="number" step="1" min="1" value="1" />
+        </div>
+
+        <div class="col-6">
+          <label>Buscar SKU vendido</label>
+          <input id="saleSkuSearch" placeholder="SKU producto simple o combo" oninput="debouncedSearch('sale')" />
+          <div id="saleResults" class="result-list hidden"></div>
+        </div>
+        <div class="col-6">
+          <label>SKU vendido seleccionado</label>
+          <div id="saleSelected" class="selected-box muted">Ninguno.</div>
+        </div>
+
+        <div class="col-4">
+          <button class="secondary" onclick="simularVenta(true)">Dry run: ver descuento</button>
+        </div>
+        <div class="col-4">
+          <button class="danger" onclick="simularVenta(false)">REGISTRAR venta y descontar stock</button>
+        </div>
+        <div class="col-4">
+          <button class="secondary" onclick="generarOrderIdTest()">Generar ID test</button>
+        </div>
+      </div>
+
+      <div id="saleResult" style="margin-top:12px"></div>
+    </section>
+
+    <section id="view-stock" class="card hidden">
+      <h2>Stock</h2>
+      <div class="grid">
+        <div class="col-6">
+          <label>Buscar SKU</label>
+          <input id="stockSearch" placeholder="Buscar producto..." oninput="debouncedSearch('stock')" />
+          <div id="stockResults" class="result-list hidden"></div>
+        </div>
+        <div class="col-6">
+          <label>SKU seleccionado</label>
+          <div id="stockSelected" class="selected-box muted">Ninguno.</div>
+        </div>
+        <div class="col-3">
+          <label>Nuevo stock</label>
+          <input id="newStock" type="number" min="0" step="1" value="0" />
+        </div>
+        <div class="col-3">
+          <label>&nbsp;</label>
+          <button class="secondary" onclick="setStock(true)">Dry run</button>
+        </div>
+        <div class="col-3">
+          <label>&nbsp;</label>
+          <button class="danger" onclick="setStock(false)">Aplicar stock</button>
+        </div>
+      </div>
+      <div id="stockResult" style="margin-top:12px"></div>
+    </section>
+
+    <section id="view-movs" class="card hidden">
+      <h2>Movimientos</h2>
+      <div class="row">
+        <input id="movSku" placeholder="Filtrar por SKU opcional" style="max-width:320px" />
+        <button style="width:auto" onclick="cargarMovimientos()">Ver movimientos</button>
+        <button style="width:auto" onclick="cargarOrdenes()">Ver órdenes</button>
+      </div>
+      <div id="movTable" style="margin-top:12px"></div>
+    </section>
+  </main>
+
+<script>
+let selectedBundle = null;
+let selectedComponent = null;
+let selectedSale = null;
+let selectedStock = null;
+let timers = {};
+
+function getApiUrl() {
+  return document.getElementById('apiUrl').value.replace(/\/$/, '');
+}
+function getToken() {
+  return document.getElementById('token').value.trim();
+}
+function authParam() {
+  return 'token=' + encodeURIComponent(getToken());
+}
+function setEstado(txt, kind='') {
+  const cls = kind === 'ok' ? 'oktxt' : kind === 'bad' ? 'badtxt' : kind === 'warn' ? 'warntxt' : '';
+  document.getElementById('estado').innerHTML = cls ? `<span class="${cls}">${escapeHtml(txt)}</span>` : escapeHtml(txt);
+}
+function limpiarEstado() { setEstado(''); }
+function guardar() {
+  localStorage.setItem('erp_api_url', getApiUrl());
+  localStorage.setItem('erp_admin_token', getToken());
+  setEstado('Guardado en este navegador.', 'ok');
+}
+function cargarGuardado() {
+  const api = localStorage.getItem('erp_api_url');
+  const tok = localStorage.getItem('erp_admin_token');
+  if (api) document.getElementById('apiUrl').value = api;
+  if (tok) document.getElementById('token').value = tok;
+}
+async function api(path, opts={}) {
+  const sep = path.includes('?') ? '&' : '?';
+  const url = `${getApiUrl()}${path}${sep}${authParam()}`;
+  const res = await fetch(url, {
+    ...opts,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(opts.headers || {})
+    }
+  });
+  let data;
+  try { data = await res.json(); } catch(e) { data = {ok:false, detail:'Respuesta no JSON'}; }
+  if (!res.ok) {
+    throw new Error(data.detail || data.error || JSON.stringify(data));
+  }
+  return data;
+}
+async function probar() {
+  try {
+    const data = await fetch(getApiUrl() + '/health').then(r => r.json());
+    setEstado(`Conexión OK. Versión ${data.version}. Supabase: ${data.supabase_configurado}. Token: ${data.admin_token_configurado}.`, 'ok');
+  } catch(e) {
+    setEstado('No pude conectar al ERP Admin.', 'bad');
+  }
+}
+function showTab(name) {
+  for (const n of ['combos','venta','stock','movs']) {
+    document.getElementById('view-' + n).classList.toggle('hidden', n !== name);
+    document.getElementById('tab-' + n).classList.toggle('active', n === name);
+  }
+}
+function debouncedSearch(kind) {
+  clearTimeout(timers[kind]);
+  timers[kind] = setTimeout(() => searchInventory(kind), 250);
+}
+function inputFor(kind) {
+  return {
+    bundle: 'bundleSearch',
+    component: 'componentSearch',
+    sale: 'saleSkuSearch',
+    stock: 'stockSearch'
+  }[kind];
+}
+function resultsFor(kind) {
+  return {
+    bundle: 'bundleResults',
+    component: 'componentResults',
+    sale: 'saleResults',
+    stock: 'stockResults'
+  }[kind];
+}
+async function searchInventory(kind) {
+  const input = document.getElementById(inputFor(kind));
+  const box = document.getElementById(resultsFor(kind));
+  const q = input.value.trim();
+  if (q.length < 2) {
+    box.classList.add('hidden');
+    box.innerHTML = '';
+    return;
+  }
+  try {
+    const data = await api(`/admin/inventory/search?q=${encodeURIComponent(q)}&limit=40`);
+    box.innerHTML = '';
+    if (!data.items || data.items.length === 0) {
+      box.innerHTML = '<div class="result-item muted">Sin resultados.</div>';
+      box.classList.remove('hidden');
+      return;
+    }
+    for (const item of data.items) {
+      const div = document.createElement('div');
+      div.className = 'result-item';
+      div.innerHTML = `
+        <strong>${escapeHtml(item.sku)} — ${escapeHtml(item.name || '')}</strong>
+        <span class="small muted">
+          ${escapeHtml(item.variant_name || '')}
+          ${item.item_type ? ' | tipo: ' + escapeHtml(item.item_type) : ''}
+          | stock: ${item.stock ?? ''}
+          ${item.active === false ? ' | INACTIVO' : ''}
+        </span>`;
+      div.onclick = () => selectItem(kind, item);
+      box.appendChild(div);
+    }
+    box.classList.remove('hidden');
+  } catch(e) {
+    box.innerHTML = `<div class="result-item badtxt">${escapeHtml(e.message)}</div>`;
+    box.classList.remove('hidden');
+  }
+}
+function selectItem(kind, item) {
+  if (kind === 'bundle') {
+    selectedBundle = item;
+    document.getElementById('bundleSelected').innerHTML = renderSelected(item);
+    document.getElementById('bundleResults').classList.add('hidden');
+    document.getElementById('bundleSearch').value = item.sku;
+    cargarComboActual();
+  }
+  if (kind === 'component') {
+    selectedComponent = item;
+    document.getElementById('componentSelected').innerHTML = renderSelected(item);
+    document.getElementById('componentResults').classList.add('hidden');
+    document.getElementById('componentSearch').value = item.sku;
+  }
+  if (kind === 'sale') {
+    selectedSale = item;
+    document.getElementById('saleSelected').innerHTML = renderSelected(item);
+    document.getElementById('saleResults').classList.add('hidden');
+    document.getElementById('saleSkuSearch').value = item.sku;
+  }
+  if (kind === 'stock') {
+    selectedStock = item;
+    document.getElementById('stockSelected').innerHTML = renderSelected(item);
+    document.getElementById('stockResults').classList.add('hidden');
+    document.getElementById('stockSearch').value = item.sku;
+    document.getElementById('newStock').value = item.stock ?? 0;
+  }
+}
+function renderSelected(item) {
+  return `
+    <b>${escapeHtml(item.sku)}</b> — ${escapeHtml(item.name || '')}
+    <br><span class="small muted">
+      ${escapeHtml(item.variant_name || '')}
+      ${item.category ? '<br>' + escapeHtml(item.category) : ''}
+      <br>Stock: ${item.stock ?? ''} | Tipo: ${escapeHtml(item.item_type || '')} | ID: ${item.id}
+    </span>`;
+}
+async function cargarComboActual() {
+  if (!selectedBundle) {
+    document.getElementById('comboSummary').innerHTML = '<span class="warntxt">Seleccioná primero un SKU combo.</span>';
+    return;
+  }
+  try {
+    const data = await api(`/admin/bundles/${encodeURIComponent(selectedBundle.sku)}`);
+    renderBundle(data);
+    setEstado('Combo cargado.', 'ok');
+  } catch(e) {
+    document.getElementById('comboSummary').innerHTML = `<span class="badtxt">${escapeHtml(e.message)}</span>`;
+  }
+}
+function renderBundle(data) {
+  const b = data.bundle;
+  const comps = data.components || [];
+  const available = data.available_to_sell;
+  document.getElementById('comboSummary').innerHTML = `
+    <span class="pill info">Combo: ${escapeHtml(b.sku)}</span>
+    <span class="pill">Componentes: ${comps.length}</span>
+    <span class="pill ${available === 0 ? 'bad' : 'ok'}">Disponible calculado: ${available ?? 'sin componentes'}</span>
+    <span class="pill">Stock actual combo: ${b.stock ?? ''}</span>`;
+  if (comps.length === 0) {
+    document.getElementById('comboTable').innerHTML = '<p class="muted">Este SKU todavía no tiene componentes cargados.</p>';
+    return;
+  }
+  let html = '<div class="table-wrap"><table><thead><tr><th>SKU componente</th><th>Nombre</th><th>Cantidad</th><th>Stock componente</th><th>Acción</th></tr></thead><tbody>';
+  for (const c of comps) {
+    html += `<tr>
+      <td><b>${escapeHtml(c.component_sku || '')}</b></td>
+      <td>${escapeHtml(c.component_name || '')}</td>
+      <td>${c.quantity}</td>
+      <td>${c.component_stock ?? ''}</td>
+      <td><button class="danger" onclick="eliminarComponente('${escapeAttr(c.component_sku || '')}')" style="width:auto">Eliminar</button></td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  document.getElementById('comboTable').innerHTML = html;
+}
+async function agregarComponente() {
+  if (!selectedBundle) return setEstado('Falta seleccionar combo desde la lista.', 'bad');
+  if (!selectedComponent) return setEstado('Falta seleccionar componente desde la lista.', 'bad');
+  const qty = Number(document.getElementById('componentQty').value);
+  if (!qty || qty <= 0) return setEstado('Cantidad inválida.', 'bad');
+
+  if (!confirm(`Agregar/actualizar componente:\n\nCombo: ${selectedBundle.sku}\nComponente: ${selectedComponent.sku}\nCantidad: ${qty}`)) return;
+
+  try {
+    const data = await api('/admin/bundles/component', {
+      method: 'POST',
+      body: JSON.stringify({
+        bundle_sku: selectedBundle.sku,
+        component_sku: selectedComponent.sku,
+        quantity: qty
+      })
+    });
+    setEstado(`Componente ${data.action}.`, 'ok');
+    await cargarComboActual();
+  } catch(e) {
+    setEstado(e.message, 'bad');
+  }
+}
+async function eliminarComponente(componentSku) {
+  if (!selectedBundle) return;
+  if (!confirm(`Eliminar ${componentSku} del combo ${selectedBundle.sku}?`)) return;
+  try {
+    const data = await api('/admin/bundles/component', {
+      method: 'DELETE',
+      body: JSON.stringify({
+        bundle_sku: selectedBundle.sku,
+        component_sku: componentSku
+      })
+    });
+    setEstado(`Eliminado: ${data.deleted}`, 'ok');
+    await cargarComboActual();
+  } catch(e) {
+    setEstado(e.message, 'bad');
+  }
+}
+async function recalcularCombo() {
+  if (!selectedBundle) return setEstado('Seleccioná combo.', 'bad');
+  try {
+    const data = await api(`/admin/bundles/${encodeURIComponent(selectedBundle.sku)}/recalc?dry_run=false`, {method:'POST'});
+    setEstado(`Recalculado ${data.result.sku}: ${data.result.old_stock} → ${data.result.new_stock}`, 'ok');
+    await cargarComboActual();
+  } catch(e) {
+    setEstado(e.message, 'bad');
+  }
+}
+async function listarCombos() {
+  try {
+    const data = await api('/admin/bundles?limit=200');
+    const rows = data.items || [];
+    if (!rows.length) {
+      document.getElementById('comboTable').innerHTML = '<p class="muted">Todavía no hay combos cargados.</p>';
+      return;
+    }
+    let html = '<div class="table-wrap"><table><thead><tr><th>SKU</th><th>Nombre</th><th>Stock actual</th><th>Disponible calculado</th><th>Componentes</th><th>Acción</th></tr></thead><tbody>';
+    for (const r of rows) {
+      html += `<tr>
+        <td><b>${escapeHtml(r.sku)}</b></td>
+        <td>${escapeHtml(r.name || '')}</td>
+        <td>${r.stock ?? ''}</td>
+        <td>${r.available_to_sell ?? ''}</td>
+        <td>${r.components_count ?? ''}</td>
+        <td><button class="secondary" style="width:auto" onclick='selectItem("bundle", ${JSON.stringify(r).replace(/'/g, "&apos;")})'>Abrir</button></td>
+      </tr>`;
+    }
+    html += '</tbody></table></div>';
+    document.getElementById('comboSummary').innerHTML = `<span class="pill">Combos: ${rows.length}</span>`;
+    document.getElementById('comboTable').innerHTML = html;
+  } catch(e) {
+    setEstado(e.message, 'bad');
+  }
+}
+function generarOrderIdTest() {
+  const d = new Date();
+  document.getElementById('saleOrderId').value = 'TEST-' + d.toISOString().replace(/[-:.TZ]/g,'').slice(0,14);
+}
+async function simularVenta(dryRun) {
+  if (!selectedSale) return setEstado('Seleccioná SKU vendido desde la lista.', 'bad');
+  const orderId = document.getElementById('saleOrderId').value.trim();
+  if (!orderId) return setEstado('Falta ID de orden externa.', 'bad');
+
+  const payload = {
+    channel: document.getElementById('saleChannel').value,
+    external_order_id: orderId,
+    sku: selectedSale.sku,
+    quantity: Number(document.getElementById('saleQty').value || 1),
+    dry_run: dryRun
+  };
+
+  if (!dryRun) {
+    const msg = `Esto va a registrar venta y descontar stock.\n\nCanal: ${payload.channel}\nOrden: ${payload.external_order_id}\nSKU: ${payload.sku}\nCantidad: ${payload.quantity}\n\n¿Confirmás?`;
+    if (!confirm(msg)) return;
+  }
+
+  try {
+    const data = await api('/admin/orders/manual_sale', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    renderSaleResult(data);
+    setEstado(dryRun ? 'Dry run OK.' : 'Venta registrada y stock descontado.', 'ok');
+  } catch(e) {
+    setEstado(e.message, 'bad');
+  }
+}
+function renderSaleResult(data) {
+  if (data.duplicate) {
+    document.getElementById('saleResult').innerHTML = `<p class="warntxt">${escapeHtml(data.message || 'Orden duplicada')}</p>`;
+    return;
+  }
+  const rows = data.stock_preview || data.stock_applied || [];
+  let html = `
+    <div>
+      <span class="pill ${data.dry_run ? 'info' : 'ok'}">${data.dry_run ? 'DRY RUN' : 'APLICADO'}</span>
+      <span class="pill">SKU vendido: ${escapeHtml(data.sold_sku || '')}</span>
+      <span class="pill">Tipo: ${data.is_bundle ? 'Combo' : 'Simple'}</span>
+    </div>`;
+  html += '<div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>SKU afectado</th><th>Nombre</th><th>Descuento</th><th>Stock anterior</th><th>Stock nuevo</th><th>Alerta</th></tr></thead><tbody>';
+  for (const r of rows) {
+    html += `<tr>
+      <td><b>${escapeHtml(r.sku || '')}</b></td>
+      <td>${escapeHtml(r.name || '')}</td>
+      <td>${r.qty_decrement}</td>
+      <td>${r.old_stock}</td>
+      <td>${r.new_stock}</td>
+      <td>${r.insufficient_stock ? '<span class="badtxt">Stock negativo</span>' : '<span class="oktxt">OK</span>'}</td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+
+  if (data.affected_bundles && data.affected_bundles.length) {
+    html += '<h3>Combos recalculados</h3><div class="table-wrap"><table><thead><tr><th>SKU</th><th>Anterior</th><th>Nuevo</th><th>Cambió</th></tr></thead><tbody>';
+    for (const b of data.affected_bundles) {
+      html += `<tr><td>${escapeHtml(b.sku || '')}</td><td>${b.old_stock}</td><td>${b.new_stock}</td><td>${b.changed ? 'sí' : 'no'}</td></tr>`;
+    }
+    html += '</tbody></table></div>';
+  }
+  document.getElementById('saleResult').innerHTML = html;
+}
+async function setStock(dryRun) {
+  if (!selectedStock) return setEstado('Seleccioná SKU desde la lista.', 'bad');
+  const newStock = Number(document.getElementById('newStock').value);
+  if (!Number.isInteger(newStock) || newStock < 0) return setEstado('Stock inválido.', 'bad');
+
+  if (!dryRun && !confirm(`Aplicar stock ${newStock} al SKU ${selectedStock.sku}?`)) return;
+
+  try {
+    const data = await api('/admin/stock/set', {
+      method: 'POST',
+      body: JSON.stringify({
+        sku: selectedStock.sku,
+        new_stock: newStock,
+        dry_run: dryRun,
+        notes: 'Ajuste desde admin_erp.html'
+      })
+    });
+    document.getElementById('stockResult').innerHTML = `<pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;
+    setEstado(dryRun ? 'Dry run stock OK.' : 'Stock aplicado.', 'ok');
+  } catch(e) {
+    setEstado(e.message, 'bad');
+  }
+}
+async function cargarMovimientos() {
+  const sku = document.getElementById('movSku').value.trim();
+  try {
+    const data = await api('/admin/stock/movements?limit=200' + (sku ? '&sku=' + encodeURIComponent(sku) : ''));
+    renderGenericTable('movTable', data.items || []);
+  } catch(e) {
+    setEstado(e.message, 'bad');
+  }
+}
+async function cargarOrdenes() {
+  try {
+    const data = await api('/admin/orders?limit=200');
+    renderGenericTable('movTable', data.items || []);
+  } catch(e) {
+    setEstado(e.message, 'bad');
+  }
+}
+function renderGenericTable(target, rows) {
+  const cont = document.getElementById(target);
+  if (!rows.length) {
+    cont.innerHTML = '<p class="muted">Sin datos.</p>';
+    return;
+  }
+  const cols = [...new Set(rows.flatMap(r => Object.keys(r)))];
+  let html = '<div class="table-wrap"><table><thead><tr>' + cols.map(c => `<th>${escapeHtml(c)}</th>`).join('') + '</tr></thead><tbody>';
+  for (const r of rows) {
+    html += '<tr>' + cols.map(c => `<td>${formatVal(r[c])}</td>`).join('') + '</tr>';
+  }
+  html += '</tbody></table></div>';
+  cont.innerHTML = html;
+}
+function formatVal(v) {
+  if (v === null || v === undefined) return '';
+  if (typeof v === 'object') return `<pre>${escapeHtml(JSON.stringify(v, null, 2))}</pre>`;
+  let s = String(v);
+  if (s.length > 180) s = s.slice(0, 180) + '...';
+  return escapeHtml(s);
+}
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+}
+function escapeAttr(s) {
+  return String(s ?? '').replace(/['"\\]/g, '');
+}
+
+cargarGuardado();
+generarOrderIdTest();
+</script>
+</body>
+</html>
