@@ -101,7 +101,7 @@
       <div class="grid">
         <div class="col-6">
           <label>API ERP</label>
-          <input id="apiUrl" value="http://localhost:8010" />
+          <input id="apiUrl" value="https://planeta-casa-erp.onrender.com" disabled />
         </div>
         <div class="col-4">
           <label>ADMIN_TOKEN</label>
@@ -280,8 +280,10 @@ let selectedSale = null;
 let selectedStock = null;
 let timers = {};
 
+const FIXED_API_URL = 'https://planeta-casa-erp.onrender.com';
+
 function getApiUrl() {
-  return document.getElementById('apiUrl').value.replace(/\/$/, '');
+  return FIXED_API_URL;
 }
 function getToken() {
   return document.getElementById('token').value.trim();
@@ -295,26 +297,33 @@ function setEstado(txt, kind='') {
 }
 function limpiarEstado() { setEstado(''); }
 function guardar() {
-  localStorage.setItem('erp_api_url', getApiUrl());
+  localStorage.removeItem('erp_api_url');
   localStorage.setItem('erp_admin_token', getToken());
-  setEstado('Guardado en este navegador.', 'ok');
+  const api = document.getElementById('apiUrl');
+  if (api) api.value = FIXED_API_URL;
+  setEstado('Token guardado. API fija: ' + FIXED_API_URL, 'ok');
 }
 function cargarGuardado() {
-  const api = localStorage.getItem('erp_api_url');
+  localStorage.removeItem('erp_api_url');
   const tok = localStorage.getItem('erp_admin_token');
-  if (api) document.getElementById('apiUrl').value = api;
+  document.getElementById('apiUrl').value = FIXED_API_URL;
   if (tok) document.getElementById('token').value = tok;
 }
 async function api(path, opts={}) {
   const sep = path.includes('?') ? '&' : '?';
   const url = `${getApiUrl()}${path}${sep}${authParam()}`;
-  const res = await fetch(url, {
-    ...opts,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(opts.headers || {})
-    }
-  });
+  let res;
+  try {
+    res = await fetch(url, {
+      ...opts,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(opts.headers || {})
+      }
+    });
+  } catch (e) {
+    throw new Error('No pude conectar con Render: ' + url);
+  }
   let data;
   try { data = await res.json(); } catch(e) { data = {ok:false, detail:'Respuesta no JSON'}; }
   if (!res.ok) {
