@@ -125,6 +125,7 @@
         <button class="tab" id="tab-venta" onclick="showTab('venta')">Simular / registrar venta</button>
         <button class="tab" id="tab-stock" onclick="showTab('stock')">Stock</button>
         <button class="tab" id="tab-movs" onclick="showTab('movs')">Movimientos</button>
+        <button class="tab" id="tab-tnventas" onclick="showTab('tnventas')">Ventas TN</button>
       </div>
     </section>
 
@@ -271,6 +272,21 @@
       </div>
       <div id="movTable" style="margin-top:12px"></div>
     </section>
+
+    <section id="view-tnventas" class="card hidden">
+      <h2>Ventas TN recientes</h2>
+      <p class="muted">
+        Muestra las últimas 10 ventas TN aplicadas en el ERP. El poll automático toma órdenes pagadas recientes y avisa por WhatsApp una sola vez.
+      </p>
+      <div class="row">
+        <button style="width:auto" onclick="cargarVentasTN()">Actualizar últimas 10</button>
+        <button class="ok" style="width:auto" onclick="pollVentasTN(false)">Buscar nuevas TN ahora</button>
+        <button class="secondary" style="width:auto" onclick="pollVentasTN(true)">Dry run poll</button>
+      </div>
+      <div id="tnVentasStatus" class="status"></div>
+      <div id="tnVentasTable" style="margin-top:12px"></div>
+    </section>
+
   </main>
 
 <script>
@@ -405,15 +421,17 @@ function resetView(name) {
   if (name === 'venta') resetVentaView();
   if (name === 'stock') resetStockView();
   if (name === 'movs') resetMovsView();
+  if (name === 'tnventas') resetTNVentasView();
   limpiarEstado();
 }
 
 function showTab(name) {
   resetView(name);
-  for (const n of ['combos','venta','stock','movs']) {
+  for (const n of ['combos','venta','stock','movs','tnventas']) {
     document.getElementById('view-' + n).classList.toggle('hidden', n !== name);
     document.getElementById('tab-' + n).classList.toggle('active', n === name);
   }
+  if (name === 'tnventas') cargarVentasTN();
 }
 
 function clearComponentSelection() {
@@ -771,6 +789,138 @@ async function cargarOrdenes() {
     setEstado(e.message, 'bad');
   }
 }
+
+async function cargarVentasTN() {
+  const st = document.getElementById('tnVentasStatus');
+  const tb = document.getElementById('tnVentasTable');
+  try {
+    if (st) st.innerHTML = 'Cargando ventas TN...';
+    const data = await api('/admin/tn/orders/recent?limit=10');
+    renderVentasTN(data.items || []);
+    if (st) st.innerHTML = `<span class="oktxt">OK.</span> ${data.total || 0} ventas TN recientes.`;
+  } catch(e) {
+    if (st) st.innerHTML = `<span class="badtxt">${escapeHtml(e.message)}</span>`;
+    if (tb) tb.innerHTML = '';
+  }
+}
+
+async function pollVentasTN(dryRun) {
+  const st = document.getElementById('tnVentasStatus');
+  try {
+    if (st) st.innerHTML = dryRun ? 'Probando poll TN...' : 'Buscando ventas nuevas TN...';
+    const path = `/admin/tn/orders/poll?limit=10&dry_run=${dryRun ? 'true' : 'false'}&notify=true&apply_existing=false`;
+    const data = await api(path, {method:'POST'});
+    const cls = data.ok ? 'oktxt' : 'warntxt';
+    if (st) st.innerHTML = `<span class="${cls}">Poll terminado.</span> Aplicadas: ${data.applied || 0}. Omitidas: ${data.skipped || 0}. Errores: ${data.errors || 0}.`;
+    renderPollTN(data.items || []);
+    if (!dryRun) {
+      setTimeout(() => cargarVentasTN(), 900);
+    }
+  } catch(e) {
+    if (st) st.innerHTML = `<span class="badtxt">${escapeHtml(e.message)}</span>`;
+  }
+}
+
+function renderVentasTN(rows) {
+  const cont = document.getElementById('tnVentasTable');
+  if (!rows.length) {
+    cont.innerHTML = '<p class="muted">Todavía no hay ventas TN aplicadas en ERP.</p>';
+    return;
+  }
+
+  let html = '<div class="table-wrap"><table><thead><tr>' +
+    '<th>Fecha ERP</th><th>TN #</th><th>Cliente</th><th>Total</th><th>Pago</th><th>Envío</th><th>WhatsApp</th><th>Productos</th><th>Stock</th><th>Acción</th>' +
+    '</tr></thead><tbody>';
+
+  for (const r of rows) {
+    const productos = (r.sold_lines || []).map(x =>
+      `${escapeHtml(x.sku)} x${escapeHtml(x.quantity)}<br><span class="muted">${escapeHtml(x.name || '')}</span>`
+    ).join('<hr>');
+
+    const stock = (r.stock_movements || []).map(x =>
+      `${escapeHtml(x.sku)}: ${escapeHtml(x.previous_stock)} → ${escapeHtml(x.new_stock)} (${escapeHtml(x.quantity)})`
+    ).join('<br>');
+
+    const wa = r.whatsapp_notified
+      ? `<span class="pill ok">avisado</span><br><span class="small muted">${escapeHtml(r.whatsapp_notified_at || '')}</span>`
+      : '<span class="pill bad">no avisado</span>';
+
+    html += '<tr>' +
+      `<td>${escapeHtml(r.created_at || '')}</td>` +
+      `<td><b>#${escapeHtml(r.tn_order_number || r.external_order_id || '')}</b><br><span class="small muted">${escapeHtml(r.external_order_id || '')}</span></td>` +
+      `<td>${escapeHtml(r.customer_name || '')}<br><span class="small muted">${escapeHtml(r.customer_phone || '')}</span></td>` +
+      `<td>${formatMoney(r.total)}</td>` +
+      `<td>${escapeHtml(r.tn_payment_status || r.status || '')}</td>` +
+      `<td>${escapeHtml(r.shipping_option || r.tn_shipping_status || '')}</td>` +
+      `<td>${wa}</td>` +
+      `<td>${productos || '<span class="muted">Sin líneas</span>'}</td>` +
+      `<td>${stock || '<span class="muted">Sin movimientos</span>'}</td>` +
+      `<td><button class="secondary" onclick="reavisarTN('${escapeAttr(r.external_order_id)}')" style="width:auto">Reavisar</button></td>` +
+      '</tr>';
+  }
+  html += '</tbody></table></div>';
+  cont.innerHTML = html;
+}
+
+function renderPollTN(rows) {
+  const cont = document.getElementById('tnVentasTable');
+  if (!rows.length) {
+    cont.innerHTML = '<p class="muted">Poll sin resultados.</p>';
+    return;
+  }
+
+  let html = '<div class="table-wrap"><table><thead><tr>' +
+    '<th>TN #</th><th>ID</th><th>Pago</th><th>Estado</th><th>Acción</th><th>Error / detalle</th>' +
+    '</tr></thead><tbody>';
+
+  for (const r of rows) {
+    let detail = '';
+    if (r.error) detail = `<span class="badtxt">${escapeHtml(r.error)}</span>`;
+    else if (r.whatsapp_notify) detail = `<pre>${escapeHtml(JSON.stringify(r.whatsapp_notify, null, 2))}</pre>`;
+    else if (r.process_result) detail = `<pre>${escapeHtml(JSON.stringify(r.process_result, null, 2).slice(0, 1200))}</pre>`;
+
+    html += '<tr>' +
+      `<td><b>#${escapeHtml(r.tn_number || '')}</b></td>` +
+      `<td>${escapeHtml(r.tn_order_id || '')}</td>` +
+      `<td>${escapeHtml(r.payment_status || '')}</td>` +
+      `<td>${escapeHtml(r.status || '')} / ${escapeHtml(r.shipping_status || '')}</td>` +
+      `<td>${renderActionPill(r.action)}</td>` +
+      `<td>${detail}</td>` +
+      '</tr>';
+  }
+  html += '</tbody></table></div>';
+  cont.innerHTML = html;
+}
+
+function renderActionPill(action) {
+  const a = String(action || '');
+  if (a === 'applied') return '<span class="pill ok">aplicada</span>';
+  if (a.includes('error')) return '<span class="pill bad">error</span>';
+  if (a.includes('duplicate')) return '<span class="pill info">duplicada</span>';
+  if (a.includes('skipped')) return `<span class="pill">${escapeHtml(a)}</span>`;
+  if (a.includes('dry')) return '<span class="pill info">dry run</span>';
+  return `<span class="pill">${escapeHtml(a)}</span>`;
+}
+
+async function reavisarTN(orderId) {
+  if (!orderId) return;
+  const st = document.getElementById('tnVentasStatus');
+  try {
+    if (st) st.innerHTML = 'Reavisando por WhatsApp...';
+    const data = await api(`/admin/tn/orders/${encodeURIComponent(orderId)}/notify?force=true`, {method:'POST'});
+    if (st) st.innerHTML = data.ok ? '<span class="oktxt">Reaviso enviado.</span>' : '<span class="warntxt">Reaviso intentado, revisar respuesta.</span>';
+    await cargarVentasTN();
+  } catch(e) {
+    if (st) st.innerHTML = `<span class="badtxt">${escapeHtml(e.message)}</span>`;
+  }
+}
+
+function formatMoney(v) {
+  const n = Number(v || 0);
+  if (!Number.isFinite(n)) return escapeHtml(v || '');
+  return '$' + Math.round(n).toLocaleString('es-AR');
+}
+
 function renderGenericTable(target, rows) {
   const cont = document.getElementById(target);
   if (!rows.length) {
