@@ -108,7 +108,7 @@
         <button class="navBtn" data-view="fallas">Reporte de fallas</button>
       </div>
     </nav>
-    <div class="sidebarFoot">Versión front: shell-0.3 · colores Planeta Casa</div>
+    <div class="sidebarFoot">Versión front: shell-0.4-env-before-jobs · colores Planeta Casa</div>
   </aside>
   <main>
     <div class="topbar">
@@ -205,11 +205,11 @@
 
     <section id="planilla-bajar" class="view"><div class="card"><h3>Gestión · Bajar planilla</h3><p>Usa el exportador ya existente.</p><a class="btn primary" id="downloadCsv" href="#">Descargar inventario CSV</a></div></section>
     <section id="planilla-subir" class="view"><div class="card"><h3>Gestión · Subir planilla</h3><p>Sube la planilla al endpoint existente. Luego se automatizará la replicación.</p><input type="file" id="csvFile" accept=".csv"><div class="btnrow" style="margin-top:12px"><button onclick="uploadCsv()">Subir CSV</button></div><pre id="uploadOut" class="hidden"></pre></div></section>
-    <section id="fallas" class="view"><div class="card"><h3>Gestión · Reporte de fallas / jobs</h3><div class="btnrow"><button onclick="loadSyncJobs()">Ver sync jobs</button><button class="warn" onclick="processJobs(1)">Procesar 1 job</button><button class="secondary" onclick="processJobs(20)">Procesar hasta 20</button><button class="secondary" onclick="health()">Health</button></div><div id="jobsStatus" class="status"></div><div id="jobsTable" class="tableWrap" style="margin-top:12px"></div><pre id="jobsOut" class="hidden"></pre></div></section>
+    <section id="fallas" class="view"><div class="card"><h3>Gestión · Reporte de fallas / jobs</h3><div class="btnrow"><button onclick="loadSyncJobs()">Ver sync jobs</button><button class="warn" onclick="processJobs(1)">Ejecutar 1 job</button><button class="secondary" onclick="processJobs(20)">Ejecutar hasta 20</button><button id="confirmProcessJobsBtn" class="danger hidden" onclick="confirmProcessJobs()">Confirmar ejecución</button><button class="secondary" onclick="debugEnvBeforeJobs()">Mostrar env</button><button class="secondary" onclick="health()">Health</button></div><div id="jobsStatus" class="status"></div><div id="jobsTable" class="tableWrap" style="margin-top:12px"></div><pre id="jobsOut" class="hidden"></pre></div></section>
   </main>
 </div>
 <script>
-let state={api:'https://planeta-casa-erp.onrender.com',token:'',selected:{manual:null,comp:null}};
+let state={api:'https://planeta-casa-erp.onrender.com',token:'',selected:{manual:null,comp:null},pendingJobLimit:null};
 let manualLines=[];
 let timers={};
 function qs(id){return document.getElementById(id)}
@@ -253,7 +253,9 @@ async function uploadCsv(){let f=qs('csvFile').files[0];if(!f){showPre('uploadOu
 async function postText(path,out){try{let txt=await fetchText(path,{method:'POST'});showPre(out,txt)}catch(e){showPre(out,'Error: '+e)}}
 function statusPill(s){let cls=s==='done'?'ok':(s==='manual_review'||s==='failed_retry'||s==='error'?'bad':(s==='pending'?'warn':'info'));return `<span class="pill ${cls}">${s||''}</span>`}
 async function loadSyncJobs(){setStatus('jobsStatus','Consultando jobs...');try{let d=await fetchJson('/erp/sync_jobs?limit=100');let rows=d.items||[];qs('jobsTable').innerHTML=`<table><thead><tr><th>Market</th><th>SKU</th><th>Stock</th><th>Precio</th><th>Status</th><th>Attempts</th><th>Error</th><th>Creado</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.marketplace||''}</td><td>${r.sku||''}</td><td>${r.target_stock??''}</td><td>${r.target_price??''}</td><td>${statusPill(r.status)}</td><td>${r.attempts??''}</td><td>${r.last_error||''}</td><td>${r.created_at||''}</td></tr>`).join('')}</tbody></table>`;setStatus('jobsStatus',`OK: ${d.total||0} jobs. TN products_store_id: ${d.tn_products_store_id_used||''}`,true)}catch(e){setStatus('jobsStatus','Error: '+JSON.stringify(e),false)}}
-async function processJobs(limit){setStatus('jobsStatus','Procesando jobs...');try{let txt=await fetchText(`/erp/process_sync_jobs?limit=${limit}`,{method:'POST'});showPre('jobsOut',txt);setStatus('jobsStatus','Proceso terminado. Actualizando lista...',true);await loadSyncJobs()}catch(e){showPre('jobsOut','Error: '+e);setStatus('jobsStatus','Error procesando jobs',false)}}
+async function debugEnvBeforeJobs(){setStatus('jobsStatus','Leyendo environment real de Render...');qs('confirmProcessJobsBtn').classList.add('hidden');try{let d=await fetchJson('/admin/debug/env');showPre('jobsOut',d);setStatus('jobsStatus','Environment mostrado. No se ejecutó ningún job.',true);return d}catch(e){showPre('jobsOut','Error debug env: '+JSON.stringify(e,null,2));setStatus('jobsStatus','Error leyendo environment',false);throw e}}
+async function processJobs(limit){state.pendingJobLimit=limit;await debugEnvBeforeJobs();qs('confirmProcessJobsBtn').classList.remove('hidden');setStatus('jobsStatus',`Environment mostrado. Para procesar ${limit} job(s), tocá Confirmar ejecución.`,null)}
+async function confirmProcessJobs(){let limit=state.pendingJobLimit||1;qs('confirmProcessJobsBtn').classList.add('hidden');setStatus('jobsStatus','Procesando jobs...');try{let txt=await fetchText(`/erp/process_sync_jobs?limit=${limit}`,{method:'POST'});showPre('jobsOut',txt);setStatus('jobsStatus','Proceso terminado. Actualizando lista...',true);state.pendingJobLimit=null;await loadSyncJobs()}catch(e){showPre('jobsOut','Error: '+e);setStatus('jobsStatus','Error procesando jobs',false)}}
 function openOld(path){window.open(url(path),'_blank')}
 loadSettings();health();
 </script>
