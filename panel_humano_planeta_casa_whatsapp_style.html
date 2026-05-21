@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel Humano - Planeta Casa</title>
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"%3E%3Crect width="64" height="64" rx="14" fill="%23075e54"/%3E%3Cpath fill="%23fff8df" d="M32 8c-7.5 0-13.5 6-13.5 13.5v2.2c-2.4 1.6-4 4.3-4 7.3v5.5h4V31c0-2 .9-3.8 2.4-4.9l1.6-1.2v-3.4C22.5 16.3 26.8 12 32 12s9.5 4.3 9.5 9.5v3.4l1.6 1.2c1.5 1.1 2.4 2.9 2.4 4.9v5.5h4V31c0-3-1.6-5.7-4-7.3v-2.2C45.5 14 39.5 8 32 8z"/%3E%3Cpath fill="%23fff8df" d="M23 24c1.4-5 5.1-8 9-8s7.6 3 9 8c-.9 7.6-4.8 12-9 12s-8.1-4.4-9-12z"/%3E%3Cpath fill="%23fff8df" d="M16 43c2.5-4.3 8.7-7 16-7s13.5 2.7 16 7v5H16v-5z"/%3E%3Crect x="13" y="49" width="38" height="7" rx="2" fill="%23fff8df"/%3E%3Crect x="18" y="51" width="5" height="2" rx="1" fill="%23075e54"/%3E%3Crect x="25" y="51" width="5" height="2" rx="1" fill="%23075e54"/%3E%3Crect x="32" y="51" width="5" height="2" rx="1" fill="%23075e54"/%3E%3Crect x="39" y="51" width="5" height="2" rx="1" fill="%23075e54"/%3E%3Ccircle cx="44" cy="31" r="2" fill="%23075e54"/%3E%3Cpath d="M42 31h-6" stroke="%23075e54" stroke-width="2" stroke-linecap="round"/%3E%3C/svg%3E' />
   <style>
     :root {
       --green: #075e54;
@@ -364,12 +365,23 @@
 let currentConversation = null;
 let conversations = [];
 let refreshTimer = null;
+let firstConversationLoad = true;
+let lastConversationStamp = "";
+let originalTitle = document.title;
+let audioCtx = null;
+let soundUnlocked = false;
+let titleAlertTimer = null;
 
 const DEFAULT_BASE = "https://planeta-casa-erp.onrender.com";
 
 function init() {
   document.getElementById("baseUrl").value = localStorage.getItem("pc_admin_base") || DEFAULT_BASE;
   document.getElementById("token").value = localStorage.getItem("pc_admin_token") || "";
+  document.addEventListener("click", unlockSound, { once: true });
+  document.addEventListener("keydown", unlockSound, { once: true });
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) clearTitleAlert();
+  });
   loadConversations();
 
   refreshTimer = setInterval(() => {
@@ -429,16 +441,112 @@ function normalizePhone(v) {
   return raw.startsWith("+") ? raw : "+" + raw;
 }
 
+function isUuidLike(v) {
+  const s = String(v || "").trim().replace(/^\+/, "");
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+}
+
+function isRealWhatsAppId(v) {
+  const raw = String(v || "").trim();
+  if (!raw) return false;
+  if (raw.startsWith("web_")) return true;
+  if (raw.includes("-")) return false;
+  const digits = raw.replace(/\D/g, "");
+  return digits === raw.replace(/^\+/, "") && digits.length >= 8 && digits.length <= 20;
+}
+
 function isGhostConversation(c) {
   const id = String(c.id || "").trim().toUpperCase();
   const wa = String(c.wa_id || "").trim().toUpperCase();
   const name = String(c.customer_name || "").trim().toUpperCase();
   const status = String(c.status || "").trim().toUpperCase();
   const technical = ["BOT", "SYSTEM", "STATUS", "META", "WEBHOOK", "NONE", "NULL", "UNDEFINED"];
+  const validStatuses = ["BOT", "HUMAN", "CLOSED"];
+
   if (!c.wa_id && !c.customer_name) return true;
+  if (!validStatuses.includes(status)) return true;
   if (technical.includes(id) || technical.includes(wa) || technical.includes(name)) return true;
-  if (!status) return true;
+  if (isUuidLike(c.wa_id) || String(c.wa_id || "").includes("-")) return true;
+  if (!isRealWhatsAppId(c.wa_id)) return true;
   return false;
+}
+
+function visibleConversations() {
+  return (conversations || []).filter(c => !isGhostConversation(c));
+}
+
+function conversationStamp(items) {
+  return (items || [])
+    .map(c => `${c.id || ""}|${c.last_message_at || ""}|${c.status || ""}`)
+    .sort()
+    .join("||");
+}
+
+function unlockSound() {
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    if (!audioCtx) audioCtx = new Ctx();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    soundUnlocked = true;
+  } catch (e) {
+    console.warn("No pude habilitar audio", e);
+  }
+}
+
+function playNotifySound() {
+  try {
+    if (!soundUnlocked) return;
+    if (!audioCtx) unlockSound();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.setValueAtTime(660, now + 0.12);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.22, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.34);
+  } catch (e) {
+    console.warn("No pude reproducir sonido", e);
+  }
+}
+
+function startTitleAlert() {
+  if (!document.hidden) return;
+  if (titleAlertTimer) return;
+  let on = false;
+  titleAlertTimer = setInterval(() => {
+    on = !on;
+    document.title = on ? "🔔 Nuevo mensaje - Panel Humano" : originalTitle;
+  }, 900);
+}
+
+function clearTitleAlert() {
+  if (titleAlertTimer) clearInterval(titleAlertTimer);
+  titleAlertTimer = null;
+  document.title = originalTitle;
+}
+
+function notifyIfNewConversationActivity(items) {
+  const stamp = conversationStamp(items);
+  if (firstConversationLoad) {
+    firstConversationLoad = false;
+    lastConversationStamp = stamp;
+    return;
+  }
+  if (stamp && lastConversationStamp && stamp !== lastConversationStamp) {
+    if (document.hidden) {
+      playNotifySound();
+      startTitleAlert();
+    }
+  }
+  lastConversationStamp = stamp;
 }
 
 async function loadConversations(showErrors = true) {
@@ -449,6 +557,7 @@ async function loadConversations(showErrors = true) {
       return;
     }
     conversations = data.items || [];
+    notifyIfNewConversationActivity(visibleConversations());
     renderConversations();
   } catch (e) {
     if (showErrors) alert("No pude conectar con el backend.");
@@ -460,7 +569,7 @@ function renderConversations() {
   const list = document.getElementById("conversationList");
   list.innerHTML = "";
 
-  const visible = (conversations || []).filter(c => !isGhostConversation(c));
+  const visible = visibleConversations();
 
   if (!visible.length) {
     list.innerHTML = `<div class="small" style="padding:14px">No hay conversaciones.</div>`;
@@ -494,6 +603,7 @@ function renderConversations() {
 }
 
 function selectConversation(c) {
+  clearTitleAlert();
   currentConversation = c;
   renderConversations();
   document.getElementById("chatTitle").innerText = `${c.customer_name || normalizePhone(c.wa_id)} · ${c.status}`;
