@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Planeta Casa ERP · ARCA</title>
+  <title>Planeta Casa ERP · ARCA v0.3</title>
   <style>
     :root{--bg:#f2f0eb;--surface:#fffdf8;--surface2:#f8f4ea;--ink:#171717;--muted:#6b665c;--line:#ded4be;--brand:#dcc58f;--brand2:#cdb272;--dark:#101010;--ok:#067647;--bad:#b42318;--warn:#b54708;--shadow:0 10px 30px rgba(17,17,17,.08);--radius:18px}
     *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif;font-size:14px}
@@ -20,7 +20,7 @@
 </head>
 <body>
 <header>
-  <div class="brand"><span class="mark">AF</span><div><h1>ARCA / Facturación</h1><p>Planeta Casa ERP · comprobantes electrónicos</p></div></div>
+  <div class="brand"><span class="mark">AF</span><div><h1>ARCA / Facturación</h1><p>Planeta Casa ERP · comprobantes electrónicos · front v0.3</p></div></div>
   <div class="btnrow"><a class="btn secondary" href="admin_erp.html">Volver ERP</a><button class="secondary" onclick="health()">Probar ARCA</button><button class="primary" onclick="saveSettings()">Guardar acceso</button></div>
 </header>
 <main>
@@ -30,7 +30,7 @@
       <div class="col-8"><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div>
       <div class="col-4"><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div>
     </div>
-    <div id="healthStatus" class="status">Carga automática: solo listado. El check ARCA se ejecuta manualmente para no pedir WSAA al abrir la página.</div>
+    <div id="healthStatus" class="status">La página lista facturas al abrir. El check ARCA es manual para no mostrar datos técnicos ni forzar WSAA.</div>
   </section>
 
   <section class="card">
@@ -50,6 +50,7 @@
       <button class="primary" onclick="emitirDryRun()">Emitir dry-run</button>
       <button class="danger" onclick="emitirReal()">Emitir real</button>
       <button class="secondary" onclick="listarFacturas()">Actualizar listado</button>
+      <button class="secondary" onclick="hideOut()">Ocultar detalle</button>
     </div>
     <div id="emitStatus" class="status"></div>
     <pre id="emitOut" class="hidden"></pre>
@@ -72,22 +73,23 @@ let state={api:'https://planeta-casa-erp.onrender.com',token:''};
 function qs(id){return document.getElementById(id)}
 function apiBase(){return (qs('apiUrl').value||state.api).replace(/\/$/,'')}
 function token(){return qs('token').value||state.token||''}
-function url(path){return `${apiBase()}${path}${path.includes('?')?'&':'?'}token=${encodeURIComponent(token())}`}
+function buildUrl(path, params={}){let u=new URL(apiBase()+path);let t=token();if(t)u.searchParams.set('token',t);Object.entries(params).forEach(([k,v])=>{if(v!==undefined&&v!==null&&v!=='')u.searchParams.set(k,v)});return u.toString()}
 function setStatus(id,msg,ok=null){let el=qs(id);el.className='status '+(ok===true?'oktxt':ok===false?'badtxt':ok==='warn'?'warntxt':'');el.textContent=msg||''}
 function showPre(id,obj){let el=qs(id);el.classList.remove('hidden');el.textContent=typeof obj==='string'?obj:JSON.stringify(obj,null,2)}
+function hideOut(){qs('emitOut').classList.add('hidden');qs('emitOut').textContent=''}
 function money(n){return '$'+Number(n||0).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2})}
 function saveSettings(){state.api=apiBase();state.token=token();localStorage.setItem('pc_erp_api',state.api);localStorage.setItem('pc_erp_token',state.token);setStatus('healthStatus','Acceso guardado.',true)}
 function loadSettings(){state.api=localStorage.getItem('pc_erp_api')||state.api;state.token=localStorage.getItem('pc_erp_token')||'';qs('apiUrl').value=state.api;qs('token').value=state.token}
-async function fetchJson(path,opt={}){let r=await fetch(url(path),{...opt,headers:{'Content-Type':'application/json',...(opt.headers||{})}});let txt=await r.text();let data;try{data=JSON.parse(txt)}catch{data={ok:r.ok,text:txt}}if(!r.ok)throw data;return data}
-function friendlyError(e){let s=JSON.stringify(e);if(s.includes('alreadyAuthenticated'))return 'ARCA tiene un TA vigente pero esta instancia no tiene cache local. El listado funciona; para preparar/emitir hay que esperar el vencimiento del TA o mantener vivo el cache del backend.';return s}
-async function health(){try{let d=await fetchJson('/admin/arca/check');setStatus('healthStatus',`ARCA OK · env ${d.env} · pto ${d.pto_vta} · último ${d.last_voucher?.cbte_nro ?? '?'}`,true);showPre('emitOut',d)}catch(e){setStatus('healthStatus','Error ARCA: '+friendlyError(e),false);showPre('emitOut',e)}}
-function paramsBase(){let p=new URLSearchParams();p.set('importe_total',qs('importeTotal').value||'0');p.set('source_channel',qs('sourceChannel').value||'MANUAL');p.set('source_order_id',qs('sourceOrderId').value||'');p.set('source_order_number',qs('sourceOrderNumber').value||'');p.set('doc_tipo',qs('docTipo').value||'99');p.set('doc_nro',qs('docNro').value||'0');return p.toString()}
-async function preparar(){setStatus('emitStatus','Preparando...');try{let d=await fetchJson('/admin/arca/preparar?'+paramsBase(),{method:'POST'});setStatus('emitStatus',`Preparado: próximo ${d.pto_vta}-${d.proximo_cbte_nro} total ${money(d.importe_total)}`,true);showPre('emitOut',d);listarFacturas()}catch(e){setStatus('emitStatus','Error preparar: '+friendlyError(e),false);showPre('emitOut',e)}}
-async function emitirDryRun(){setStatus('emitStatus','Dry-run...');try{let d=await fetchJson('/admin/arca/emitir?'+paramsBase(),{method:'POST'});setStatus('emitStatus',`Dry-run OK: próximo ${d.pto_vta}-${d.proximo_cbte_nro}`,true);showPre('emitOut',d)}catch(e){setStatus('emitStatus','Error dry-run: '+friendlyError(e),false);showPre('emitOut',e)}}
-async function emitirReal(){if(!qs('confirmar').checked){setStatus('emitStatus','Marcá la confirmación antes de emitir real.',false);return}if(!confirm('Esto solicita CAE real en el ambiente configurado. ¿Emitir?'))return;setStatus('emitStatus','Emitiendo...');try{let d=await fetchJson('/admin/arca/emitir?dry_run=false&confirmar_emision=true&'+paramsBase(),{method:'POST'});let cae=d.issued?.cae||'';setStatus('emitStatus',`Emitido OK: comprobante ${d.pto_vta}-${d.cbte_nro} CAE ${cae}`,d.ok===true);showPre('emitOut',d);listarFacturas()}catch(e){setStatus('emitStatus','Error emitir: '+friendlyError(e),false);showPre('emitOut',e)}}
+async function fetchJson(path,params={},opt={}){let r=await fetch(buildUrl(path,params),{...opt,headers:{'Content-Type':'application/json',...(opt.headers||{})}});let txt=await r.text();let data;try{data=JSON.parse(txt)}catch{data={ok:r.ok,text:txt}}if(!r.ok)throw data;return data}
+function friendlyError(e){let s=JSON.stringify(e);if(s.includes('alreadyAuthenticated'))return 'ARCA tiene un TA vigente pero esta instancia no tiene cache local. El listado funciona; para preparar/emitir hay que esperar el vencimiento del TA o usar la instancia que conserva cache.';return s}
+async function health(){try{let d=await fetchJson('/admin/arca/check');setStatus('healthStatus',`ARCA OK · env ${d.env} · pto ${d.pto_vta} · último ${d.last_voucher?.cbte_nro ?? '?'}`,true);hideOut()}catch(e){setStatus('healthStatus','Error ARCA: '+friendlyError(e),false);showPre('emitOut',e)}}
+function paramsBase(){return {importe_total:qs('importeTotal').value||'0',source_channel:qs('sourceChannel').value||'MANUAL',source_order_id:qs('sourceOrderId').value||'',source_order_number:qs('sourceOrderNumber').value||'',doc_tipo:qs('docTipo').value||'99',doc_nro:qs('docNro').value||'0'}}
+async function preparar(){setStatus('emitStatus','Preparando...');try{let d=await fetchJson('/admin/arca/preparar',paramsBase(),{method:'POST'});setStatus('emitStatus',`Preparado: próximo ${d.pto_vta}-${d.proximo_cbte_nro} total ${money(d.importe_total)}`,true);showPre('emitOut',d);listarFacturas()}catch(e){setStatus('emitStatus','Error preparar: '+friendlyError(e),false);showPre('emitOut',e)}}
+async function emitirDryRun(){setStatus('emitStatus','Dry-run...');try{let d=await fetchJson('/admin/arca/emitir',paramsBase(),{method:'POST'});setStatus('emitStatus',`Dry-run OK: próximo ${d.pto_vta}-${d.proximo_cbte_nro}`,true);showPre('emitOut',d)}catch(e){setStatus('emitStatus','Error dry-run: '+friendlyError(e),false);showPre('emitOut',e)}}
+async function emitirReal(){if(!qs('confirmar').checked){setStatus('emitStatus','Marcá la confirmación antes de emitir real.',false);return}if(!confirm('Esto solicita CAE real en el ambiente configurado. ¿Emitir?'))return;setStatus('emitStatus','Emitiendo...');try{let d=await fetchJson('/admin/arca/emitir',{...paramsBase(),dry_run:'false',confirmar_emision:'true'},{method:'POST'});let cae=d.issued?.cae||'';setStatus('emitStatus',`Emitido OK: comprobante ${d.pto_vta}-${d.cbte_nro} CAE ${cae}`,d.ok===true);showPre('emitOut',d);listarFacturas()}catch(e){setStatus('emitStatus','Error emitir: '+friendlyError(e),false);showPre('emitOut',e)}}
 function pill(s){let cls=s==='issued'?'ok':(s==='rejected'?'bad':'warn');return `<span class="pill ${cls}">${s||''}</span>`}
-async function listarFacturas(){setStatus('listStatus','Consultando facturas...');try{let p=new URLSearchParams();p.set('limit',qs('limit').value||'20');if(qs('filterEnv').value)p.set('env',qs('filterEnv').value);if(qs('filterChannel').value)p.set('source_channel',qs('filterChannel').value);let d=await fetchJson('/admin/arca/facturas?'+p.toString());let rows=d.items||[];qs('facturasTable').innerHTML=`<table><thead><tr><th>ID</th><th>Fecha</th><th>Env</th><th>Origen</th><th>Comprobante</th><th>Total</th><th>CAE</th><th>Estado</th><th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.id}</td><td>${r.created_at||''}</td><td>${r.env||''}</td><td>${r.source_channel||''}<br><span class="small">${r.source_order_id||''}</span></td><td>${r.pto_vta}-${r.cbte_nro}</td><td>${money(r.importe_total)}</td><td>${r.cae||''}<br><span class="small">vto ${r.cae_vto||''}</span></td><td>${pill(r.status)}</td><td><button class="secondary" onclick="detalle(${r.id})">Detalle</button></td></tr>`).join('')}</tbody></table>`;setStatus('listStatus',`OK: ${d.count} factura(s)`,true)}catch(e){setStatus('listStatus','Error listado: '+friendlyError(e),false);qs('facturasTable').innerHTML='<pre>'+JSON.stringify(e,null,2)+'</pre>'}}
-async function detalle(id){try{let d=await fetchJson(`/admin/arca/facturas/${id}`);showPre('emitOut',d);setStatus('emitStatus',`Detalle factura id ${id}`,true)}catch(e){showPre('emitOut',e);setStatus('emitStatus','Error detalle: '+friendlyError(e),false)}}
+async function listarFacturas(){setStatus('listStatus','Consultando facturas...');try{let params={limit:qs('limit').value||'20',env:qs('filterEnv').value||'',source_channel:qs('filterChannel').value||''};let d=await fetchJson('/admin/arca/facturas',params);let rows=d.items||[];if(!rows.length){qs('facturasTable').innerHTML='<div style="padding:14px" class="muted">No hay facturas guardadas para este filtro.</div>'}else{qs('facturasTable').innerHTML=`<table><thead><tr><th>ID</th><th>Fecha</th><th>Env</th><th>Origen</th><th>Comprobante</th><th>Total</th><th>CAE</th><th>Estado</th><th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.id}</td><td>${r.created_at||''}</td><td>${r.env||''}</td><td>${r.source_channel||''}<br><span class="small">${r.source_order_id||''}</span></td><td>${r.pto_vta}-${r.cbte_nro}</td><td>${money(r.importe_total)}</td><td>${r.cae||''}<br><span class="small">vto ${r.cae_vto||''}</span></td><td>${pill(r.status)}</td><td><button class="secondary" onclick="detalle(${r.id})">Detalle</button></td></tr>`).join('')}</tbody></table>`}setStatus('listStatus',`OK: ${d.count} factura(s)`,true)}catch(e){setStatus('listStatus','Error listado: '+friendlyError(e),false);qs('facturasTable').innerHTML='<pre>'+JSON.stringify(e,null,2)+'</pre>'}}
+async function detalle(id){try{let d=await fetchJson(`/admin/arca/facturas/${id}`);showPre('emitOut',d);setStatus('emitStatus',`Detalle factura id ${id}`,true);window.scrollTo({top:0,behavior:'smooth'})}catch(e){showPre('emitOut',e);setStatus('emitStatus','Error detalle: '+friendlyError(e),false)}}
 loadSettings();listarFacturas();
 </script>
 </body>
