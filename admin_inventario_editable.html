@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planeta Casa ERP · Inventario editable</title>
+  <link rel="icon" href="./ERP.png" />
+  <style>
+    :root{--bg:#f2f0eb;--surface:#fffdf8;--ink:#171717;--muted:#6b665c;--line:#ded4be;--brand:#cdb272;--dark:#101010;--ok:#067647;--bad:#b42318;--warn:#b54708;--shadow:0 10px 30px rgba(17,17,17,.08);--radius:18px}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif;font-size:14px}header{background:#111;color:#fff;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:10;box-shadow:0 10px 30px rgba(0,0,0,.15)}h1{margin:0;font-size:20px}.brand{display:flex;align-items:center;gap:12px}.mark{width:42px;height:42px;border-radius:14px;background:var(--brand);display:flex;align-items:center;justify-content:center;color:#111;font-weight:900}.settings{display:flex;gap:8px;align-items:end;flex-wrap:wrap}.settings input{width:260px}.wrap{padding:22px 26px 60px}.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}label{display:block;font-size:12px;font-weight:800;color:#504b43;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}input,select{width:100%;border:1px solid #cfc4ad;border-radius:12px;background:#fff;padding:10px 11px;font-size:14px;color:var(--ink);outline:none}button,.btn{border:0;border-radius:12px;background:var(--dark);color:#fff;padding:10px 13px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}.primary{background:var(--brand);color:#111}.secondary{background:#fff;color:#111;border:1px solid var(--line)}.ok{background:var(--ok)}.warn{background:var(--warn)}.row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;align-items:end}.btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.status{min-height:24px;color:var(--muted);margin-top:10px}.status.oktxt{color:var(--ok);font-weight:800}.status.badtxt{color:var(--bad);font-weight:800}.status.warntxt{color:var(--warn);font-weight:800}.small,.muted{font-size:12px;color:var(--muted)}.pill{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:800;background:#efe7d5;color:#453d31}.pill.ok{background:#ecfdf3;color:var(--ok)}.pill.warn{background:#fff7ed;color:var(--warn)}.pill.info{background:#eef2ff;color:#3730a3}.tableWrap{border:1px solid var(--line);border-radius:14px;overflow:auto;background:#fff;max-height:calc(100vh - 300px)}table{width:100%;border-collapse:collapse;background:#fff;font-size:13px}th,td{border-bottom:1px solid #eee2c8;padding:8px 9px;text-align:left;vertical-align:top}th{background:#151515;color:#fff;position:sticky;top:0;z-index:1}.stockInput{width:90px}.priceInput{width:115px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}.marketBox{display:grid;grid-template-columns:75px 150px 135px 115px 90px 85px 95px;gap:6px;align-items:center;margin-bottom:6px;padding:7px;border:1px solid #eee2c8;border-radius:12px;background:#fffaf0}.marketBox input{padding:7px 8px;border-radius:9px;font-size:12px}.marketBox .id{word-break:break-all}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:1000px){.row,.grid2{grid-template-columns:1fr}.settings input{width:190px}.marketBox{grid-template-columns:1fr}.tableWrap{max-height:none}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="mark">ERP</div><div><h1>Inventario editable</h1><div class="small">Stock master + publicaciones TN/ML</div></div></div>
+  <div class="settings">
+    <div><label style="color:#d8d0c0">API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div>
+    <div><label style="color:#d8d0c0">ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div>
+    <button class="primary" onclick="saveSettings()">Guardar</button>
+    <button class="secondary" onclick="health()">Health</button>
+  </div>
+</header>
+<div class="wrap">
+  <div class="card">
+    <div class="row">
+      <div><label>Buscar SKU / producto</label><input id="q" placeholder="Ej: PCMAGICRACKIMP4, virola, suela..." onkeydown="if(event.key==='Enter') loadInventory()"></div>
+      <div><label>Canal</label><select id="market" onchange="render()"><option value="">Todos</option><option>TN</option><option>ML</option></select></div>
+      <div><label>Máximo</label><input id="limit" type="number" value="80" min="1" max="500"></div>
+      <div><label>&nbsp;</label><button class="primary" onclick="loadInventory()">Buscar</button></div>
+      <div><label>&nbsp;</label><button class="secondary" onclick="loadListingsOnly()">Recargar publicaciones</button></div>
+    </div>
+    <div class="btnrow" style="margin-top:12px">
+      <a class="btn secondary" href="./admin_erp.html">Volver ERP</a>
+      <a class="btn secondary" href="./admin_erp_operativo.html">Operativo</a>
+      <button class="warn" onclick="processJobs()">Procesar sync_jobs ahora</button>
+    </div>
+    <div id="status" class="status"></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card"><strong>Edición actual</strong><p>Modifica <b>stock ERP</b> con <code>/admin/stock/set</code>. Ese cambio crea sync_jobs hacia marketplaces.</p></div>
+    <div class="card"><strong>Publicaciones</strong><p>Muestra publicación, variante, precio marketplace y stock marketplace desde <code>marketplace_listings</code>. La edición directa de precio queda visualmente preparada, pero requiere endpoint backend específico.</p></div>
+  </div>
+
+  <div class="tableWrap" id="tableBox"><table><thead><tr><th>SKU</th><th>Producto</th><th>Stock ERP</th><th>Publicaciones / variantes / precio / stock</th><th>Acciones</th></tr></thead><tbody><tr><td colspan="5" class="muted" style="text-align:center;padding:24px">Buscá un SKU o producto.</td></tr></tbody></table></div>
+</div>
+<script>
+let state={api:'https://planeta-casa-erp.onrender.com',token:'',items:[],listings:[],bySku:{}};
+function qs(id){return document.getElementById(id)}
+function apiBase(){return(qs('apiUrl').value||state.api).replace(/\/$/,'')}
+function token(){return qs('token').value||state.token||''}
+function url(path){return `${apiBase()}${path}${path.includes('?')?'&':'?'}token=${encodeURIComponent(token())}`}
+function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+function setStatus(msg,ok=null){let el=qs('status');el.className='status '+(ok===true?'oktxt':ok===false?'badtxt':ok==='warn'?'warntxt':'');el.textContent=msg||''}
+function saveSettings(){state.api=apiBase();state.token=token();localStorage.setItem('pc_erp_api',state.api);localStorage.setItem('pc_erp_token',state.token);setStatus('Guardado.',true)}
+function loadSettings(){state.api=localStorage.getItem('pc_erp_api')||state.api;state.token=localStorage.getItem('pc_erp_token')||'';qs('apiUrl').value=state.api;qs('token').value=state.token}
+async function fetchJson(path,opt={}){let r=await fetch(url(path),{...opt,headers:{'Content-Type':'application/json',...(opt.headers||{})}});let txt=await r.text();let data;try{data=JSON.parse(txt)}catch{data={ok:r.ok,text:txt}}if(!r.ok)throw data;return data}
+async function fetchText(path,opt={}){let r=await fetch(url(path),opt);let txt=await r.text();if(!r.ok)throw txt;return txt}
+async function health(){try{let d=await fetchJson('/health');setStatus('Backend OK: '+(d.version||''),true)}catch(e){setStatus('Health error: '+JSON.stringify(e),false)}}
+function normalizeListingRows(payload){let raw=[];if(Array.isArray(payload))raw=payload;else if(Array.isArray(payload.items))raw=payload.items;else if(Array.isArray(payload.data))raw=payload.data;else if(Array.isArray(payload.results))raw=payload.results;return raw.filter(x=>x&&x.sku)}
+async function loadListingsOnly(){setStatus('Cargando publicaciones...');let endpoints=['/erp/marketplace_listings?limit=10000','/admin/marketplace_listings?limit=10000','/erp/listings?limit=10000'];let lastErr=null;for(const ep of endpoints){try{let d=await fetchJson(ep);state.listings=normalizeListingRows(d);buildListingIndex();setStatus(`Publicaciones cargadas: ${state.listings.length}`,true);render();return true}catch(e){lastErr=e}}setStatus('No pude cargar publicaciones/listings: '+JSON.stringify(lastErr),false);return false}
+function buildListingIndex(){state.bySku={};for(const l of state.listings){let sku=String(l.sku||'').trim();if(!sku)continue;(state.bySku[sku] ||= []).push(l)}}
+async function loadInventory(){let q=qs('q').value.trim();let lim=Number(qs('limit').value||80);setStatus('Buscando inventario...');try{let inv=await fetchJson(`/admin/inventory/search?q=${encodeURIComponent(q)}&limit=${encodeURIComponent(lim)}`);state.items=inv.items||[];if(!state.listings.length)await loadListingsOnly();render();setStatus(`Inventario: ${state.items.length} ítems · Publicaciones: ${state.listings.length}`,true)}catch(e){setStatus('Error inventario: '+JSON.stringify(e),false)}}
+function listingMarket(l){return String(l.marketplace||l.channel||'').toUpperCase()}
+function listingProductId(l){return l.external_product_id??l.listing_id??l.item_id??l.product_id??l.external_full_id??''}
+function listingVariantId(l){return l.external_variant_id??l.variant_id??l.variation_id??''}
+function listingPrice(l){return l.price??l.marketplace_price??l.target_price??''}
+function listingStock(l){return l.stock??l.available_quantity??l.marketplace_stock??''}
+function listingStatus(l){return l.status??l.state??''}
+function listingUrl(l){return l.url??l.permalink??''}
+function renderListings(sku){let market=qs('market').value;let arr=(state.bySku[sku]||[]).filter(l=>!market||listingMarket(l)===market);if(!arr.length)return '<span class="muted">Sin publicaciones vinculadas cargadas.</span>';arr.sort((a,b)=>(listingMarket(a)+listingProductId(a)+listingVariantId(a)).localeCompare(listingMarket(b)+listingProductId(b)+listingVariantId(b)));return arr.map((l,idx)=>{let m=listingMarket(l);let pid=listingProductId(l);let vid=listingVariantId(l);let price=listingPrice(l);let stock=listingStock(l);let st=listingStatus(l);let link=listingUrl(l);let key=esc(`${sku}_${idx}`);return `<div class="marketBox">
+  <div><span class="pill ${m==='ML'?'info':'ok'}">${esc(m||'?')}</span></div>
+  <div class="mono id" title="Publicación">Pub: ${esc(pid)}</div>
+  <div class="mono id" title="Variante">Var: ${esc(vid)}</div>
+  <div><input class="priceInput" id="price_${key}" value="${esc(price)}" title="Precio marketplace"></div>
+  <div><input class="stockInput" id="mstock_${key}" value="${esc(stock)}" disabled title="Stock marketplace informado"></div>
+  <div><span class="pill ${String(st).toLowerCase().includes('active')?'ok':'warn'}">${esc(st||'-')}</span></div>
+  <div>${link?`<a class="btn secondary" target="_blank" href="${esc(link)}">Abrir</a>`:''}</div>
+</div>`}).join('')}
+function render(){let tbody='';if(!state.items.length){tbody='<tr><td colspan="5" class="muted" style="text-align:center;padding:24px">Sin resultados.</td></tr>'}else{tbody=state.items.map((i,idx)=>{let sku=String(i.sku||'');return `<tr>
+<td><strong class="mono">${esc(sku)}</strong><br><span class="small">${esc(i.item_type||'')}</span></td>
+<td>${esc(i.name||'')}<br><span class="small">${esc(i.category||'')}</span></td>
+<td><input class="stockInput" type="number" step="1" id="stock_${idx}" value="${esc(i.stock??0)}"><br><span class="small">actual ERP: ${esc(i.stock??0)}</span></td>
+<td>${renderListings(sku)}</td>
+<td><div class="btnrow"><button class="ok" onclick="saveStock(${idx})">Guardar stock</button><button class="secondary" onclick="copySku('${esc(sku)}')">Copiar SKU</button><button class="secondary" onclick="filterSku('${esc(sku)}')">Solo este</button></div><div id="rowStatus_${idx}" class="small"></div></td>
+</tr>`}).join('')}
+qs('tableBox').innerHTML=`<table><thead><tr><th>SKU</th><th>Producto</th><th>Stock ERP editable</th><th>Publicaciones / variantes / precio / stock</th><th>Acciones</th></tr></thead><tbody>${tbody}</tbody></table>`}
+async function saveStock(idx){let item=state.items[idx];let sku=item.sku;let newStock=Number(qs('stock_'+idx).value);let el=qs('rowStatus_'+idx);if(!Number.isFinite(newStock)){el.textContent='Stock inválido';return}el.textContent='Guardando...';try{await fetchJson('/admin/stock/set',{method:'POST',body:JSON.stringify({sku,new_stock:Math.trunc(newStock),channel:'ADMIN',notes:'Ajuste desde inventario editable',dry_run:false})});item.stock=Math.trunc(newStock);el.textContent='OK: stock guardado y sync_job creado';el.style.color='var(--ok)'}catch(e){el.textContent='Error: '+JSON.stringify(e);el.style.color='var(--bad)'}}
+function copySku(sku){navigator.clipboard?.writeText(sku);setStatus('SKU copiado: '+sku,true)}
+function filterSku(sku){qs('q').value=sku;loadInventory()}
+async function processJobs(){setStatus('Procesando sync_jobs...');try{let txt=await fetchText('/erp/process_sync_jobs?limit=50',{method:'POST'});setStatus('sync_jobs procesados. Revisá fallas si quedó algo.',true);console.log(txt)}catch(e){setStatus('Error procesando jobs: '+String(e),false)}}
+loadSettings();health();
+</script>
+</body>
+</html>
