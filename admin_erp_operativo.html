@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planeta Casa ERP · Operativo</title>
+  <link rel="icon" href="./ERP.png" />
+  <style>
+    :root{
+      --bg:#f2f0eb;--surface:#fffdf8;--ink:#171717;--muted:#6b665c;--line:#ded4be;
+      --brand:#dcc58f;--brand2:#cdb272;--dark:#101010;--ok:#067647;--bad:#b42318;--warn:#b54708;
+      --info:#3730a3;--shadow:0 10px 30px rgba(17,17,17,.08);--radius:18px
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif;font-size:14px}
+    header{background:#111;color:#fff;padding:18px 26px;display:flex;gap:18px;align-items:center;justify-content:space-between;box-shadow:0 6px 22px rgba(0,0,0,.2)}
+    .brand{display:flex;align-items:center;gap:12px}.mark{width:42px;height:42px;border-radius:14px;background:var(--brand);display:flex;align-items:center;justify-content:center;color:#111;font-weight:900}.brand h1{margin:0;font-size:20px}.brand p{margin:3px 0 0;color:#d8d0c0;font-size:12px}
+    .settings{display:flex;gap:8px;align-items:end;flex-wrap:wrap}.settings label{font-size:11px;color:#d8d0c0;text-transform:uppercase;font-weight:800}.field{display:flex;flex-direction:column;gap:4px}.settings input{border:1px solid #3a352c;background:#fff;color:#111;border-radius:10px;padding:9px 10px;min-width:230px}.settings input[type=password]{min-width:190px}
+    main{padding:22px 26px 60px;max-width:1500px;margin:0 auto}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.col-3{grid-column:span 3}.col-4{grid-column:span 4}.col-6{grid-column:span 6}.col-8{grid-column:span 8}.col-12{grid-column:span 12}@media(max-width:1000px){.col-3,.col-4,.col-6,.col-8{grid-column:span 12}header{align-items:flex-start;flex-direction:column}.settings input{min-width:100%}}
+    .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}.card h2,.card h3{margin:0 0 12px}.card p{margin:6px 0;color:var(--muted)}
+    .stat{background:linear-gradient(180deg,#fffdf8,#f7f1e3);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}.k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}.v{font-size:28px;font-weight:900;margin-top:5px}.s{font-size:12px;color:var(--muted);margin-top:3px}
+    button,.btn{border:0;border-radius:12px;background:var(--dark);color:#fff;padding:10px 13px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}button:hover,.btn:hover{background:#2b2b2b}.primary{background:var(--brand2);color:#111}.primary:hover{background:var(--brand)}.secondary{background:#fff;color:#111;border:1px solid var(--line)}.warn{background:var(--warn)}.danger{background:var(--bad)}
+    .btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.status{min-height:24px;color:var(--muted);margin-top:10px}.oktxt{color:var(--ok);font-weight:800}.badtxt{color:var(--bad);font-weight:800}.warntxt{color:var(--warn);font-weight:800}
+    table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;font-size:13px}th,td{border-bottom:1px solid #eee2c8;padding:9px 10px;text-align:left;vertical-align:top}th{background:#151515;color:#fff;position:sticky;top:0;z-index:1}.tableWrap{border:1px solid var(--line);border-radius:14px;overflow:auto;max-height:460px;background:#fff}.pill{display:inline-flex;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:800;background:#efe7d5;color:#453d31}.pill.ok{background:#ecfdf3;color:var(--ok)}.pill.bad{background:#fef3f2;color:var(--bad)}.pill.warn{background:#fff7ed;color:var(--warn)}.pill.info{background:#eef2ff;color:var(--info)}
+    pre{white-space:pre-wrap;background:#111;color:#f8f8f2;border-radius:14px;padding:14px;max-height:420px;overflow:auto;font-size:12px}.muted{color:var(--muted);font-size:12px}.bigline{font-size:16px;font-weight:900}.hidden{display:none}.sep{height:1px;background:var(--line);margin:14px 0}.note{padding:12px;border-radius:14px;background:#fff7ed;border:1px solid #fed7aa;color:#7c2d12}
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="mark">ERP</div><div><h1>Planeta Casa ERP · Operativo</h1><p>Panel de monitoreo post EcommApp · captura automática + autosync</p></div></div>
+  <div class="settings">
+    <div class="field"><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div>
+    <div class="field"><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div>
+    <button class="primary" onclick="saveSettings()">Guardar</button>
+    <button class="secondary" onclick="refreshAll()">Actualizar</button>
+  </div>
+</header>
+<main>
+  <div class="grid">
+    <div class="col-3 stat"><div class="k">TN poller</div><div class="v" id="tnPoller">?</div><div class="s" id="tnPollerSub">ventas Tienda Nube</div></div>
+    <div class="col-3 stat"><div class="k">ML poller</div><div class="v" id="mlPoller">?</div><div class="s" id="mlPollerSub">ventas Mercado Libre</div></div>
+    <div class="col-3 stat"><div class="k">Autosync</div><div class="v" id="autoSync">?</div><div class="s" id="autoSyncSub">procesa sync_jobs</div></div>
+    <div class="col-3 stat"><div class="k">Backend</div><div class="v" id="backendVer" style="font-size:18px">?</div><div class="s" id="backendSub">health</div></div>
+
+    <div class="col-8 card">
+      <h2>Estado operativo</h2>
+      <p>Esta pantalla es para mirar que el ERP trabaje solo. Los botones manuales quedan como emergencia, no como flujo diario.</p>
+      <div class="btnrow">
+        <button class="primary" onclick="refreshAll()">Actualizar estado</button>
+        <button class="secondary" onclick="loadRecent('TN')">Últimas TN</button>
+        <button class="secondary" onclick="loadRecent('ML')">Últimas ML</button>
+        <button class="secondary" onclick="loadSyncJobs()">Sync jobs</button>
+        <a class="btn secondary" href="./admin_erp.html" target="_blank">Abrir panel completo</a>
+      </div>
+      <div id="mainStatus" class="status"></div>
+      <div id="opsSummary" style="margin-top:12px"></div>
+    </div>
+
+    <div class="col-4 card">
+      <h3>Modo actual</h3>
+      <div class="bigline">ERP activo · EcommApp testigo</div>
+      <p>El flujo esperado es: venta nueva → captura automática → descuento stock → jobs → autosync → marketplace actualizado.</p>
+      <div class="note">Si ves errores ML <b>available_quantity.not_modifiable</b>, son publicaciones Full/mixtas conocidas. No borrar: sirven para el enchufe multiorigen.</div>
+    </div>
+
+    <div class="col-6 card">
+      <h3>Últimas ventas TN capturadas</h3>
+      <div id="tnStatus" class="status"></div>
+      <div id="tnTable" class="tableWrap"></div>
+    </div>
+
+    <div class="col-6 card">
+      <h3>Últimas ventas ML capturadas</h3>
+      <div id="mlStatus" class="status"></div>
+      <div id="mlTable" class="tableWrap"></div>
+    </div>
+
+    <div class="col-12 card">
+      <h3>Sync jobs no terminados</h3>
+      <p>Acá se miran pendientes, retries y manual_review. El ERP ya procesa solo por autosync.</p>
+      <div class="btnrow">
+        <button class="secondary" onclick="loadSyncJobs()">Actualizar jobs</button>
+        <button class="warn" onclick="emergencyProcessJobs()">Emergencia: procesar 50 ahora</button>
+      </div>
+      <div id="jobsStatus" class="status"></div>
+      <div id="jobsTable" class="tableWrap"></div>
+      <pre id="jobsRaw" class="hidden"></pre>
+    </div>
+  </div>
+</main>
+<script>
+let state={api:'https://planeta-casa-erp.onrender.com',token:''};
+function qs(id){return document.getElementById(id)}
+function apiBase(){return(qs('apiUrl').value||state.api).replace(/\/$/,'')}
+function token(){return qs('token').value||state.token||''}
+function url(path){return `${apiBase()}${path}${path.includes('?')?'&':'?'}token=${encodeURIComponent(token())}`}
+function saveSettings(){state.api=apiBase();state.token=token();localStorage.setItem('pc_erp_api',state.api);localStorage.setItem('pc_erp_token',state.token);setStatus('mainStatus','Configuración guardada.',true)}
+function loadSettings(){state.api=localStorage.getItem('pc_erp_api')||state.api;state.token=localStorage.getItem('pc_erp_token')||'';qs('apiUrl').value=state.api;qs('token').value=state.token}
+function setStatus(id,msg,ok=null){let el=qs(id);if(!el)return;el.className='status '+(ok===true?'oktxt':ok===false?'badtxt':'');el.textContent=msg||''}
+function pill(text,type='info'){return `<span class="pill ${type}">${text}</span>`}
+function money(n){let x=Number(n||0);return x?('$'+Math.round(x).toLocaleString('es-AR')):''}
+function esc(v){return String(v??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+async function fetchJson(path,opt={}){let r=await fetch(url(path),{...opt,headers:{'Content-Type':'application/json',...(opt.headers||{})}});let txt=await r.text();let data;try{data=JSON.parse(txt)}catch{data={ok:r.ok,text:txt}}if(!r.ok)throw data;return data}
+async function health(){let d=await fetchJson('/health');qs('backendVer').textContent=d.version||'?';qs('backendSub').textContent=d.erp_admin_enabled?'ERP router OK':'ERP router NO';return d}
+async function autoStatus(){let d=await fetchJson('/erp/auto/status');let p=d.pollers||{}, a=d.autosync||{};
+  qs('tnPoller').textContent=p.tn_auto_poll_enabled?'ON':'OFF';qs('tnPollerSub').textContent=`cada ${p.tn_auto_poll_interval_seconds||'?'}s · limit ${p.tn_auto_poll_limit||'?'}`;
+  qs('mlPoller').textContent=p.ml_auto_poll_enabled?'ON':'OFF';qs('mlPollerSub').textContent=`cada ${p.ml_auto_poll_interval_seconds||'?'}s · limit ${p.ml_auto_poll_limit||'?'}`;
+  qs('autoSync').textContent=a.enabled?'ON':'OFF';qs('autoSyncSub').textContent=a.last_run_at?`última: ${a.last_run_at}`:`cada ${a.interval_seconds||'?'}s`;
+  qs('opsSummary').innerHTML=`<table><tbody>
+    <tr><td>Autosync corridas</td><td>${esc(a.runs)}</td></tr>
+    <tr><td>Último autosync OK</td><td>${a.last_ok===true?pill('OK','ok'):a.last_ok===false?pill('ERROR','bad'):pill('sin corrida','warn')}</td></tr>
+    <tr><td>Último resultado</td><td>found=${esc(a.last_result?.found)} · processed=${esc(a.last_result?.processed)} · ok=${esc(a.last_result?.ok)} · errors=${esc(a.last_result?.errors)}</td></tr>
+    <tr><td>TN products_store_id</td><td>${esc(d.ids?.tn_products_store_id_used)}</td></tr>
+    <tr><td>TN orders_store_id</td><td>${esc(d.ids?.tn_orders_store_id_used)}</td></tr>
+    <tr><td>ML user configurado</td><td>${d.ids?.ml_user_id_set?pill('sí','ok'):pill('no','bad')}</td></tr>
+    ${a.last_error?`<tr><td>Último error</td><td>${esc(a.last_error)}</td></tr>`:''}
+  </tbody></table>`;
+  return d;
+}
+function ordersTable(items,channel){if(!items||!items.length)return '<p class="muted">Sin ventas capturadas.</p>';return `<table><thead><tr><th>Fecha</th><th>Orden</th><th>Cliente</th><th>Total</th><th>Estado</th><th>WA</th></tr></thead><tbody>${items.map(o=>`<tr><td>${esc(o.created_at)}</td><td>${esc(o.tn_order_number?('#'+o.tn_order_number):o.external_order_id)}</td><td>${esc(o.customer_name)}<br><span class="muted">${esc(o.customer_phone)}</span></td><td>${money(o.total)}</td><td>${esc(o.status||o.tn_payment_status||'')}</td><td>${o.whatsapp_notified?pill('sí','ok'):pill('no','warn')}</td></tr>`).join('')}</tbody></table>`}
+async function loadRecent(ch){let lc=ch.toLowerCase();let target=lc==='tn'?'tn':'ml';try{setStatus(target+'Status','Consultando...');let d=await fetchJson(`/admin/${lc}/orders/recent?limit=10`);qs(target+'Table').innerHTML=ordersTable(d.items||[],ch);setStatus(target+'Status',`OK: ${d.total||0} ventas`,true)}catch(e){setStatus(target+'Status','Error: '+JSON.stringify(e),false)}}
+function jobsTable(items){let nd=(items||[]).filter(j=>j.status!=='done');if(!nd.length)return '<p class="muted">No hay jobs pendientes o con error.</p>';return `<table><thead><tr><th>Origen</th><th>Market</th><th>SKU</th><th>Stock</th><th>Status</th><th>Attempts</th><th>Error</th><th>Creado</th></tr></thead><tbody>${nd.map(j=>`<tr><td>${esc(j.source_channel||'')}</td><td>${esc(j.marketplace)}</td><td>${esc(j.sku)}</td><td>${esc(j.target_stock)}</td><td>${j.status==='manual_review'||j.status==='failed_retry'?pill(j.status,'warn'):pill(j.status,'info')}</td><td>${esc(j.attempts)}</td><td>${esc(j.last_error||'')}</td><td>${esc(j.created_at_arg||j.created_at)}</td></tr>`).join('')}</tbody></table>`}
+async function loadSyncJobs(){try{setStatus('jobsStatus','Consultando jobs...');let d=await fetchJson('/erp/sync_jobs?limit=120');qs('jobsTable').innerHTML=jobsTable(d.items||[]);let pending=(d.items||[]).filter(j=>j.status!=='done').length;setStatus('jobsStatus',pending?`Hay ${pending} jobs no terminados`:'Sin jobs pendientes',pending===0);qs('jobsRaw').classList.add('hidden');qs('jobsRaw').textContent=JSON.stringify(d.items||[],null,2)}catch(e){setStatus('jobsStatus','Error jobs: '+JSON.stringify(e),false)}}
+async function emergencyProcessJobs(){if(!confirm('Esto fuerza el procesamiento manual de hasta 50 jobs. Usar solo como emergencia.'))return;try{setStatus('jobsStatus','Procesando emergencia...');let d=await fetch(url('/erp/process_sync_jobs?limit=50'),{method:'POST'}).then(r=>r.text());qs('jobsRaw').classList.remove('hidden');qs('jobsRaw').textContent=d;setStatus('jobsStatus','Proceso manual ejecutado. Revisá jobs.',true);await loadSyncJobs()}catch(e){setStatus('jobsStatus','Error procesando: '+e,false)}}
+async function refreshAll(){setStatus('mainStatus','Actualizando...');try{await health();await autoStatus();await Promise.allSettled([loadRecent('TN'),loadRecent('ML'),loadSyncJobs()]);setStatus('mainStatus','Estado actualizado.',true)}catch(e){setStatus('mainStatus','Error actualizando: '+JSON.stringify(e),false)}}
+loadSettings();refreshAll();setInterval(refreshAll,60000);
+</script>
+</body>
+</html>
