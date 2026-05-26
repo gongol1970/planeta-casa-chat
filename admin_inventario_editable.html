@@ -12,7 +12,7 @@
 </head>
 <body>
 <header>
-  <div class="brand"><div class="mark">ERP</div><div><h1>Inventario editable</h1><div class="small">Stock master + publicaciones TN/ML</div></div></div>
+  <div class="brand"><div class="mark">ERP</div><div><h1>Inventario editable v0.2</h1><div class="small">Stock master + publicaciones TN/ML</div></div></div>
   <div class="settings">
     <div><label style="color:#d8d0c0">API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div>
     <div><label style="color:#d8d0c0">ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div>
@@ -60,7 +60,7 @@ async function health(){try{let d=await fetchJson('/health');setStatus('Backend 
 function normalizeListingRows(payload){let raw=[];if(Array.isArray(payload))raw=payload;else if(Array.isArray(payload.items))raw=payload.items;else if(Array.isArray(payload.data))raw=payload.data;else if(Array.isArray(payload.results))raw=payload.results;return raw.filter(x=>x&&x.sku)}
 async function loadListingsOnly(){setStatus('Cargando publicaciones...');let endpoints=['/erp/marketplace_listings?limit=10000','/admin/marketplace_listings?limit=10000','/erp/listings?limit=10000'];let lastErr=null;for(const ep of endpoints){try{let d=await fetchJson(ep);state.listings=normalizeListingRows(d);buildListingIndex();setStatus(`Publicaciones cargadas: ${state.listings.length}`,true);render();return true}catch(e){lastErr=e}}setStatus('No pude cargar publicaciones/listings: '+JSON.stringify(lastErr),false);return false}
 function buildListingIndex(){state.bySku={};for(const l of state.listings){let sku=String(l.sku||'').trim();if(!sku)continue;(state.bySku[sku] ||= []).push(l)}}
-async function loadInventory(){let q=qs('q').value.trim();let lim=Number(qs('limit').value||80);setStatus('Buscando inventario...');try{let inv=await fetchJson(`/admin/inventory/search?q=${encodeURIComponent(q)}&limit=${encodeURIComponent(lim)}`);state.items=inv.items||[];if(!state.listings.length)await loadListingsOnly();render();setStatus(`Inventario: ${state.items.length} ítems · Publicaciones: ${state.listings.length}`,true)}catch(e){setStatus('Error inventario: '+JSON.stringify(e),false)}}
+async function loadInventory(){let q=qs('q').value.trim();let lim=Number(qs('limit').value||80);setStatus('Buscando inventario + publicaciones...');try{let inv=await fetchJson(`/admin/inventory/search?q=${encodeURIComponent(q)}&limit=${encodeURIComponent(lim)}&include_listings=true`);state.items=inv.items||[];state.listings=[];for(const it of state.items){if(Array.isArray(it.listings)){for(const l of it.listings){state.listings.push(l)}}}buildListingIndex();render();let linked=state.listings.length;setStatus(`Inventario: ${state.items.length} ítems · Publicaciones vinculadas: ${linked}`,linked>0?true:'warn')}catch(e){setStatus('Error inventario: '+JSON.stringify(e),false)}}
 function listingMarket(l){return String(l.marketplace||l.channel||'').toUpperCase()}
 function listingProductId(l){return l.external_product_id??l.listing_id??l.item_id??l.product_id??l.external_full_id??''}
 function listingVariantId(l){return l.external_variant_id??l.variant_id??l.variation_id??''}
@@ -68,7 +68,7 @@ function listingPrice(l){return l.price??l.marketplace_price??l.target_price??''
 function listingStock(l){return l.stock??l.available_quantity??l.marketplace_stock??''}
 function listingStatus(l){return l.status??l.state??''}
 function listingUrl(l){return l.url??l.permalink??''}
-function renderListings(sku){let market=qs('market').value;let arr=(state.bySku[sku]||[]).filter(l=>!market||listingMarket(l)===market);if(!arr.length)return '<span class="muted">Sin publicaciones vinculadas cargadas.</span>';arr.sort((a,b)=>(listingMarket(a)+listingProductId(a)+listingVariantId(a)).localeCompare(listingMarket(b)+listingProductId(b)+listingVariantId(b)));return arr.map((l,idx)=>{let m=listingMarket(l);let pid=listingProductId(l);let vid=listingVariantId(l);let price=listingPrice(l);let stock=listingStock(l);let st=listingStatus(l);let link=listingUrl(l);let key=esc(`${sku}_${idx}`);return `<div class="marketBox">
+function renderListings(sku){let market=qs('market').value;let arr=(state.bySku[sku]||[]).filter(l=>!market||listingMarket(l)===market);if(!arr.length)return '<span class="muted">Sin publicaciones en marketplace_listings para este SKU o no fueron devueltas por el backend.</span>';arr.sort((a,b)=>(listingMarket(a)+listingProductId(a)+listingVariantId(a)).localeCompare(listingMarket(b)+listingProductId(b)+listingVariantId(b)));return arr.map((l,idx)=>{let m=listingMarket(l);let pid=listingProductId(l);let vid=listingVariantId(l);let price=listingPrice(l);let stock=listingStock(l);let st=listingStatus(l);let link=listingUrl(l);let key=esc(`${sku}_${idx}`);return `<div class="marketBox">
   <div><span class="pill ${m==='ML'?'info':'ok'}">${esc(m||'?')}</span></div>
   <div class="mono id" title="Publicación">Pub: ${esc(pid)}</div>
   <div class="mono id" title="Variante">Var: ${esc(vid)}</div>
