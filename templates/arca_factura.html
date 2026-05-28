@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>$page_title</title>
+<style>
+@page{size:A4;margin:8mm}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#ddd}
+body{font-family:Arial,Helvetica,sans-serif;color:#111;font-size:10px}
+.noPrint{width:210mm;margin:8px auto;text-align:right}.noPrint button{padding:8px 13px;border:0;background:#111;color:#fff;border-radius:6px;font-weight:700;cursor:pointer}
+.sheet{width:210mm;height:297mm;margin:0 auto;background:#fff;padding:8mm;position:relative;overflow:hidden;box-shadow:0 0 6px rgba(0,0,0,.28)}
+.box{border:1px solid #222}.top{height:56mm;display:grid;grid-template-columns:44mm 1fr 76mm;position:relative}.logoBox{padding:5mm;border-right:1px solid #222}.logo{width:34mm;height:28mm;object-fit:contain;border:1px solid #222;margin-bottom:3mm}.brandSmall{line-height:1.25;font-size:8px}.letterBox{position:absolute;left:50%;top:-1px;transform:translateX(-50%);width:18mm;height:18mm;border:1px solid #222;background:#fff;text-align:center;padding-top:2.4mm;z-index:5}.letter{font-size:18px;font-weight:900;line-height:1}.cod{font-size:6px;margin-top:1mm}.issuer{padding:31mm 5mm 3mm 6mm;border-right:1px solid #222;line-height:1.45}.invoice{padding:10mm 6mm 4mm 14mm;line-height:1.55}.original{text-align:left;font-weight:800;font-size:9px;margin-bottom:3mm}.invoice h1{margin:0 0 4mm 0;font-size:21px;letter-spacing:.09em}.label{font-weight:800}.period{height:9mm;border-left:1px solid #222;border-right:1px solid #222;border-bottom:1px solid #222;display:grid;grid-template-columns:47mm 40mm 1fr;align-items:center;padding:0 4mm}.customer{min-height:30mm;border-left:1px solid #222;border-right:1px solid #222;border-bottom:1px solid #222;display:grid;grid-template-columns:1fr 1fr;gap:8mm;padding:4mm;line-height:1.55}.items{margin-top:6mm}table{width:100%;border-collapse:collapse;font-size:8.5px}th{background:#cfe7e0;border:1px solid #7da097;padding:1.4mm .9mm;text-align:center;font-weight:800}td{border-left:1px solid #b7c5c1;border-right:1px solid #b7c5c1;padding:1.35mm .9mm;vertical-align:top;line-height:1.18}tbody tr:not(.empty) td{border-bottom:0}tbody tr:last-child td{border-bottom:1px solid #b7c5c1}.empty td{height:6mm;color:#fff;border-bottom:0}.code{width:28mm;text-align:center;word-break:break-word}.desc{width:auto}.c{text-align:center}.r{text-align:right;white-space:nowrap}.bottomArea{position:absolute;left:8mm;right:8mm;bottom:46mm}.observ{min-height:18mm;border:1px solid #222;padding:3mm 4mm;margin-bottom:3mm}.totals{border:1px solid #222;display:grid;grid-template-columns:1fr 66mm;min-height:33mm}.taxes{border-right:1px solid #222;padding:3mm 4mm;align-self:stretch}.transparency-title{font-weight:800;font-style:italic;border-bottom:1px solid #222;margin-bottom:2mm;padding-bottom:1mm}.tax-line{display:flex;gap:9mm;justify-content:flex-start;margin:1.5mm 0}.amounts{padding:4mm 5mm;align-self:center}.tot-row{display:flex;justify-content:space-between;gap:8mm;margin:2mm 0;font-size:10.5px}.grand{font-size:12px;font-weight:900}.auth{position:absolute;left:8mm;right:8mm;bottom:14mm;display:grid;grid-template-columns:30mm 1fr 64mm;gap:6mm;align-items:end}.qr{width:28mm;height:28mm;border:1px solid #222;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800}.authText{font-size:8px;line-height:1.45}.cae{font-size:8.5px;line-height:1.7}.footer{position:absolute;left:8mm;right:8mm;bottom:5mm;text-align:center;font-size:7px;color:#444}
+.draft-stamp{border:1px solid #111;text-align:center;font-weight:900;padding:1.4mm;margin-top:2mm}
+@media print{html,body{background:#fff}.noPrint{display:none}.sheet{width:194mm;height:281mm;margin:0;padding:0;box-shadow:none}.bottomArea{left:0;right:0}.auth{left:0;right:0}.footer{left:0;right:0}}
+</style>
+</head>
+<body>
+<div class="noPrint"><button onclick="window.print()">Imprimir / Guardar PDF</button></div>
+<div class="sheet">
+  <section class="top box">
+    <div class="logoBox"><img src="$logo_url" class="logo" onerror="this.outerHTML='<div class=&quot;logo&quot; style=&quot;display:flex;align-items:center;justify-content:center&quot;>ISOLOGO</div>'"><div class="brandSmall"><b>$emisor_razon</b><br>$emisor_dom<br>$emisor_email<br>$emisor_web</div></div>
+    <div class="letterBox"><div class="letter">$letter</div><div class="cod">COD. $cbte_codigo</div></div>
+    <div class="issuer"><div><span class="label">Razón Social:</span> $emisor_razon</div><div><span class="label">Domicilio Comercial:</span> $emisor_dom</div><div><span class="label">Condición frente al IVA:</span> $emisor_cond_iva</div></div>
+    <div class="invoice"><div class="original">$original_label</div><h1>$title</h1><div><span class="label">Punto de Venta:</span> $pto_vta</div><div><span class="label">Nro:</span> $nro</div><div><span class="label">Fecha de Emisión:</span> $invoice_date</div><div><span class="label">CUIT:</span> $emisor_cuit</div><div><span class="label">Ingresos Brutos:</span> $emisor_iibb</div><div><span class="label">Fecha de Inicio de Actividades:</span> $emisor_inicio</div></div>
+  </section>
+  <section class="period"><div><span class="label">Período Facturado Desde:</span> $periodo_desde</div><div><span class="label">Hasta:</span> $periodo_hasta</div><div><span class="label">Fecha de Vto. para el pago:</span> $fecha_vto_pago</div></section>
+  <section class="customer"><div><div><span class="label">CUIT:</span> $customer_doc</div><div><span class="label">Condición frente al IVA:</span> $customer_iva</div><div><span class="label">Domicilio de venta:</span> $customer_address</div></div><div><div><span class="label">Apellido y Nombre / Razón Social:</span> $customer_name</div><div><span class="label">Localidad:</span> $customer_localidad</div><div><span class="label">Condición de pago:</span> $cond_pago</div><div><span class="label">Concepto:</span> $concept</div><div><span class="label">Canal:</span> $source_channel &nbsp; <span class="label">Operación:</span> $source_number</div></div></section>
+  <section class="items"><table><thead><tr><th>Código</th><th>Producto / Servicio</th><th>Cantidad</th><th>U. Medida</th><th>Precio Unit.</th><th>% Bonif.</th><th>Imp. Bonif.</th><th>Subtotal</th>$headers_extra</tr></thead><tbody>$item_rows</tbody></table></section>
+  <section class="bottomArea"><div class="observ"><b>Observaciones:</b><br>$notes_html</div><div class="totals"><div class="taxes">$fiscal_block</div><div class="amounts">$totals_block</div></div></section>
+  <section class="auth"><div class="qr">$qr</div><div class="authText"><b>ARCA</b><br>$comprobante_autorizado<br>Estado ERP: $status<br><small>$legal_note</small></div><div class="cae"><b>$cae_label</b> $cae<br><b>$cae_vto_label</b> $cae_vto</div></section>
+  <div class="footer">Planeta Casa ERP · Facturación · Pág. 1/1</div>
+</div>
+</body>
+</html>
