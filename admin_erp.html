@@ -1,10 +1,11 @@
+<!-- ARCA_PDF_POST_ISSUE_V11 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Planeta Casa ERP</title>
-<!-- ARCA_VIEW_TOKEN_PDF_READY_V11 -->
+<!-- ARCA_PDF_POST_ISSUE_V11 -->
 <link rel="icon" href="./ERP.png" />
 <style>
 :root{--bg:#f2f0eb;--surface:#fffdf8;--surface2:#f8f4ea;--ink:#171717;--muted:#6b665c;--line:#ded4be;--brand:#dcc58f;--brand2:#cdb272;--dark:#101010;--ok:#067647;--bad:#b42318;--warn:#b54708;--shadow:0 10px 30px rgba(17,17,17,.08);--radius:18px}
@@ -36,7 +37,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="manual-venta">Venta manual</button></div>
 <div class="navTitle">Gestión</div><div class="sub"><button class="navBtn" data-view="inventario">Inventario</button><button class="navBtn" data-view="movimientos">Ver movimientos de stock</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button><button class="navBtn" data-view="planilla-bajar">Bajar planilla</button><button class="navBtn" data-view="planilla-subir">Subir planilla</button><button class="navBtn" data-view="fallas">Reporte de fallas</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.22<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.24<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
@@ -59,7 +60,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 </main></div>
 <script>
 let state={api:'https://planeta-casa-erp.onrender.com',token:'',pendingJobLimit:null,inventoryItems:[],inventory:{offset:0,total:0},sales:{ML:{offset:0},TN:{offset:0}},publications:{ML:{offset:0,total:0},TN:{offset:0,total:0}},jobs:{offset:0}};let timers={};
-function qs(id){return document.getElementById(id)}function apiBase(){return(qs('apiUrl').value||state.api).replace(/\/$/,'')}function token(){return qs('token').value||state.token||''}function url(path){return `${apiBase()}${path}${path.includes('?')?'&':'?'}token=${encodeURIComponent(token())}`}function openInvoiceHtml(id){if(!id){alert('No encontré ID de factura.');return}window.open(url('/admin/arca/facturas/'+encodeURIComponent(id)+'/html'),'_blank')}
+function qs(id){return document.getElementById(id)}function apiBase(){return(qs('apiUrl').value||state.api).replace(/\/$/,'')}function token(){return qs('token').value||state.token||''}function url(path){return `${apiBase()}${path}${path.includes('?')?'&':'?'}token=${encodeURIComponent(token())}`}function openInvoiceHtml(id){if(!id){alert('No encontré ID de factura.');return}window.open(url('/admin/arca/facturas/'+encodeURIComponent(id)+'/html'),'_blank')}function openInvoicePdf(id){if(!id){alert('No encontré ID de factura.');return}window.open(url('/admin/arca/facturas/'+encodeURIComponent(id)+'/pdf'),'_blank')}
 function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}function dateAR(x){if(!x)return'';try{return new Date(x).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short',hour12:false})}catch{return x}}function money(n){let x=Number(n||0);return x?('$'+Math.round(x).toLocaleString('es-AR')):''}function shortVer(v){let m=String(v||'').match(/\d+(?:\.\d+){1,3}/);return m?m[0]:String(v||'?')}function jsq(s){return String(s??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ')}
 function setStatus(id,msg,ok=null){let el=qs(id);if(!el)return;el.className='status '+(ok===true?'oktxt':ok===false?'badtxt':ok==='warn'?'warntxt':'');el.textContent=msg||''}function showPre(id,obj){let el=qs(id);el.classList.remove('hidden');el.textContent=typeof obj==='string'?obj:JSON.stringify(obj,null,2)}
 function saveSettings(){state.api=apiBase();state.token=token();localStorage.setItem('pc_erp_api',state.api);localStorage.setItem('pc_erp_token',state.token);setStatus('homeStatus','Guardado.',true);syncLinks()}function loadSettings(){state.api=localStorage.getItem('pc_erp_api')||state.api;state.token=localStorage.getItem('pc_erp_token')||'';qs('apiUrl').value=state.api;qs('token').value=state.token;loadViewPrefs();loadConfig();syncLinks()}function syncLinks(){let d=qs('downloadCsv');if(d)d.href=url('/erp/export_inventory')}function prefKey(section,key){return `pc_erp_pref_${section}_${key}`}function saveViewPref(section,key,value){localStorage.setItem(prefKey(section,key),String(value??''))}function loadViewPrefs(){let jl=localStorage.getItem(prefKey('jobs','limit'));if(jl&&qs('jobsLimit'))qs('jobsLimit').value=jl;let ml=localStorage.getItem(prefKey('ventas_ml','limit'));if(ml&&qs('mlVentasLimit'))qs('mlVentasLimit').value=ml;let tl=localStorage.getItem(prefKey('ventas_tn','limit'));if(tl&&qs('tnVentasLimit'))qs('tnVentasLimit').value=tl;let il=localStorage.getItem(prefKey('inventario','limit'));if(il&&qs('invLimit'))qs('invLimit').value=il;let mpl=localStorage.getItem(prefKey('publicaciones_ml','limit'));if(mpl&&qs('mlPubLimit'))qs('mlPubLimit').value=mpl;let tpl=localStorage.getItem(prefKey('publicaciones_tn','limit'));if(tpl&&qs('tnPubLimit'))qs('tnPubLimit').value=tpl}
@@ -223,7 +224,7 @@ function arcaActions(r){
   let id=encodeURIComponent(r.id||'');
   let ch=String(r.source_channel||'').toUpperCase();
   let oid=String(r.source_order_id||r.source_order_api_id||'');
-  let view=id?`<button onclick="openInvoiceHtml('${esc(r.id||'')}')">Ver / imprimir</button>`:'';
+  let view=id?`<button onclick="openInvoiceHtml('${esc(r.id||'')}')">Ver / imprimir</button><button onclick="openInvoicePdf('${esc(r.id||'')}')">Ver PDF</button>`:'';
   let facturar=(ch&&oid&&!r.cae)?`<button onclick="issueInvoiceFromArcaReport('${esc(ch)}','${esc(oid)}')">Facturar</button>`:'';
   let borrador=(ch&&oid&&!r.cae)?`<button onclick="createInvoiceDraft('${esc(ch)}','${esc(oid)}')">Actualizar borrador</button>`:'';
   let nc=id?`<button onclick="alert('Próximo: Nota de Crédito')">Nota de Crédito</button>`:'';
