@@ -21,7 +21,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 .orderCard{border:1px solid var(--line);border-radius:16px;background:#fff;margin:8px 0;overflow:hidden}.orderHead{padding:9px 14px;background:#fffaf0;border-bottom:1px solid #eee2c8;display:grid;grid-template-columns:1.15fr 1.25fr .9fr .8fr auto;gap:10px;align-items:center}.orderLines{padding:6px 14px}.lineItem{display:grid;grid-template-columns:170px 1fr 70px 90px 105px;gap:10px;padding:3px 0;border-bottom:1px dashed #eee2c8;align-items:center}.lineItem,.lineItem *{font-family:Inter,Arial,sans-serif!important;font-size:12px!important;line-height:1.18}.orderPayStatus{display:inline-block;margin-left:9px;color:var(--muted);font-size:12px}.invoiceAction{font-size:12px!important;padding:8px 10px!important}.lineItem:last-child{border-bottom:0}.movementSale{color:var(--bad);font-weight:800}.movementUpdate{color:#3730a3;font-weight:800}.movementManual{color:var(--warn);font-weight:800}.marketBox{display:grid;grid-template-columns:48px minmax(105px,1fr) minmax(78px,.8fr) 86px 76px 86px;gap:8px;align-items:center;margin-bottom:7px;padding:8px;border:1px solid #eee2c8;border-radius:12px;background:#fffaf0}.marketBox input{padding:7px 8px;border-radius:9px;font-size:12px}.marketBox .id{word-break:break-all;font-size:11px}.marketStatus{justify-content:center}.pill.inactive{background:var(--bad);color:#fff}.stockInput{width:88px}.priceInput{width:86px}.invStockBox{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap}.invStockBox input{width:88px}.inventoryPager{margin-top:12px}.inventoryTable{table-layout:fixed}.inventoryTable th:nth-child(1){width:145px}.inventoryTable th:nth-child(2){width:225px}.inventoryTable th:nth-child(3){width:170px}.inventoryTable td{overflow-wrap:anywhere}.inventoryWrap{overflow-x:hidden}.jobsPager{margin-top:12px}.limitSelect{max-width:120px}.actionSale{border-left:5px solid var(--warn);box-shadow:0 8px 18px rgba(181,71,8,.12)}.actionBadge{display:inline-flex;margin-top:4px;border-radius:999px;background:#fff7ed;color:var(--warn);font-size:11px;font-weight:900;padding:3px 7px}.hidden{display:none!important}pre{white-space:pre-wrap;background:#111;color:#f8f8f2;border-radius:14px;padding:14px;max-height:420px;overflow:auto;font-size:12px}details.kebabMenu{position:relative;display:inline-block}details.kebabMenu summary{list-style:none;cursor:pointer;border:1px solid var(--line);border-radius:10px;background:#fff;color:#111;font-weight:900;padding:8px 11px;line-height:1}details.kebabMenu summary::-webkit-details-marker{display:none}.kebabPanel{position:absolute;right:0;top:38px;z-index:50;min-width:210px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:8px;display:grid;gap:6px}.kebabPanel button{width:100%;justify-content:flex-start;background:#fff;color:#111;border:1px solid #eee2c8}.kebabPanel button:hover{background:#fffaf0}
 @media(max-width:1050px){aside{width:235px}main{margin-left:235px;width:calc(100% - 235px)}.col-2,.col-3,.col-4,.col-5,.col-6,.col-8{grid-column:span 12}.tokenBox{flex-wrap:wrap}.tokenBox input{width:220px}.orderHead,.lineItem,.marketBox{grid-template-columns:1fr}.tableWrap{max-height:none}}
 </style>
-<!-- FORCE_UPDATE_ADMIN_ERP_1_14_NO_SALES_INVOICE_BUTTONS_20260530 -->
+<!-- FORCE_UPDATE_ADMIN_ERP_1_16_FACTURACION_ML_TN_REPORTES_20260531 -->
 </head>
 <body>
 <div class="app">
@@ -35,7 +35,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="manual-venta">Venta manual</button></div>
 <div class="navTitle">Gestión</div><div class="sub"><button class="navBtn" data-view="inventario">Inventario</button><button class="navBtn" data-view="movimientos">Ver movimientos de stock</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button><button class="navBtn" data-view="planilla-bajar">Bajar planilla</button><button class="navBtn" data-view="planilla-subir">Subir planilla</button><button class="navBtn" data-view="fallas">Reporte de fallas</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.15<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.16<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
@@ -104,16 +104,27 @@ function countLabel(n){n=Number(n||0);return n===1?'1 orden':`${n} órdenes`}
 function linesForOrder(o){let lines=Array.isArray(o.sold_lines)?o.sold_lines:[];if(lines.length)return lines.map(l=>({sku:l.sku||'',name:l.name||l.title||l.product_name||'',quantity:l.quantity??l.qty??'',unit_price:l.unit_price??l.price??'',subtotal:(Number(l.quantity??l.qty??0)*Number(l.unit_price??l.price??0))||''}));let movs=Array.isArray(o.stock_movements)?o.stock_movements:[];return movs.map(m=>({sku:m.sku||'',name:m.notes||'',quantity:Math.abs(Number(m.quantity||0)),unit_price:'',subtotal:'',prev:m.previous_stock,next:m.new_stock}))}
 
 function invoiceStatus(o){
-  let issued=o.invoice_id||o.arca_invoice_id||o.cae||o.invoice_cae||o.factura_emitida;
-  if(issued)return `<span class="pill ok">🧾 Facturada</span>`;
+  let st=String(o.invoice_status||'none').toLowerCase();
+  let label=o.invoice_label||'';
+  if(st==='issued'||o.invoice_cae||o.cae)return `<span class="pill ok">🧾 Facturada${o.invoice_number?' '+esc(o.invoice_number):''}</span>`;
+  if(st==='draft')return `<span class="pill info">🧾 Borrador</span>`;
+  if(st==='void')return `<span class="pill bad">🧾 Anulada</span>`;
+  if(st==='test'||st==='preview')return `<span class="pill warn">🧾 ${esc(label||st)}</span>`;
   return `<span class="pill warn">🧾 Sin factura</span>`;
 }
 function channelCustomerHtml(o,ch){
-  let fiscal=o.customer_fiscal_name||o.fiscal_name||o.billing_name||o.customer_name||'';
-  let nick=o.customer_nickname||o.nickname||o.buyer_nickname||o.ml_nickname||'';
-  let phone=o.customer_phone||'';
-  let sub=[nick,phone].filter(Boolean).join(' · ');
-  return `<strong>${esc(fiscal)}</strong>${sub?`<br><span class="small">${esc(sub)}</span>`:''}`;
+  let cf=o.customer_fiscal||{};
+  let fiscal=o.customer_fiscal_name||cf.fiscal_name||o.fiscal_name||o.billing_name||o.customer_name||'';
+  let nick=o.customer_nickname||o.customer_name||o.nickname||o.buyer_nickname||o.ml_nickname||'';
+  let doc=[o.customer_doc_type||cf.doc_type||'',o.customer_doc_number||cf.doc_number||''].filter(Boolean).join(' ');
+  let iva=o.customer_iva_condition||cf.iva_condition||'';
+  let loc=o.customer_city||cf.city||'';
+  let sub=[];
+  if(nick&&String(nick).toLowerCase()!==String(fiscal).toLowerCase())sub.push('nick: '+nick);
+  if(doc)sub.push(doc);
+  if(iva)sub.push(iva);
+  if(loc)sub.push(loc);
+  return `<strong>${esc(fiscal)}</strong>${sub.length?`<br><span class="small">${esc(sub.join(' · '))}</span>`:''}`;
 }
 function shippingStateLabel(o,ch){
   let raw=String(o.shipping_status||o.tn_shipping_status||o.ml_shipping_status||o.fulfillment_status||o.delivery_status||'').toLowerCase();
@@ -127,12 +138,25 @@ function shippingStateLabel(o,ch){
   if(opt)return opt;
   return '';
 }
-function invoiceButton(o,ch){
-  // 1.15: desde ventas solo mostramos estado. La emisión real queda en ARCA · Emitir comprobante manual.
-  return invoiceStatus(o);
+function invoiceOrderId(o,ch){
+  if(ch==='ML'){
+    let ids=Array.isArray(o.child_order_ids)?o.child_order_ids.filter(Boolean):[];
+    if(ids.length)return ids[0];
+  }
+  return o.external_order_id||o.id||'';
 }
+function invoiceButton(o,ch){
+  let oid=invoiceOrderId(o,ch);
+  let status=invoiceStatus(o);
+  let disabled=!oid?'disabled':'';
+  let preview=`<button class="secondary invoiceAction" ${disabled} onclick="openInvoicePreview('${ch}','${esc(String(oid))}')">Preview</button>`;
+  let draft=`<button class="secondary invoiceAction" ${disabled} onclick="createInvoiceDraft('${ch}','${esc(String(oid))}')">Borrador</button>`;
+  let issue=`<button class="primary invoiceAction" ${disabled} onclick="issueInvoiceFromSale('${ch}','${esc(String(oid))}')">Facturar</button>`;
+  let view=o.invoice_id?`<a class="btn secondary invoiceAction" target="_blank" href="${url('/admin/arca/facturas/'+encodeURIComponent(o.invoice_id)+'/html')}">Ver</a>`:'';
+  return `<div class="btnrow" style="justify-content:flex-end;gap:6px">${status}${view}${preview}${draft}${issue}</div>`;
+}
+function orderCard(o,ch){let lines=linesForOrder(o);let display=lines.map(l=>`<div class="lineItem"><div><strong>${esc(l.sku)}</strong></div><div>${esc(l.name||'')}</div><div>Cant: <strong>${esc(l.quantity)}</strong></div><div>${l.unit_price!==''?money(l.unit_price):''}</div><div>${l.prev!==undefined?`Stock ${esc(l.prev)} → ${esc(l.next)}`:(l.subtotal?money(l.subtotal):'')}</div></div>`).join('')||'<div class="muted">Sin líneas visibles todavía.</div>';let sub=subOrderText(o,ch);let logistic=logisticLabel(o,ch);let logState=shippingStateLabel(o,ch);let act=saleNeedsAction(o,ch);let stateHtml=logState?`<br><span class="small">${esc(logState)}</span>`:'';let actionHtml=act?`<br><span class="actionBadge">${esc(act)}</span>`:'';let totalSub=o.total_products&&Number(o.total_products)!==Number(o.total)?`<br><span class="small">Productos: ${money(o.total_products)}</span>`:'';return `<div class="orderCard ${act?'actionSale':''}"><div class="orderHead"><div><strong>${esc(orderNumber(o,ch))}</strong>${sub?`<br><span class="small">${sub}</span>`:''}<br><span class="small">${dateAR(o.display_created_at||o.created_at||o.ml_date_created)}</span></div><div>${channelCustomerHtml(o,ch)}</div><div><span class="pill ${logistic==='FULL'?'dark':logistic==='FLEX'?'ok':logistic==='A coordinar con comprador'?'warn':'info'}">${esc(logistic)}</span><br><span class="orderPayStatus">${esc(orderStatusLabel(o,ch))}</span>${stateHtml}${actionHtml}</div><div><strong>${money(o.total)}</strong>${totalSub}<br><span class="small">${countLabel(lines.length)}</span></div><div>${invoiceButton(o,ch)}</div></div><div class="orderLines">${display}</div></div>`}
 
-function orderCard(o,ch){let lines=linesForOrder(o);let display=lines.map(l=>`<div class="lineItem"><div><strong>${esc(l.sku)}</strong></div><div>${esc(l.name||'')}</div><div>Cant: <strong>${esc(l.quantity)}</strong></div><div>${l.unit_price!==''?money(l.unit_price):''}</div><div>${l.prev!==undefined?`Stock ${esc(l.prev)} → ${esc(l.next)}`:(l.subtotal?money(l.subtotal):'')}</div></div>`).join('')||'<div class="muted">Sin líneas visibles todavía.</div>';let sub=subOrderText(o,ch);let logistic=logisticLabel(o,ch);let logState=shippingStateLabel(o,ch);let act=saleNeedsAction(o,ch);let stateHtml=logState?`<br><span class="small">${esc(logState)}</span>`:'';let actionHtml=act?`<br><span class="actionBadge">${esc(act)}</span>`:'';return `<div class="orderCard ${act?'actionSale':''}"><div class="orderHead"><div><strong>${esc(orderNumber(o,ch))}</strong>${sub?`<br><span class="small">${sub}</span>`:''}<br><span class="small">${dateAR(o.display_created_at||o.created_at||o.ml_date_created)}</span></div><div>${channelCustomerHtml(o,ch)}</div><div><span class="pill ${logistic==='FULL'?'dark':logistic==='FLEX'?'ok':logistic==='A coordinar con comprador'?'warn':'info'}">${esc(logistic)}</span><br><span class="orderPayStatus">${esc(orderStatusLabel(o,ch))}</span>${stateHtml}${actionHtml}</div><div><strong>${money(o.total)}</strong><br><span class="small">${countLabel(lines.length)}</span></div><div>${invoiceButton(o,ch)}</div></div><div class="orderLines">${display}</div></div>`}
 function ordersTable(items,channel){if(!items||!items.length)return '<div class="card"><p>No hay ventas capturadas.</p></div>';return items.map(o=>orderCard(o,channel)).join('')}
 function salesLimit(ch){let el=qs(ch.toLowerCase()+'VentasLimit');return Number(el?.value||20)}
 function salesSearch(ch){let el=qs(ch.toLowerCase()+'VentasSearch');return (el?.value||'').trim()}
@@ -170,7 +194,38 @@ function arcaTypeLabel(r){return r.cbte_tipo_label||((Number(r.cbte_tipo)===1?'F
 function arcaActions(r){let id=encodeURIComponent(r.id||'');let view=`<a class="btn secondary" target="_blank" href="${url('/admin/arca/facturas/'+id+'/html')}">Ver / imprimir</a>`;let menu=`<details class="kebabMenu"><summary title="Más acciones">⋮</summary><div class="kebabPanel"><button onclick="alert('Próximo: Nota de Crédito')">Nota de Crédito</button><button onclick="alert('Próximo: Nota de Débito')">Nota de Débito</button><button onclick="alert('Próximo: Factura manual al cliente')">Factura manual al cliente</button></div></details>`;return `<div class="btnrow">${view}${menu}</div>`}
 async function loadArcaInvoices(){initArcaDates();setStatus('arcaStatus','Consultando comprobantes...');try{let lim=Number(qs('arcaLimit')?.value||100);let p=`/admin/arca/facturas?limit=${lim}&date_from=${encodeURIComponent(qs('arcaDesde')?.value||'')}&date_to=${encodeURIComponent(qs('arcaHasta')?.value||'')}`;let tipo=qs('arcaTipo')?.value||'Todos',canal=qs('arcaCanal')?.value||'Todos',concepto=qs('arcaConcepto')?.value||'Todos';if(tipo!=='Todos')p+=`&cbte_tipo=${encodeURIComponent(tipo)}`;if(canal!=='Todos')p+=`&channel=${encodeURIComponent(canal)}`;if(concepto!=='Todos')p+=`&concept=${encodeURIComponent(concepto)}`;let d=await fetchJson(p);let rows=d.items||[];qs('arcaTable').innerHTML=`<table><thead><tr><th>Fecha</th><th>Tipo</th><th>Número</th><th>CAE</th><th>Nombre</th><th>Documento</th><th>Canal</th><th>Total</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.invoice_date||r.created_at||'')}</td><td>${esc(arcaTypeLabel(r))}</td><td>${esc((r.pto_vta||'')+'-'+(r.cbte_nro||'BORRADOR'))}</td><td>${esc(r.cae||'')}</td><td>${esc(r.customer_name||r.source_customer_name||'')}</td><td>${esc((r.customer_doc_type||'')+' '+(r.customer_doc_number||''))}</td><td>${esc(r.source_channel||'')}</td><td><strong>${money(r.importe_total)}</strong></td><td>${statusPill(r.status)}</td><td>${arcaActions(r)}</td></tr>`).join('')||'<tr><td colspan="10" class="muted" style="text-align:center">Sin comprobantes para el rango.</td></tr>'}</tbody></table>`;setStatus('arcaStatus',`OK: ${rows.length} comprobantes`,true)}catch(e){setStatus('arcaStatus','Error ARCA: '+JSON.stringify(e),false)}}async function arcaCheck(){setStatus('arcaStatus','Probando configuración ARCA...');try{let d=await fetchJson('/admin/arca/check');showPre('arcaOut',d);setStatus('arcaStatus','Configuración ARCA OK',true)}catch(e){showPre('arcaOut',e);setStatus('arcaStatus','Error ARCA',false)}}
 async function loadArcaTestPreviews(){setStatus('arcaStatus','Armando pruebas sin CAE...');try{let d=await fetchJson('/admin/arca/previews/test-batch?ml_limit=10&tn_limit=5');let rows=d.items||[];qs('arcaPreviewTable').innerHTML=`<table><thead><tr><th>Canal</th><th>Orden</th><th>Tipo</th><th>Cliente</th><th>Documento</th><th>Ítems</th><th>Neto</th><th>IVA</th><th>IVA contenido</th><th>Total</th><th>Acción</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.source_channel||'')}</td><td>${esc(r.source_order_number||r.source_order_id||'')}</td><td>${esc(r.cbte_tipo_label||'')}</td><td>${esc(r.customer_name||'')}</td><td>${esc((r.customer_doc_type||'')+' '+(r.customer_doc_number||''))}</td><td>${esc(r.line_count??'')}</td><td>${money(r.importe_neto)}</td><td>${money(r.importe_iva)}</td><td>${money(r.iva_contenido)}</td><td><strong>${money(r.importe_total)}</strong></td><td><a class="btn secondary" target="_blank" href="${url('/admin/arca/previews/'+encodeURIComponent(r.source_channel)+'/'+encodeURIComponent(r.source_order_id)+'/html')}">Ver preview</a></td></tr>`).join('')||'<tr><td colspan="11" class="muted" style="text-align:center">Sin previews.</td></tr>'}</tbody></table>`;setStatus('arcaStatus',`OK: ${rows.length} pruebas sin CAE armadas`,true)}catch(e){setStatus('arcaStatus','Error previews: '+JSON.stringify(e),false);showPre('arcaOut',e)}}
-async function createInvoiceDraft(ch,orderId){if(!orderId){alert('No encontré ID de orden para facturar.');return}if(!confirm(`Crear borrador de factura para ${ch} ${orderId}?`))return;setStatus(ch.toLowerCase()+'VentasStatus','Creando borrador de factura...');try{let d=await fetchJson(`/admin/arca/orders/${encodeURIComponent(ch)}/${encodeURIComponent(orderId)}/draft`,{method:'POST',body:JSON.stringify({concept:'Productos'})});let inv=d.invoice||{};setStatus(ch.toLowerCase()+'VentasStatus',`Borrador de factura creado: ${inv.cbte_tipo_label||''} ${inv.pto_vta||''}-BORRADOR`,true);showView('arca-reportes');loadArcaInvoices();if(inv.id){window.open(url('/admin/arca/facturas/'+inv.id+'/html'),'_blank')}}catch(e){setStatus(ch.toLowerCase()+'VentasStatus','Error facturando: '+JSON.stringify(e),false);showPre('arcaOut',e)}}
+function openInvoicePreview(ch,orderId){
+  if(!orderId){alert('No encontré ID de orden para preview.');return}
+  window.open(url(`/admin/arca/previews/${encodeURIComponent(ch)}/${encodeURIComponent(orderId)}/html`),'_blank');
+}
+async function createInvoiceDraft(ch,orderId){
+  if(!orderId){alert('No encontré ID de orden para facturar.');return}
+  if(!confirm(`Crear/actualizar borrador de factura para ${ch} ${orderId}?`))return;
+  setStatus(ch.toLowerCase()+'VentasStatus','Creando/actualizando borrador de factura...');
+  try{
+    let d=await fetchJson(`/admin/arca/orders/${encodeURIComponent(ch)}/${encodeURIComponent(orderId)}/draft`,{method:'POST',body:JSON.stringify({concept:'Productos'})});
+    let inv=d.invoice||{};
+    let msg=d.updated?'Borrador actualizado':(d.duplicate?'Ya estaba emitida':'Borrador creado');
+    setStatus(ch.toLowerCase()+'VentasStatus',`${msg}: ${inv.cbte_tipo_label||''} ${inv.pto_vta||''}-${inv.cbte_nro||'BORRADOR'} · ${inv.customer_name||''} · ${money(inv.importe_total)}`,true);
+    loadRecent(ch,state.sales[ch]?.offset||0);
+    loadArcaInvoices();
+    if(inv.id)window.open(url('/admin/arca/facturas/'+inv.id+'/html'),'_blank')
+  }catch(e){setStatus(ch.toLowerCase()+'VentasStatus','Error creando borrador: '+(e.message||JSON.stringify(e)),false);showPre('arcaOut',e)}
+}
+async function issueInvoiceFromSale(ch,orderId){
+  if(!orderId){alert('No encontré ID de orden para emitir.');return}
+  let ok=confirm(`Emitir comprobante REAL en ARCA para ${ch} ${orderId}?\n\nRevisá que el preview/borrador tenga receptor fiscal e importe correctos antes de aceptar.`);
+  if(!ok)return;
+  setStatus(ch.toLowerCase()+'VentasStatus','Emitiendo comprobante real en ARCA...');
+  try{
+    let d=await fetchJson(`/admin/arca/orders/${encodeURIComponent(ch)}/${encodeURIComponent(orderId)}/issue`,{method:'POST',body:JSON.stringify({concept:'Productos'})});
+    let inv=d.invoice||{};
+    setStatus(ch.toLowerCase()+'VentasStatus',`Emitida OK: ${inv.cbte_letra||''} ${String(inv.pto_vta||'').padStart(4,'0')}-${String(inv.cbte_nro||'').padStart(8,'0')} · CAE ${inv.cae||''}`,true);
+    loadRecent(ch,state.sales[ch]?.offset||0);
+    loadArcaInvoices();
+    if(inv.id)window.open(url('/admin/arca/facturas/'+inv.id+'/html'),'_blank')
+  }catch(e){setStatus(ch.toLowerCase()+'VentasStatus','Error emitiendo: '+(e.message||JSON.stringify(e)),false);showPre('arcaOut',e)}
+}
 
 let arcaManualSeq=0;
 function arcaManualInit(){
