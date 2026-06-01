@@ -18,33 +18,103 @@ main{margin-left:282px;width:calc(100% - 282px);padding:22px 26px 60px}.topbar{d
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}.card h3{margin:0 0 12px;font-size:18px}.card p{margin:6px 0;color:var(--muted)}label{display:block;font-size:12px;font-weight:800;color:#504b43;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
 input,select,textarea{width:100%;border:1px solid #cfc4ad;border-radius:12px;background:#fff;padding:10px 11px;font-size:14px;color:var(--ink);outline:none}button,.btn{border:0;border-radius:12px;background:var(--dark);color:#fff;padding:10px 13px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}button:hover,.btn:hover{background:#2b2b2b}.primary{background:var(--brand2);color:#111}.secondary{background:#fff;color:#111;border:1px solid var(--line)}.danger{background:var(--bad)}.ok{background:var(--ok)}.warn{background:var(--warn)}
 .btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.view{display:none}.view.active{display:block}.status{min-height:24px;color:var(--muted);margin-top:10px}.status.oktxt{color:var(--ok);font-weight:800}.status.badtxt{color:var(--bad);font-weight:800}.status.warntxt{color:var(--warn);font-weight:800}.small,.muted{font-size:12px;color:var(--muted)}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
-.stat{background:linear-gradient(180deg,#fffdf8,#f7f1e3);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}.stat .k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}.stat .v{font-size:28px;font-weight:900;margin-top:5px}.stat .s{font-size:12px;color:var(--muted);margin-top:3px}
+.stat{background:linear-gradient(180deg,#fffdf8,#f7f1e3);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}.stat .k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}.stat .v{font-size:28px;font-weight:900;margin-top:5px}.stat .s{font-size:12px;color:var(--muted);margin-top:3px}.dashHero{background:linear-gradient(135deg,#fffdf8,#efe3c5);border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}.dashHero h3{font-size:22px;margin:0 0 6px}.dashStat{position:relative;overflow:hidden}.dashStat.alert{border-left:6px solid var(--bad)}.dashStat.good{border-left:6px solid var(--ok)}.dashStat.warnline{border-left:6px solid var(--warn)}.dashBig{font-size:34px;font-weight:950;letter-spacing:-.03em}.dashMoney{font-size:20px;font-weight:900;margin-top:4px}.dashGridSmall{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}.dashMini{border:1px solid #eee2c8;background:#fffaf0;border-radius:14px;padding:10px}.dashMini b{display:block;font-size:18px}.dashList{display:grid;gap:8px}.dashItem{display:grid;grid-template-columns:90px 1fr auto;gap:10px;align-items:center;border:1px solid #eee2c8;border-radius:14px;background:#fff;padding:10px}.dashItem .small{line-height:1.35}.dashTable td,.dashTable th{font-size:12px}.dashRefresh{margin-left:auto}.dashStatusLine{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.dashEmpty{border:1px dashed var(--line);border-radius:16px;padding:18px;text-align:center;color:var(--muted);background:#fffaf0}
 table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;font-size:13px}th,td{border-bottom:1px solid #eee2c8;padding:8px 9px;text-align:left;vertical-align:top}th{background:#151515;color:#fff;position:sticky;top:0;z-index:1}.tableWrap{border:1px solid var(--line);border-radius:14px;overflow:auto;max-height:660px;background:#fff}.pill{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:800;background:#efe7d5;color:#453d31}.pill.ok{background:#ecfdf3;color:var(--ok)}.pill.bad{background:#fef3f2;color:var(--bad)}.pill.warn{background:#fff7ed;color:var(--warn)}.pill.info{background:#eef2ff;color:#3730a3}.pill.dark{background:#111;color:#fff}
 .orderCard{border:1px solid var(--line);border-radius:16px;background:#fff;margin:8px 0;overflow:hidden}.orderHead{padding:9px 14px;background:#fffaf0;border-bottom:1px solid #eee2c8;display:grid;grid-template-columns:1.15fr 1.25fr .9fr .8fr auto;gap:10px;align-items:center}.orderLines{padding:6px 14px}.lineItem{display:grid;grid-template-columns:170px 1fr 70px 90px 105px;gap:10px;padding:3px 0;border-bottom:1px dashed #eee2c8;align-items:center}.lineItem,.lineItem *{font-family:Inter,Arial,sans-serif!important;font-size:12px!important;line-height:1.18}.orderPayStatus{display:block;margin-left:0;color:var(--muted);font-size:12px}.shippingPill{margin-left:-10px;padding-left:10px!important;padding-right:10px!important}.invoiceAction{font-size:12px!important;padding:8px 10px!important}.lineItem:last-child{border-bottom:0}.movementSale{color:var(--bad);font-weight:800}.movementUpdate{color:#3730a3;font-weight:800}.movementManual{color:var(--warn);font-weight:800}.marketBox{display:grid;grid-template-columns:48px minmax(105px,1fr) minmax(78px,.8fr) 86px 76px 86px;gap:8px;align-items:center;margin-bottom:7px;padding:8px;border:1px solid #eee2c8;border-radius:12px;background:#fffaf0}.marketBox input{padding:7px 8px;border-radius:9px;font-size:12px}.marketBox .id{word-break:break-all;font-size:11px}.marketStatus{justify-content:center}.pill.inactive{background:var(--bad);color:#fff}.stockInput{width:88px}.priceInput{width:86px}.invStockBox{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap}.invStockBox input{width:88px}.inventoryPager{margin-top:12px}.inventoryTable{table-layout:fixed}.inventoryTable th:nth-child(1){width:145px}.inventoryTable th:nth-child(2){width:225px}.inventoryTable th:nth-child(3){width:170px}.inventoryTable td{overflow-wrap:anywhere}.inventoryWrap{overflow-x:hidden}.jobsPager{margin-top:12px}.limitSelect{max-width:120px}.shippingAction{display:block;margin-top:4px;font-size:12px}.shippingAction.pending{color:var(--bad);font-weight:900}.shippingAction.delivered{color:var(--ink);font-weight:400}.shippingAction.other{color:#3730a3;font-weight:900}.logisticsAction{display:block;margin-top:4px;color:var(--warn);font-size:12px;font-weight:900}.invoiceStatusIcon{font-size:22px;line-height:1;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:10px}.invoiceStatusIcon.issued{background:#ecfdf5;color:#047857}.invoiceStatusIcon.draft{background:#fff7ed;color:#b54708}.invoiceStatusIcon.none{background:#fff1f2;color:#b91c1c}.invoiceMiniWrap{display:flex;justify-content:flex-end;align-items:center}.invoiceMiniWrap a{text-decoration:none}.arcaFiscalName{font-weight:900;white-space:normal}.arcaCompactDoc{white-space:nowrap}.arcaActionsWrap{display:flex;gap:8px;align-items:center;justify-content:flex-end}.arcaStatusIconCell{font-size:18px;white-space:nowrap}.arcaUserCell{font-size:12px;color:var(--muted);white-space:nowrap}.arcaDateCell{white-space:nowrap}.arcaCbteCell{white-space:nowrap;line-height:1.35}.arcaChannelCell{white-space:nowrap}.orderLogisticsBlock{line-height:1.55}.actionSale{border-left:5px solid var(--bad);box-shadow:0 8px 18px rgba(181,71,8,.12)}.actionBadge{display:inline-flex;margin-top:4px;border-radius:999px;background:#fff7ed;color:var(--warn);font-size:11px;font-weight:900;padding:3px 7px}.hidden{display:none!important}pre{white-space:pre-wrap;background:#111;color:#f8f8f2;border-radius:14px;padding:14px;max-height:420px;overflow:auto;font-size:12px}details.kebabMenu{position:relative;display:inline-block}details.kebabMenu summary{list-style:none;cursor:pointer;border:1px solid var(--line);border-radius:10px;background:#fff;color:#111;font-weight:900;padding:8px 11px;line-height:1}details.kebabMenu summary::-webkit-details-marker{display:none}.kebabPanel{position:absolute;right:0;top:38px;z-index:50;min-width:210px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:8px;display:grid;gap:6px}.kebabPanel button{width:100%;justify-content:flex-start;background:#fff;color:#111;border:1px solid #eee2c8}.kebabPanel button:hover{background:#fffaf0}
 
 .erpBusyOverlay{position:fixed;inset:0;background:rgba(16,16,16,.58);z-index:9999;display:none;align-items:center;justify-content:center;padding:24px}.erpBusyOverlay.active{display:flex}.erpBusyBox{width:min(520px,92vw);background:#fffdf8;border:1px solid var(--line);border-radius:22px;box-shadow:0 22px 70px rgba(0,0,0,.35);padding:24px;text-align:center}.erpBusyTitle{font-size:20px;font-weight:900;margin-bottom:8px}.erpBusyMsg{color:var(--muted);font-size:14px;line-height:1.45}.erpSpinner{width:42px;height:42px;border-radius:50%;border:5px solid #eee2c8;border-top-color:var(--brand2);margin:0 auto 16px;animation:erpSpin .9s linear infinite}@keyframes erpSpin{to{transform:rotate(360deg)}}body.erpBusy button,body.erpBusy .btn,body.erpBusy summary{pointer-events:none;opacity:.72}.erpBusyOverlay button{pointer-events:auto;opacity:1}
 @media(max-width:1050px){aside{width:235px}main{margin-left:235px;width:calc(100% - 235px)}.col-2,.col-3,.col-4,.col-5,.col-6,.col-8{grid-column:span 12}.tokenBox{flex-wrap:wrap}.tokenBox input{width:220px}.orderHead,.lineItem,.marketBox{grid-template-columns:1fr}.tableWrap{max-height:none}}
 </style>
-<!-- REPORTES_ARCA_COMPACTO_FACTURA_V6 FRONTEND_1_22 -->
+<!-- DASHBOARD_OPERATIVO_FRONTEND_1_28 -->
 </head>
 <body>
 <div class="app">
 <aside>
 <div class="brand"><span class="brandMark">PC</span><h1>ERP</h1><p>Planeta Casa · operación diaria</p></div>
 <nav>
-<button class="navBtn active" data-view="inicio">⌂ Inicio</button><button class="navBtn" data-view="dashboard">▣ Dashboard</button><button class="navBtn" data-view="metricas">◈ Métricas</button>
+<button class="navBtn active" data-view="inicio">⌂ Inicio / Dashboard</button><button class="navBtn" data-view="metricas">◈ Métricas</button>
 <div class="navTitle">Mercado Libre</div><div class="sub"><button class="navBtn" data-view="ml-publicaciones">Publicaciones</button><button class="navBtn" data-view="ml-preguntas">Preguntas</button><button class="navBtn" data-view="ml-ventas">Ventas</button><button class="navBtn" data-view="ml-mensajes">Mensajes</button><button class="navBtn" data-view="ml-clientes">Clientes</button></div>
 <div class="navTitle">Tienda Nube</div><div class="sub"><button class="navBtn" data-view="tn-publicaciones">Publicaciones</button><button class="navBtn" data-view="tn-ventas">Ventas</button><button class="navBtn" data-view="tn-clientes">Clientes</button></div>
 <div class="navTitle">Mercado Pago</div><div class="sub"><button class="navBtn" data-view="mp-conciliacion">Conciliación futura</button></div>
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="manual-venta">Venta manual</button></div>
 <div class="navTitle">Gestión</div><div class="sub"><button class="navBtn" data-view="inventario">Inventario</button><button class="navBtn" data-view="movimientos">Ver movimientos de stock</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button><button class="navBtn" data-view="planilla-bajar">Bajar planilla</button><button class="navBtn" data-view="planilla-subir">Subir planilla</button><button class="navBtn" data-view="fallas">Reporte de fallas</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.27<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.28<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
-<section id="inicio" class="view active"><div class="grid"><div class="col-3 stat"><div class="k">TN auto</div><div class="v" id="stTn">?</div><div class="s">poll ventas</div></div><div class="col-3 stat"><div class="k">ML auto</div><div class="v" id="stMl">?</div><div class="s">poll ventas</div></div><div class="col-3 stat"><div class="k">WhatsApp</div><div class="v" id="stWa">?</div><div class="s">avisos internos</div></div><div class="col-3 stat"><div class="k">ERP</div><div class="v" id="stErp">OK</div><div class="s">estado general</div></div></div><div class="card"><h3>Accesos rápidos</h3><div class="btnrow"><button class="secondary" onclick="showView('ml-ventas')">Ventas ML</button><button class="secondary" onclick="showView('tn-ventas')">Ventas TN</button><button class="secondary" onclick="showView('inventario')">Inventario</button><button class="secondary" onclick="showView('movimientos')">Movimientos stock</button><button class="secondary" onclick="showView('manual-venta')">Venta manual</button><button class="secondary" onclick="showView('fallas')">Fallas / jobs</button></div><div id="homeStatus" class="status"></div></div></section>
-<section id="dashboard" class="view"><div class="card"><h3>Dashboard</h3><p>Reservado para resumen operativo.</p></div></section><section id="metricas" class="view"><div class="card"><h3>Métricas</h3><p>Reservado para margen, rotación y canales.</p></div></section>
+<section id="inicio" class="view active">
+  <div class="dashHero">
+    <div class="dashStatusLine">
+      <div>
+        <h3>Inicio / Dashboard</h3>
+        <p>Resumen operativo real: ventas, facturación y envíos. Sin horóscopo de endpoints.</p>
+      </div>
+      <button class="secondary dashRefresh" onclick="loadDashboard(true)">Actualizar</button>
+    </div>
+    <div id="homeStatus" class="status"></div>
+  </div>
+
+  <div class="grid">
+    <div class="col-3 stat dashStat alert">
+      <div class="k">Pendientes facturación</div>
+      <div class="v" id="dashPendingInvCount">?</div>
+      <div class="dashMoney" id="dashPendingInvAmount">$0</div>
+      <div class="s">ML + TN últimos 7 días</div>
+    </div>
+    <div class="col-3 stat dashStat good">
+      <div class="k">Ventas del día</div>
+      <div class="v" id="dashTodayCount">?</div>
+      <div class="dashMoney" id="dashTodayAmount">$0</div>
+      <div class="s" id="dashTodayDate">Argentina</div>
+    </div>
+    <div class="col-3 stat dashStat warnline">
+      <div class="k">Pendientes de envío</div>
+      <div class="v" id="dashShipCount">?</div>
+      <div class="dashMoney" id="dashShipAmount">$0</div>
+      <div class="s">por canal y logística</div>
+    </div>
+    <div class="col-3 stat dashStat">
+      <div class="k">ERP / ARCA</div>
+      <div class="v" id="stErp">OK</div>
+      <div class="s">Backend <span id="dashBackendVer">?</span></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="col-6 card">
+      <h3>Facturación pendiente</h3>
+      <div class="dashGridSmall">
+        <div class="dashMini"><span class="small">Mercado Libre</span><b id="dashInvML">?</b><span id="dashInvMLAmount" class="small">$0</span></div>
+        <div class="dashMini"><span class="small">Tienda Nube</span><b id="dashInvTN">?</b><span id="dashInvTNAmount" class="small">$0</span></div>
+      </div>
+      <div id="dashPendingInvList" class="dashList" style="margin-top:12px"></div>
+      <div class="btnrow" style="margin-top:12px"><button class="secondary" onclick="showView('arca-reportes')">Ir a ARCA reportes</button></div>
+    </div>
+
+    <div class="col-6 card">
+      <h3>Ventas de hoy</h3>
+      <div class="dashGridSmall">
+        <div class="dashMini"><span class="small">ML</span><b id="dashTodayML">?</b><span id="dashTodayMLAmount" class="small">$0</span></div>
+        <div class="dashMini"><span class="small">TN</span><b id="dashTodayTN">?</b><span id="dashTodayTNAmount" class="small">$0</span></div>
+      </div>
+      <div id="dashTodayList" class="dashList" style="margin-top:12px"></div>
+      <div class="btnrow" style="margin-top:12px"><button class="secondary" onclick="showView('ml-ventas')">Ventas ML</button><button class="secondary" onclick="showView('tn-ventas')">Ventas TN</button></div>
+    </div>
+
+    <div class="col-12 card">
+      <h3>Pendientes de envío por canal y tipo</h3>
+      <div id="dashShippingTable" class="tableWrap" style="max-height:360px"></div>
+      <div id="dashShippingList" class="dashList" style="margin-top:12px"></div>
+    </div>
+
+    <div class="col-12 card">
+      <h3>Accesos rápidos</h3>
+      <div class="btnrow"><button class="secondary" onclick="showView('ml-ventas')">Ventas ML</button><button class="secondary" onclick="showView('tn-ventas')">Ventas TN</button><button class="secondary" onclick="showView('inventario')">Inventario</button><button class="secondary" onclick="showView('movimientos')">Movimientos stock</button><button class="secondary" onclick="showView('manual-venta')">Venta manual</button><button class="secondary" onclick="showView('fallas')">Fallas / jobs</button></div>
+    </div>
+  </div>
+</section>
+<section id="dashboard" class="view"><div class="card"><h3>Dashboard</h3><p>El dashboard ahora vive en Inicio.</p><button class="primary" onclick="showView('inicio')">Abrir Inicio / Dashboard</button></div></section><section id="metricas" class="view"><div class="card"><h3>Métricas</h3><p>Reservado para margen, rotación y canales.</p></div></section>
 <section id="ml-ventas" class="view"><div class="card"><h3>Mercado Libre · Ventas capturadas</h3><div class="grid"><div class="col-8"><label>Buscar venta ML</label><input id="mlVentasSearch" oninput="debouncedSales('ML')" placeholder="Nombre, SKU, venta, orden API, envío ML, producto"></div><div class="col-2"><label>Mostrar</label><select id="mlVentasLimit" onchange="loadRecent('ML',0)"><option selected>20</option><option>40</option><option>50</option></select></div><div class="col-2"><label>&nbsp;</label><button class="secondary" onclick="clearSalesSearch('ML')">Limpiar</button></div></div><div id="mlVentasStatus" class="status"></div><div id="mlVentasTable" style="margin-top:12px"></div><div id="mlVentasPager" class="btnrow" style="margin-top:12px"></div></div></section>
 <section id="tn-ventas" class="view"><div class="card"><h3>Tienda Nube · Ventas capturadas</h3><div class="grid"><div class="col-8"><label>Buscar venta TN</label><input id="tnVentasSearch" oninput="debouncedSales('TN')" placeholder="Nombre, SKU, número de venta, orden, teléfono, producto"></div><div class="col-2"><label>Mostrar</label><select id="tnVentasLimit" onchange="loadRecent('TN',0)"><option selected>20</option><option>40</option><option>50</option></select></div><div class="col-2"><label>&nbsp;</label><button class="secondary" onclick="clearSalesSearch('TN')">Limpiar</button></div></div><div id="tnVentasStatus" class="status"></div><div id="tnVentasTable" style="margin-top:12px"></div><div id="tnVentasPager" class="btnrow" style="margin-top:12px"></div></div></section>
 <section id="ml-publicaciones" class="view"><div class="card"><h3>Mercado Libre · Publicaciones</h3><p>Vista solo lectura de publicaciones ML vinculadas al inventario. Para modificar stock/precio, usar Gestión · Inventario.</p><div class="grid"><div class="col-8"><label>Buscar publicación ML</label><input id="mlPubSearch" oninput="debouncedPublications('ML')" placeholder="SKU, producto, publicación, variante"></div><div class="col-2"><label>Mostrar</label><select id="mlPubLimit" onchange="loadPublications('ML',0,true)"><option selected>20</option><option>40</option><option>80</option><option>100</option></select></div><div class="col-2"><label>&nbsp;</label><button class="secondary" onclick="clearPubSearch('ML')">Limpiar</button></div></div><div id="mlPubStatus" class="status"></div><div id="mlPubResults" class="tableWrap inventoryWrap" style="margin-top:12px"></div><div id="mlPubPager" class="btnrow inventoryPager"></div></div></section><section id="tn-publicaciones" class="view"><div class="card"><h3>Tienda Nube · Publicaciones</h3><p>Vista solo lectura de publicaciones TN vinculadas al inventario. Para modificar stock/precio, usar Gestión · Inventario.</p><div class="grid"><div class="col-8"><label>Buscar publicación TN</label><input id="tnPubSearch" oninput="debouncedPublications('TN')" placeholder="SKU, producto, publicación, variante"></div><div class="col-2"><label>Mostrar</label><select id="tnPubLimit" onchange="loadPublications('TN',0,true)"><option selected>20</option><option>40</option><option>80</option><option>100</option></select></div><div class="col-2"><label>&nbsp;</label><button class="secondary" onclick="clearPubSearch('TN')">Limpiar</button></div></div><div id="tnPubStatus" class="status"></div><div id="tnPubResults" class="tableWrap inventoryWrap" style="margin-top:12px"></div><div id="tnPubPager" class="btnrow inventoryPager"></div></div></section>
@@ -67,9 +137,51 @@ function qs(id){return document.getElementById(id)}function apiBase(){return(qs(
 function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}function dateAR(x){if(!x)return'';try{return new Date(x).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short',hour12:false})}catch{return x}}function money(n){let x=Number(n||0);return x?('$'+Math.round(x).toLocaleString('es-AR')):''}function shortVer(v){let m=String(v||'').match(/\d+(?:\.\d+){1,3}/);return m?m[0]:String(v||'?')}function jsq(s){return String(s??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ')}
 function setStatus(id,msg,ok=null){let el=qs(id);if(!el)return;el.className='status '+(ok===true?'oktxt':ok===false?'badtxt':ok==='warn'?'warntxt':'');el.textContent=msg||''}function showPre(id,obj){let el=qs(id);el.classList.remove('hidden');el.textContent=typeof obj==='string'?obj:JSON.stringify(obj,null,2)}function setBusy(on,title='Procesando...',msg='No cierres esta pantalla.'){let ov=qs('erpBusyOverlay');if(!ov)return;document.body.classList.toggle('erpBusy',!!on);ov.classList.toggle('active',!!on);if(qs('erpBusyTitle'))qs('erpBusyTitle').textContent=title;if(qs('erpBusyMsg'))qs('erpBusyMsg').textContent=msg}function setArcaAndSalesStatus(ch,msg,ok=null){setStatus('arcaStatus',msg,ok);setStatus(String(ch||'').toLowerCase()+'VentasStatus',msg,ok)}
 function saveSettings(){state.api=apiBase();state.token=token();localStorage.setItem('pc_erp_api',state.api);localStorage.setItem('pc_erp_token',state.token);setStatus('homeStatus','Guardado.',true);syncLinks()}function loadSettings(){state.api=localStorage.getItem('pc_erp_api')||state.api;state.token=localStorage.getItem('pc_erp_token')||'';qs('apiUrl').value=state.api;qs('token').value=state.token;loadViewPrefs();loadConfig();syncLinks()}function syncLinks(){let d=qs('downloadCsv');if(d)d.href=url('/erp/export_inventory')}function prefKey(section,key){return `pc_erp_pref_${section}_${key}`}function saveViewPref(section,key,value){localStorage.setItem(prefKey(section,key),String(value??''))}function loadViewPrefs(){let jl=localStorage.getItem(prefKey('jobs','limit'));if(jl&&qs('jobsLimit'))qs('jobsLimit').value=jl;let ml=localStorage.getItem(prefKey('ventas_ml','limit'));if(ml&&qs('mlVentasLimit'))qs('mlVentasLimit').value=ml;let tl=localStorage.getItem(prefKey('ventas_tn','limit'));if(tl&&qs('tnVentasLimit'))qs('tnVentasLimit').value=tl;let il=localStorage.getItem(prefKey('inventario','limit'));if(il&&qs('invLimit'))qs('invLimit').value=il;let mpl=localStorage.getItem(prefKey('publicaciones_ml','limit'));if(mpl&&qs('mlPubLimit'))qs('mlPubLimit').value=mpl;let tpl=localStorage.getItem(prefKey('publicaciones_tn','limit'));if(tpl&&qs('tnPubLimit'))qs('tnPubLimit').value=tpl}
-function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));qs(id).classList.add('active');document.querySelectorAll('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.view===id));let b=document.querySelector(`.navBtn[data-view="${id}"]`);qs('pageTitle').textContent=b?b.textContent.trim():'ERP';qs('pageCrumb').textContent='Planeta Casa · '+qs('pageTitle').textContent;if(id==='movimientos')loadMovements();if(id==='ml-ventas')loadRecent('ML',state.sales.ML.offset||0);if(id==='tn-ventas')loadRecent('TN',state.sales.TN.offset||0);if(id==='ml-publicaciones')loadPublications('ML',state.publications.ML.offset||0);if(id==='tn-publicaciones')loadPublications('TN',state.publications.TN.offset||0);if(id==='arca-reportes'){initArcaDates();loadArcaInvoices()}if(id==='arca-manual'){arcaManualInit()}if(id==='inventario'&&!state.inventoryItems.length)searchInventory(state.inventory.offset||0)}document.addEventListener('click',e=>{let b=e.target.closest('.navBtn[data-view]');if(b)showView(b.dataset.view)});
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));qs(id).classList.add('active');document.querySelectorAll('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.view===id));let b=document.querySelector(`.navBtn[data-view="${id}"]`);qs('pageTitle').textContent=b?b.textContent.trim():'ERP';qs('pageCrumb').textContent='Planeta Casa · '+qs('pageTitle').textContent;if(id==='inicio')loadDashboard();if(id==='dashboard')loadDashboard();if(id==='movimientos')loadMovements();if(id==='ml-ventas')loadRecent('ML',state.sales.ML.offset||0);if(id==='tn-ventas')loadRecent('TN',state.sales.TN.offset||0);if(id==='ml-publicaciones')loadPublications('ML',state.publications.ML.offset||0);if(id==='tn-publicaciones')loadPublications('TN',state.publications.TN.offset||0);if(id==='arca-reportes'){initArcaDates();loadArcaInvoices()}if(id==='arca-manual'){arcaManualInit()}if(id==='inventario'&&!state.inventoryItems.length)searchInventory(state.inventory.offset||0)}document.addEventListener('click',e=>{let b=e.target.closest('.navBtn[data-view]');if(b)showView(b.dataset.view)});
 async function fetchJson(path,opt={}){let r=await fetch(url(path),{...opt,headers:{'Content-Type':'application/json',...(opt.headers||{})}});let txt=await r.text();let data;try{data=JSON.parse(txt)}catch{data={ok:r.ok,text:txt}}if(!r.ok)throw data;return data}async function fetchText(path,opt={}){let r=await fetch(url(path),opt);let txt=await r.text();if(!r.ok)throw txt;return txt}
-async function health(){try{let d=await fetchJson('/health');qs('stTn').textContent=d.tn_auto_poll_enabled?'ON':'OFF';qs('stMl').textContent=d.ml_auto_poll_enabled?'ON':'OFF';qs('stWa').textContent=d.whatsapp_admin_configurado?'OK':'NO';if(qs('footBackendVer'))qs('footBackendVer').textContent=shortVer(d.version||'?');if(qs('stErp'))qs('stErp').textContent='OK';setStatus('homeStatus','Backend OK',true)}catch(e){setStatus('homeStatus','Error health: '+JSON.stringify(e),false)}}
+async function health(){try{let d=await fetchJson('/admin/arca/status');let v=d.version||d.backend_version||'?';if(qs('footBackendVer'))qs('footBackendVer').textContent=shortVer(v);if(qs('dashBackendVer'))qs('dashBackendVer').textContent=shortVer(v);if(qs('stErp'))qs('stErp').textContent='OK';setStatus('homeStatus','Backend ERP OK · ARCA '+(d.auto_invoice_enabled?'AUTO ON':'AUTO OFF'),true);loadDashboard();return d}catch(e){setStatus('homeStatus','Error ERP status: '+JSON.stringify(e),false)}}
+function dashMoney(n){return money(Number(n||0))||'$0'}
+function dashSet(id,val){let el=qs(id);if(el)el.textContent=val}
+function dashChannelBox(obj,ch){return (obj&&obj.channels&&obj.channels[ch])?obj.channels[ch]:{count:0,total_amount:0,items:[],types:{}}}
+function dashInvChannelBox(obj,ch){return (obj&&obj.channels&&obj.channels[ch])?obj.channels[ch]:{count:0,total_amount:0,items:[]}}
+function dashMiniItem(it){let num=it.sale_number||it.external_order_id||'';let ch=it.channel||'';let cust=it.customer_name||'Sin nombre';let amt=dashMoney(it.total);return `<div class="dashItem"><div><span class="pill ${ch==='ML'?'info':'ok'}">${esc(ch)}</span></div><div><strong>${esc(num)}</strong><br><span class="small">${esc(cust)} · ${dateAR(it.created_at)}</span></div><div><strong>${amt}</strong></div></div>`}
+function dashShippingRows(p){let rows=[];let chs=p.channels||{};Object.keys(chs).forEach(ch=>{let types=chs[ch].types||{};Object.keys(types).forEach(t=>{rows.push({channel:ch,type:t,count:types[t].count||0,total:types[t].total_amount||0})})});rows.sort((a,b)=>a.channel.localeCompare(b.channel)||b.count-a.count);if(!rows.length)return '<div class="dashEmpty">Sin pendientes de envío en la ventana actual.</div>';return `<table class="dashTable"><thead><tr><th>Canal</th><th>Tipo de envío</th><th>Cantidad</th><th>Importe</th></tr></thead><tbody>${rows.map(r=>`<tr><td><span class="pill ${r.channel==='ML'?'info':'ok'}">${esc(r.channel)}</span></td><td><strong>${esc(r.type)}</strong></td><td>${esc(r.count)}</td><td>${dashMoney(r.total)}</td></tr>`).join('')}</tbody></table>`}
+async function loadDashboard(force=false){
+  if(loadDashboard.loading&&!force)return;
+  loadDashboard.loading=true;
+  setStatus('homeStatus','Actualizando dashboard...');
+  try{
+    let d=await fetchJson('/admin/dashboard/summary?invoice_hours=168&shipping_days=14');
+    let v=d.version||'?';
+    dashSet('dashBackendVer',shortVer(v));dashSet('footBackendVer',shortVer(v));
+    if(qs('stErp'))qs('stErp').textContent='OK';
+    let pi=d.pending_invoices||{};
+    dashSet('dashPendingInvCount',pi.count??0);dashSet('dashPendingInvAmount',dashMoney(pi.total_amount));
+    let mlInv=dashInvChannelBox(pi,'ML'),tnInv=dashInvChannelBox(pi,'TN');
+    dashSet('dashInvML',mlInv.count||0);dashSet('dashInvMLAmount',dashMoney(mlInv.total_amount));
+    dashSet('dashInvTN',tnInv.count||0);dashSet('dashInvTNAmount',dashMoney(tnInv.total_amount));
+    let invList=qs('dashPendingInvList');if(invList)invList.innerHTML=(pi.items||[]).length?(pi.items||[]).slice(0,8).map(dashMiniItem).join(''):'<div class="dashEmpty">No hay ventas pendientes de facturación.</div>';
+    let td=d.today||{};
+    dashSet('dashTodayCount',td.count??0);dashSet('dashTodayAmount',dashMoney(td.total_amount));dashSet('dashTodayDate','Día AR '+(td.date_ar||''));
+    let mlT=dashChannelBox(td,'ML'),tnT=dashChannelBox(td,'TN');
+    dashSet('dashTodayML',mlT.count||0);dashSet('dashTodayMLAmount',dashMoney(mlT.total_amount));
+    dashSet('dashTodayTN',tnT.count||0);dashSet('dashTodayTNAmount',dashMoney(tnT.total_amount));
+    let todayList=qs('dashTodayList');if(todayList)todayList.innerHTML=(td.items||[]).length?(td.items||[]).slice(0,8).map(dashMiniItem).join(''):'<div class="dashEmpty">Todavía no hay ventas hoy.</div>';
+    let ps=d.pending_shipping||{};
+    dashSet('dashShipCount',ps.count??0);dashSet('dashShipAmount',dashMoney(ps.total_amount));
+    let st=qs('dashShippingTable');if(st)st.innerHTML=dashShippingRows(ps);
+    let sl=qs('dashShippingList');if(sl)sl.innerHTML=(ps.items||[]).length?(ps.items||[]).slice(0,10).map(it=>`<div class="dashItem"><div><span class="pill ${it.channel==='ML'?'info':'ok'}">${esc(it.channel)}</span></div><div><strong>${esc(it.sale_number||it.external_order_id||'')}</strong><br><span class="small">${esc(it.customer_name||'')} · ${esc(it.logistic_type||'')} · ${esc(it.shipping_status||'')}</span></div><div><strong>${dashMoney(it.total)}</strong></div></div>`).join(''):'<div class="dashEmpty">No hay ventas pendientes de envío.</div>';
+    let poll=d.pollers||{};
+    // Los boxes viejos ya no se muestran, pero quedan por compatibilidad si existen.
+    if(qs('stTn'))qs('stTn').textContent=poll.tn_auto_poll_enabled?'ON':'OFF';
+    if(qs('stMl'))qs('stMl').textContent=poll.ml_auto_poll_enabled?'ON':'OFF';
+    if(qs('stWa'))qs('stWa').textContent=poll.whatsapp_admin_configurado?'OK':'NO';
+    setStatus('homeStatus','Dashboard actualizado · '+dateAR(d.generated_at),true);
+  }catch(e){
+    console.error('loadDashboard',e);
+    setStatus('homeStatus','Error dashboard: '+(e.message||JSON.stringify(e)),false);
+  }finally{loadDashboard.loading=false;}
+}
 function logisticLabel(o,ch){
   if(ch==='TN'){
     let opt=o.shipping_option||o.tn_shipping_option||'';
