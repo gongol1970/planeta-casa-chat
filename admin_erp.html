@@ -4,14 +4,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NEXIA · Planeta Casa</title>
+<title>Planeta Casa ERP</title>
 <!-- ARCA_VENTAS_INVOICE_LOGISTICS_VIEW_V14 -->
-<link rel="icon" href="./favicon_nexia.png?v=1" />
+<link rel="icon" href="./ERP.png" />
 <style>
 :root{--bg:#f2f0eb;--surface:#fffdf8;--surface2:#f8f4ea;--ink:#171717;--muted:#6b665c;--line:#ded4be;--brand:#dcc58f;--brand2:#cdb272;--dark:#101010;--ok:#067647;--bad:#b42318;--warn:#b54708;--shadow:0 10px 30px rgba(17,17,17,.08);--radius:18px}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif;font-size:14px}.app{display:flex;min-height:100vh}
 aside{position:fixed;left:0;top:0;bottom:0;width:282px;background:linear-gradient(180deg,#101010,#191919);color:#fff;display:flex;flex-direction:column;z-index:20;box-shadow:8px 0 28px rgba(0,0,0,.18)}
-.brand{padding:22px 18px 16px;border-bottom:1px solid rgba(220,197,143,.25)}.brandTop{display:grid;grid-template-columns:46px 1fr auto;gap:12px;align-items:center}.appMark{width:46px;height:46px;border-radius:50%;background:#fff;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 0 1px rgba(220,197,143,.35)}.appMark img{width:100%;height:100%;object-fit:cover;display:block}.brandName{font-size:22px;font-weight:950;letter-spacing:.02em;color:#fff;line-height:1}.brandTenantLogo{min-width:58px;max-width:86px;height:42px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(220,197,143,.25);display:flex;align-items:center;justify-content:center;padding:5px;color:#d8d0c0;font-size:10px;font-weight:900}.brandTenantLogo.hasLogo{background:#fff}.brandTenantLogo img{max-width:76px;max-height:32px;object-fit:contain;display:block}.brand p{margin:12px 0 0;color:#d8d0c0;font-size:12px}.configLogoPreview{min-height:96px;border:1px dashed var(--line);border-radius:16px;background:#fffaf0;display:flex;align-items:center;justify-content:center;padding:14px}.configLogoPreview.hasLogo{border-style:solid;background:#fff}.configLogoPreview img{max-width:260px;max-height:86px;object-fit:contain}.logoPlaceholder{width:82px;height:82px;border-radius:18px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:28px;color:#111}.configHint{font-size:12px;color:var(--muted);line-height:1.45}.dividerLine{height:1px;background:var(--line);margin:12px 0}
+.brand{padding:24px 22px 18px;border-bottom:1px solid rgba(220,197,143,.25)}.brandMark{width:42px;height:42px;border-radius:14px;background:var(--brand);display:inline-flex;align-items:center;justify-content:center;color:#111;font-weight:900;margin-right:10px;vertical-align:middle}.brand h1{display:inline-block;margin:0;vertical-align:middle;font-size:20px}.brand p{margin:10px 0 0;color:#d8d0c0;font-size:12px}.brandMark.hasLogo{background:transparent;border-radius:0;width:auto;min-width:42px;box-shadow:none}.brandMark.hasLogo img{display:block;max-width:92px;max-height:42px;object-fit:contain;border-radius:0}.configLogoPreview{min-height:96px;border:1px dashed var(--line);border-radius:16px;background:#fffaf0;display:flex;align-items:center;justify-content:center;padding:14px}.configLogoPreview.hasLogo{border-style:solid;background:#fff}.configLogoPreview img{max-width:260px;max-height:86px;object-fit:contain}.logoPlaceholder{width:82px;height:82px;border-radius:18px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:28px;color:#111}.configHint{font-size:12px;color:var(--muted);line-height:1.45}.dividerLine{height:1px;background:var(--line);margin:12px 0}
 nav{padding:14px 12px;overflow:auto;flex:1}.navBtn,.navTitle{width:100%;border:0;background:transparent;color:#eee;display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;text-align:left;cursor:pointer;font-weight:700}.navTitle{color:#d5c6a2;font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-top:8px;cursor:default}.navBtn:hover{background:rgba(220,197,143,.11)}.navBtn.active{background:var(--brand);color:#111}.sub{margin-left:12px;border-left:1px solid rgba(220,197,143,.22);padding-left:8px}.sub .navBtn{font-weight:600;color:#e8e2d4;padding:9px 10px;font-size:13px}.sub .navBtn.active{color:#111}.sidebarFoot{padding:10px 18px;border-top:1px solid rgba(220,197,143,.25);font-size:11px;line-height:1.35;color:#cfc7ba}
 main{margin-left:282px;width:calc(100% - 282px);padding:22px 26px 60px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}.topbar h2{margin:0;font-size:26px}.crumb{color:var(--muted);font-size:13px;margin-top:4px}.tokenBox{display:flex;gap:8px;align-items:end;background:var(--surface);padding:12px;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}.tokenBox input{width:270px}
 .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.col-2{grid-column:span 2}.col-3{grid-column:span 3}.col-4{grid-column:span 4}.col-5{grid-column:span 5}.col-6{grid-column:span 6}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
@@ -30,12 +30,12 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 
 @media(max-width:1050px){aside{width:235px}main{margin-left:235px;width:calc(100% - 235px)}.col-2,.col-3,.col-4,.col-5,.col-6,.col-8{grid-column:span 12}.tokenBox{flex-wrap:wrap}.tokenBox input{width:220px}.orderHead,.lineItem,.marketBox{grid-template-columns:1fr}.tableWrap{max-height:none}}
 </style>
-<!-- ML_QUESTIONS_CACHE_SHIPPING_ME_FIX_FRONTEND_1_32 -->
+<!-- ML_QUESTIONS_MANUAL_FRONTEND_1_34 -->
 </head>
 <body>
 <div class="app">
 <aside>
-<div class="brand"><div class="brandTop"><span class="appMark"><img src="./favicon_nexia.png?v=1" alt="NEXIA"></span><div class="brandName">NEXIA</div><div class="brandTenantLogo" id="brandTenantLogo">LOGO</div></div><p>Planeta Casa · operación diaria</p></div>
+<div class="brand"><span class="brandMark">PC</span><h1>ERP</h1><p>Planeta Casa · operación diaria</p></div>
 <nav>
 <button class="navBtn active" data-view="inicio">⌂ Inicio / Dashboard</button><button class="navBtn" data-view="metricas">◈ Métricas</button>
 <div class="navTitle">Mercado Libre</div><div class="sub"><button class="navBtn" data-view="ml-publicaciones">Publicaciones</button><button class="navBtn" data-view="ml-preguntas">Preguntas</button><button class="navBtn" data-view="ml-ventas">Ventas</button><button class="navBtn" data-view="ml-mensajes">Mensajes</button><button class="navBtn" data-view="ml-clientes">Clientes</button></div>
@@ -44,7 +44,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="manual-venta">Venta manual</button></div>
 <div class="navTitle">Gestión</div><div class="sub"><button class="navBtn" data-view="inventario">Inventario</button><button class="navBtn" data-view="movimientos">Ver movimientos de stock</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button><button class="navBtn" data-view="planilla-bajar">Bajar planilla</button><button class="navBtn" data-view="planilla-subir">Subir planilla</button><button class="navBtn" data-view="fallas">Reporte de fallas</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.33<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.34<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
@@ -133,7 +133,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <section id="planilla-bajar" class="view"><div class="card"><h3>Gestión · Bajar planilla</h3><a class="btn primary" id="downloadCsv" href="#">Descargar inventario CSV</a></div></section><section id="planilla-subir" class="view"><div class="card"><h3>Gestión · Subir planilla</h3><input type="file" id="csvFile" accept=".csv"><div class="btnrow" style="margin-top:12px"><button onclick="uploadCsv()">Subir CSV</button></div><pre id="uploadOut" class="hidden"></pre></div></section>
 <section id="fallas" class="view"><div class="card"><h3>Gestión · Monitor de sync_jobs</h3><p>Solo monitoreo. La ejecución de jobs queda a cargo del autosync del ERP.</p><div class="grid"><div class="col-2"><label>Cantidad visible</label><select id="jobsLimit" class="limitSelect" onchange="loadSyncJobs(0,true)"><option>20</option><option>50</option><option selected>100</option><option>200</option></select></div><div class="col-2"><label>&nbsp;</label><button onclick="loadSyncJobs(0,true)">Actualizar</button></div></div><div id="jobsStatus" class="status"></div><div id="jobsTable" class="tableWrap" style="margin-top:12px"></div><div id="jobsPager" class="btnrow jobsPager"></div><pre id="jobsOut" class="hidden"></pre></div></section>
 
-<section id="configuracion" class="view"><div class="card"><h3>Configuración</h3><p>Preparado para SaaS: empresa, datos fiscales, logo, preferencias de factura y ARCA. Por ahora guarda localmente el logo en este navegador; después lo conectamos a tabla <span class="mono">erp_company_settings</span>.</p><div class="grid"><div class="col-6"><label>Nombre fantasía</label><input id="cfgNombreFantasia" placeholder="Planeta Casa"></div><div class="col-6"><label>Razón social</label><input id="cfgRazonSocial" placeholder="La Salvia Gonzalo Martin"></div><div class="col-3"><label>CUIT</label><input id="cfgCuit" placeholder="23214771659"></div><div class="col-3"><label>Condición IVA</label><input id="cfgCondIva" placeholder="Responsable Inscripto"></div><div class="col-3"><label>Punto venta ARCA</label><input id="cfgPtoVta" placeholder="0006"></div><div class="col-3"><label>Ambiente ARCA</label><select id="cfgArcaEnv"><option value="homologacion">Homologación</option><option value="produccion">Producción</option></select></div><div class="col-12"><label>Domicilio comercial</label><input id="cfgDomicilio" placeholder="Domicilio fiscal/comercial"></div></div><div class="dividerLine"></div><div class="grid"><div class="col-6"><h3>Logo / branding</h3><label>URL pública del logo</label><input id="cfgLogoUrl" placeholder="https://.../logo.png" oninput="previewConfigLogo()"><div class="btnrow" style="margin-top:10px"><label class="btn secondary" style="margin:0;text-transform:none;letter-spacing:0;color:#111">Cargar archivo<input id="cfgLogoFile" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display:none" onchange="loadLogoFile(event)"></label><button class="secondary" onclick="clearLogoConfig()">Quitar logo</button></div><p class="configHint">Cuando hay logo, se muestra como logo de la empresa/tenant en el menú. NEXIA queda como marca de la app; el logo de la empresa queda separado para factura y operación.</p></div><div class="col-6"><label>Vista previa</label><div id="cfgLogoPreview" class="configLogoPreview"><div class="logoPlaceholder">LOGO</div></div><div id="cfgStatus" class="status"></div></div></div><div class="dividerLine"></div><div class="grid"><div class="col-4"><label>Facturación automática</label><select id="cfgAutoInvoice"><option value="false">OFF</option><option value="true">ON</option></select></div><div class="col-4"><label>Concepto default</label><select id="cfgConcepto"><option>Productos</option><option>Servicios</option><option>Productos y Servicios</option></select></div><div class="col-4"><label>Logo factura</label><input id="cfgLogoFactura" placeholder="Usar mismo logo del ERP" readonly></div></div><div class="dividerLine"></div><div class="btnrow" style="justify-content:flex-end"><button class="secondary" onclick="health()">Probar conexión</button><button class="primary" onclick="saveConfig()">Guardar configuración</button></div></div></section>
+<section id="configuracion" class="view"><div class="card"><h3>Configuración</h3><p>Preparado para SaaS: empresa, datos fiscales, logo, preferencias de factura y ARCA. Por ahora guarda localmente el logo en este navegador; después lo conectamos a tabla <span class="mono">erp_company_settings</span>.</p><div class="grid"><div class="col-6"><label>Nombre fantasía</label><input id="cfgNombreFantasia" placeholder="Planeta Casa"></div><div class="col-6"><label>Razón social</label><input id="cfgRazonSocial" placeholder="La Salvia Gonzalo Martin"></div><div class="col-3"><label>CUIT</label><input id="cfgCuit" placeholder="23214771659"></div><div class="col-3"><label>Condición IVA</label><input id="cfgCondIva" placeholder="Responsable Inscripto"></div><div class="col-3"><label>Punto venta ARCA</label><input id="cfgPtoVta" placeholder="0006"></div><div class="col-3"><label>Ambiente ARCA</label><select id="cfgArcaEnv"><option value="homologacion">Homologación</option><option value="produccion">Producción</option></select></div><div class="col-12"><label>Domicilio comercial</label><input id="cfgDomicilio" placeholder="Domicilio fiscal/comercial"></div></div><div class="dividerLine"></div><div class="grid"><div class="col-6"><h3>Logo / branding</h3><label>URL pública del logo</label><input id="cfgLogoUrl" placeholder="https://.../logo.png" oninput="previewConfigLogo()"><div class="btnrow" style="margin-top:10px"><label class="btn secondary" style="margin:0;text-transform:none;letter-spacing:0;color:#111">Cargar archivo<input id="cfgLogoFile" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display:none" onchange="loadLogoFile(event)"></label><button class="secondary" onclick="clearLogoConfig()">Quitar logo</button></div><p class="configHint">Cuando hay logo, se reemplaza el recuadro actual “PC” del menú por la imagen. Para la factura real, después guardamos esta URL en backend/configuración de empresa.</p></div><div class="col-6"><label>Vista previa</label><div id="cfgLogoPreview" class="configLogoPreview"><div class="logoPlaceholder">PC</div></div><div id="cfgStatus" class="status"></div></div></div><div class="dividerLine"></div><div class="grid"><div class="col-4"><label>Facturación automática</label><select id="cfgAutoInvoice"><option value="false">OFF</option><option value="true">ON</option></select></div><div class="col-4"><label>Concepto default</label><select id="cfgConcepto"><option>Productos</option><option>Servicios</option><option>Productos y Servicios</option></select></div><div class="col-4"><label>Logo factura</label><input id="cfgLogoFactura" placeholder="Usar mismo logo del ERP" readonly></div></div><div class="dividerLine"></div><div class="btnrow" style="justify-content:flex-end"><button class="secondary" onclick="health()">Probar conexión</button><button class="primary" onclick="saveConfig()">Guardar configuración</button></div></div></section>
 </main></div>
 <div id="erpBusyOverlay" class="erpBusyOverlay"><div class="erpBusyBox"><div class="erpSpinner"></div><div id="erpBusyTitle" class="erpBusyTitle">Procesando...</div><div id="erpBusyMsg" class="erpBusyMsg">No cierres esta pantalla.</div></div></div>
 <script>
@@ -251,59 +251,28 @@ function channelCustomerHtml(o,ch){
   if(loc)sub.push(loc);
   return `<strong>${esc(displayName)}</strong>${sub.length?`<br><span class="small">${esc(sub.join(' · '))}</span>`:''}`;
 }
-function rawObj(o){
-  let r=o.raw_data||o.raw||o.rawData||{};
-  if(typeof r==='string'){
-    try{return JSON.parse(r)}catch{return {}}
-  }
-  return r&&typeof r==='object'?r:{};
-}
-function deepVal(obj,path){
-  try{return path.split('.').reduce((a,k)=>a&&a[k]!==undefined?a[k]:undefined,obj)}catch{return undefined}
-}
-function firstText(vals){
-  for(let v of vals){
-    if(v===undefined||v===null)continue;
-    if(Array.isArray(v))v=v.join(' ');
-    let s=String(v).trim();
-    if(s)return s;
+function deepShippingBlob(obj,depth=0){
+  if(!obj||depth>5)return '';
+  if(typeof obj==='string'||typeof obj==='number'||typeof obj==='boolean')return String(obj).toLowerCase();
+  if(Array.isArray(obj))return obj.map(x=>deepShippingBlob(x,depth+1)).join(' ');
+  if(typeof obj==='object'){
+    let keys=['ml_shipping_substatus','shipping_substatus','substatus','sub_status','status','ml_shipping_status','shipping_status','logistic_type','ml_shipping_logistic_type','mode','shipping_option','tags','ml_shipping_last_snapshot','shipment','shipping','raw_data'];
+    let out=[];
+    for(let k of keys){ if(obj[k]!==undefined&&obj[k]!==null) out.push(deepShippingBlob(obj[k],depth+1)); }
+    return out.join(' ');
   }
   return '';
 }
-function shippingStatusText(o){
-  let r=rawObj(o);
-  return firstText([
-    o.shipping_status,o.tn_shipping_status,o.ml_shipping_status,o.fulfillment_status,o.delivery_status,
-    o.status_shipping,o.shipment_status,
-    deepVal(r,'shipping.status'),deepVal(r,'shipment.status'),deepVal(r,'shipping_status'),
-    deepVal(r,'order.shipping.status'),deepVal(r,'logistic.status')
-  ]).toLowerCase();
-}
-function shippingSubstatusText(o){
-  let r=rawObj(o);
-  return firstText([
-    o.ml_shipping_substatus,o.shipping_substatus,o.substatus,o.shipment_substatus,
-    deepVal(r,'shipping.substatus'),deepVal(r,'shipment.substatus'),deepVal(r,'shipping_substatus'),
-    deepVal(r,'order.shipping.substatus'),deepVal(r,'logistic.substatus')
-  ]).toLowerCase();
-}
 function shippingStateLabel(o,ch){
   let logistic=logisticLabel(o,ch);
-  let raw=shippingStatusText(o);
-  let sub=shippingSubstatusText(o);
+  let raw=String(o.shipping_status||o.tn_shipping_status||o.ml_shipping_status||o.fulfillment_status||o.delivery_status||'').toLowerCase();
+  let sub=String(o.ml_shipping_substatus||o.shipping_substatus||'').toLowerCase();
   let opt=String(o.shipping_option||o.tn_shipping_option||'');
-  let blob=(raw+' '+sub+' '+opt.toLowerCase()).trim();
-
+  let blob=(raw+' '+sub+' '+opt.toLowerCase()+' '+deepShippingBlob(o)).trim();
   if(blob.includes('cancel'))return 'Cancelado';
   if(blob.includes('delivered'))return 'Entregado';
-
-  // Mercado Libre puede mantener status=ready_to_ship aunque el paquete ya fue retirado.
-  // En ese caso manda substatus=picked_up: para el vendedor ya está en camino, no hay acción pendiente.
-  if(sub.includes('picked_up')||blob.includes('shipped')||blob.includes('in_transit')||blob.includes('in_route')||blob.includes('on_the_way'))return 'En camino';
-
-  // No tocar comportamiento FULL/FLEX: Full queda como bodega; Flex conserva su lógica propia.
-  if(logistic==='FULL'&&(blob.includes('ready_to_ship')||blob.includes('pending')||blob.includes('handling')||blob.includes('packed')))return 'Procesando en bodega';
-
+  if(blob.includes('picked_up')||blob.includes('shipped')||blob.includes('in_transit')||blob.includes('in_route')||blob.includes('on_the_way'))return 'En camino';
+  if(logistic==='FULL'&&(blob.includes('ready_to_ship')||blob.includes('pending')||blob.includes('handling')))return 'Procesando en bodega';
   if(blob.includes('ready_to_ship'))return 'Listo para despachar';
   if(blob.includes('not_shipped')||blob.includes('unpacked')||blob.includes('unfulfilled'))return 'Sin despachar';
   if(blob.includes('pending'))return 'Pendiente';
@@ -351,7 +320,7 @@ function orderCard(o,ch){
   let actionHtml=act?`<span class="logisticsAction">${esc(act)}</span>`:'';
   let totalSub=o.total_products&&Number(o.total_products)!==Number(o.total)?`<br><span class="small">Productos: ${money(o.total_products)}</span>`:'';
   let logisticClass=logistic==='FULL'?'dark':logistic==='FLEX'?'ok':logistic==='Sin envío'?'warn':'info';
-  let needsVisualAction=!!act;
+  let needsVisualAction=!!act || stateCls==='pending';
   return `<div class="orderCard ${needsVisualAction?'actionSale':''}"><div class="orderHead"><div><strong>${esc(orderNumber(o,ch))}</strong>${sub?`<br><span class="small">${sub}</span>`:''}<br><span class="small">${dateAR(o.display_created_at||o.created_at||o.ml_date_created)}</span></div><div>${channelCustomerHtml(o,ch)}</div><div class="orderLogisticsBlock"><span class="pill ${logisticClass} shippingPill">${esc(logistic)}</span><br><span class="orderPayStatus">${esc(orderStatusLabel(o,ch))}</span>${stateHtml}${actionHtml}</div><div><strong>${money(o.total)}</strong>${totalSub}<br><span class="small">${countLabel(lines.length)}</span></div><div>${invoiceButton(o,ch)}</div></div><div class="orderLines">${display}</div></div>`
 }
 
@@ -383,24 +352,7 @@ async function loadPublications(market,offset=0,savePref=false){let key=market==
 
 function listingStatusLabel(st){let s=String(st||'').toLowerCase();if(s.includes('active'))return 'Activa';if(s.includes('paused')||s.includes('pause'))return 'Pausada';if(s.includes('inactive'))return 'Inactiva';return st||'-'}
 function listingStatusClass(st){let s=String(st||'').toLowerCase();if(s.includes('active'))return 'ok';if(s.includes('paused')||s.includes('pause'))return 'warn';if(s.includes('inactive'))return 'inactive';return 'info'}
-function saleNeedsAction(o,ch){
-  let logistic=logisticLabel(o,ch);
-  let state=shippingStateLabel(o,ch).toLowerCase();
-  let raw=shippingStatusText(o);
-  let sub=shippingSubstatusText(o);
-
-  if(state.includes('entregado')||state.includes('en camino')||state.includes('procesando')||state.includes('cancelado'))return '';
-  if(logistic==='FULL')return '';
-
-  // No inventar acción para Mercado Envíos si ML ya tiene el paquete o si el estado está en tránsito.
-  // Full/Flex se dejan igual que estaban.
-  if(ch==='ML'&&logistic==='Mercado Envíos'&&(sub.includes('picked_up')||state.includes('en camino')))return '';
-
-  if(logistic==='Sin envío'||raw.includes('to_be_agreed')||raw.includes('not_specified'))return 'A coordinar con comprador';
-  if(logistic==='FLEX'&&!state.includes('entregado'))return 'Revisar Flex / coordinar entrega';
-  if(ch==='TN'&&String(logistic).toLowerCase().includes('retiro')&&!state.includes('entregado'))return 'Coordinar retiro';
-  return '';
-}
+function saleNeedsAction(o,ch){let logistic=logisticLabel(o,ch);let state=shippingStateLabel(o,ch).toLowerCase();let raw=String(o.shipping_status||o.tn_shipping_status||o.ml_shipping_status||o.fulfillment_status||o.delivery_status||'').toLowerCase();if(state.includes('entregado')||state.includes('en camino')||state.includes('procesando')||state.includes('cancelado'))return '';if(logistic==='FULL')return '';if(logistic==='Sin envío'||raw.includes('to_be_agreed')||raw.includes('not_specified'))return 'A coordinar con comprador';if(logistic==='FLEX')return '';if(ch==='TN'&&String(logistic).toLowerCase().includes('retiro')&&!state.includes('entregado'))return 'Coordinar retiro';return ''}
 async function searchInventory(offset=0,savePref=false){let q=qs('invSearch').value.trim();let lim=invLimit();let market=qs('invMarket')?.value||'';if(savePref)saveViewPref('inventario','limit',lim);state.inventory.offset=offset;setStatus('invStatus','Buscando inventario + publicaciones...');try{let d=await fetchJson(`/admin/inventory/search?q=${encodeURIComponent(q)}&limit=${encodeURIComponent(lim)}&offset=${encodeURIComponent(offset)}&marketplace=${encodeURIComponent(market)}&include_listings=true`);state.inventoryItems=d.items||[];state.inventory.total=Number(d.total||0);renderInventory();let linked=Number(d.publications_visible??state.inventoryItems.reduce((a,i)=>a+(Array.isArray(i.listings)?i.listings.length:0),0));if(qs('invPager'))qs('invPager').innerHTML=inventoryPagerHtml(d);let filtro=market?` · canal ${market}`:'';setStatus('invStatus',`Inventario: ${state.inventoryItems.length} de ${state.inventory.total} ítems${filtro} · Publicaciones visibles: ${linked}`,true)}catch(e){setStatus('invStatus','Error inventario: '+JSON.stringify(e),false)}}function listingMarket(l){return String(l.marketplace||l.channel||'').toUpperCase()}function listingProductId(l){return l.external_product_id??l.listing_id??l.item_id??l.product_id??l.external_full_id??''}function listingVariantId(l){return l.external_variant_id??l.variant_id??l.variation_id??''}function listingPrice(l){return l.price??l.marketplace_price??l.target_price??''}function listingStock(l){return l.stock??l.available_quantity??l.marketplace_stock??''}function listingStatus(l){return l.status??l.state??''}function listingUrl(l){return l.url??l.permalink??''}
 function renderListingsForItem(item){let market=qs('invMarket')?.value||'';let arr=(Array.isArray(item.listings)?item.listings:[]).filter(l=>!market||listingMarket(l)===market);if(!arr.length)return '<span class="muted">Sin publicaciones vinculadas para este filtro.</span>';arr.sort((a,b)=>(listingMarket(a)+listingProductId(a)+listingVariantId(a)).localeCompare(listingMarket(b)+listingProductId(b)+listingVariantId(b)));return arr.map((l,idx)=>{let m=listingMarket(l),pid=listingProductId(l),vid=listingVariantId(l),price=listingPrice(l),stock=listingStock(l),st=listingStatus(l);let key=esc(`${item.sku}_${idx}`);return `<div class="marketBox"><div><span class="pill ${m==='ML'?'info':'ok'}">${esc(m||'?')}</span></div><div class="mono id">Pub: ${esc(pid)}</div><div class="mono id">Var: ${esc(vid)}</div><div><input class="priceInput" id="price_${key}" value="${esc(price)}" title="Precio marketplace"></div><div><input class="stockInput" value="${esc(stock)}" disabled title="Stock marketplace informado"></div><div><span class="pill marketStatus ${listingStatusClass(st)}">${esc(listingStatusLabel(st))}</span></div></div>`}).join('')}
 function renderInventory(){let items=state.inventoryItems||[];let tbody='';if(!items.length){tbody='<tr><td colspan="4" class="muted" style="text-align:center;padding:24px">Sin resultados para este filtro.</td></tr>'}else{tbody=items.map((i,idx)=>`<tr><td><strong class="mono">${esc(i.sku)}</strong><br><span class="small">${esc(i.item_type||'')}</span></td><td>${esc(i.name||'')}<br><span class="small">${esc(i.category||'')}</span></td><td><div class="invStockBox"><div><input class="stockInput" type="number" step="1" id="stock_${idx}" value="${esc(i.stock??0)}"><br><span class="small">actual ERP: ${esc(i.stock??0)}</span></div><button class="ok" onclick="saveInventoryStock(${idx})">Guardar stock</button></div><div id="rowStatus_${idx}" class="small"></div></td><td>${renderListingsForItem(i)}</td></tr>`).join('')}qs('invResults').innerHTML=`<table class="inventoryTable"><thead><tr><th>SKU</th><th>Producto</th><th>Stock ERP editable</th><th>Publicaciones / variantes / precio / stock</th></tr></thead><tbody>${tbody}</tbody></table>`}
@@ -589,10 +541,10 @@ async function loadSyncJobs(offset=0,manual=false){let lim=jobsLimit();saveViewP
 function cfgSet(id,val){let el=qs(id);if(el)el.value=val||''}
 function cfgGet(id){return qs(id)?.value||''}
 function configLogoValue(){return localStorage.getItem('pc_erp_company_logo_data')||localStorage.getItem('pc_erp_company_logo_url')||''}
-function applyConfigLogo(src){let brand=qs('brandTenantLogo');let prev=qs('cfgLogoPreview');let logo=String(src||'').trim();if(brand){if(logo){brand.classList.add('hasLogo');brand.innerHTML=`<img src="${esc(logo)}" alt="Logo empresa">`}else{brand.classList.remove('hasLogo');brand.textContent='LOGO'}}if(prev){if(logo){prev.classList.add('hasLogo');prev.innerHTML=`<img src="${esc(logo)}" alt="Logo empresa">`}else{prev.classList.remove('hasLogo');prev.innerHTML='<div class="logoPlaceholder">LOGO</div>'}}let lf=qs('cfgLogoFactura');if(lf)lf.value=logo?'Usar logo configurado':'Sin logo configurado'}
+function applyConfigLogo(src){let brand=document.querySelector('.brandMark');let prev=qs('cfgLogoPreview');let logo=String(src||'').trim();if(brand){if(logo){brand.classList.add('hasLogo');brand.innerHTML=`<img src="${esc(logo)}" alt="Logo">`}else{brand.classList.remove('hasLogo');brand.textContent='PC'}}if(prev){if(logo){prev.classList.add('hasLogo');prev.innerHTML=`<img src="${esc(logo)}" alt="Logo">`}else{prev.classList.remove('hasLogo');prev.innerHTML='<div class="logoPlaceholder">PC</div>'}}let lf=qs('cfgLogoFactura');if(lf)lf.value=logo?'Usar logo configurado':'Sin logo configurado'}
 function previewConfigLogo(){let val=cfgGet('cfgLogoUrl').trim();if(val){localStorage.removeItem('pc_erp_company_logo_data');applyConfigLogo(val)}else{applyConfigLogo(configLogoValue())}}
 function loadLogoFile(ev){let f=ev.target.files&&ev.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{localStorage.setItem('pc_erp_company_logo_data',String(r.result||''));localStorage.removeItem('pc_erp_company_logo_url');cfgSet('cfgLogoUrl','');applyConfigLogo(String(r.result||''));setStatus('cfgStatus','Logo cargado localmente. Queda visible en este navegador.',true)};r.onerror=()=>setStatus('cfgStatus','No pude leer el archivo del logo.',false);r.readAsDataURL(f)}
-function clearLogoConfig(){localStorage.removeItem('pc_erp_company_logo_url');localStorage.removeItem('pc_erp_company_logo_data');cfgSet('cfgLogoUrl','');applyConfigLogo('');setStatus('cfgStatus','Logo de empresa quitado. NEXIA queda como marca de la app.',true)}
+function clearLogoConfig(){localStorage.removeItem('pc_erp_company_logo_url');localStorage.removeItem('pc_erp_company_logo_data');cfgSet('cfgLogoUrl','');applyConfigLogo('');setStatus('cfgStatus','Logo quitado. Vuelve el recuadro PC.',true)}
 function saveConfig(){let fields=['NombreFantasia','RazonSocial','Cuit','CondIva','PtoVta','ArcaEnv','Domicilio','AutoInvoice','Concepto'];fields.forEach(k=>localStorage.setItem('pc_erp_cfg_'+k,cfgGet('cfg'+k)));let urlLogo=cfgGet('cfgLogoUrl').trim();if(urlLogo){localStorage.setItem('pc_erp_company_logo_url',urlLogo);localStorage.removeItem('pc_erp_company_logo_data');applyConfigLogo(urlLogo)}setStatus('cfgStatus','Configuración guardada localmente.',true)}
 function loadConfig(){let fields=['NombreFantasia','RazonSocial','Cuit','CondIva','PtoVta','ArcaEnv','Domicilio','AutoInvoice','Concepto'];fields.forEach(k=>cfgSet('cfg'+k,localStorage.getItem('pc_erp_cfg_'+k)||''));let logoUrl=localStorage.getItem('pc_erp_company_logo_url')||'';cfgSet('cfgLogoUrl',logoUrl);applyConfigLogo(configLogoValue())}
 
