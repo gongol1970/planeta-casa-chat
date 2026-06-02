@@ -30,7 +30,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 
 @media(max-width:1050px){aside{width:235px}main{margin-left:235px;width:calc(100% - 235px)}.col-2,.col-3,.col-4,.col-5,.col-6,.col-8{grid-column:span 12}.tokenBox{flex-wrap:wrap}.tokenBox input{width:220px}.orderHead,.lineItem,.marketBox{grid-template-columns:1fr}.tableWrap{max-height:none}}
 </style>
-<!-- ML_QUESTIONS_LIVE_UNANSWERED_ANALYSIS_FRONTEND_1_36 -->
+<!-- KNOWLEDGE_BASE_ML_PREANSWER_FRONTEND_1_37 -->
 </head>
 <body>
 <div class="app">
@@ -42,9 +42,9 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Tienda Nube</div><div class="sub"><button class="navBtn" data-view="tn-publicaciones">Publicaciones</button><button class="navBtn" data-view="tn-ventas">Ventas</button><button class="navBtn" data-view="tn-clientes">Clientes</button></div>
 <div class="navTitle">Mercado Pago</div><div class="sub"><button class="navBtn" data-view="mp-conciliacion">Conciliación futura</button></div>
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="manual-venta">Venta manual</button></div>
-<div class="navTitle">Gestión</div><div class="sub"><button class="navBtn" data-view="inventario">Inventario</button><button class="navBtn" data-view="movimientos">Ver movimientos de stock</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button><button class="navBtn" data-view="planilla-bajar">Bajar planilla</button><button class="navBtn" data-view="planilla-subir">Subir planilla</button><button class="navBtn" data-view="fallas">Reporte de fallas</button></div>
+<div class="navTitle">Gestión</div><div class="sub"><button class="navBtn" data-view="inventario">Inventario</button><button class="navBtn" data-view="movimientos">Ver movimientos de stock</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="base-conocimiento">Base de conocimiento</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button><button class="navBtn" data-view="planilla-bajar">Bajar planilla</button><button class="navBtn" data-view="planilla-subir">Subir planilla</button><button class="navBtn" data-view="fallas">Reporte de fallas</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.36<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.37<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
@@ -130,6 +130,39 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <section id="combos" class="view"><div class="card"><h3>Gestión · Combos / Kits</h3><p>Alta y edición de combos queda en el próximo bloque del ERP único.</p></div></section>
 <section id="arca-reportes" class="view"><div class="card"><h3>ARCA · Reporte de facturación</h3><p>Comprobantes del ERP. Por defecto muestra el mes calendario anterior completo.</p><div class="grid"><div class="col-2"><label>Desde</label><input id="arcaDesde" type="date"></div><div class="col-2"><label>Hasta</label><input id="arcaHasta" type="date"></div><div class="col-2"><label>Tipo de comprobante</label><select id="arcaTipo"><option>Todos</option><option>A</option><option>B</option></select></div><div class="col-2"><label>Canal de venta</label><select id="arcaCanal"><option>Todos</option><option>TN</option><option>ML</option><option>MANUAL</option></select></div><div class="col-2"><label>Concepto</label><select id="arcaConcepto"><option>Todos</option><option>Productos</option><option>Servicios</option><option>Productos y Servicios</option></select></div><div class="col-2"><label>Límite visible</label><select id="arcaLimit"><option>20</option><option selected>100</option><option>200</option></select></div></div><div class="btnrow" style="margin-top:12px"><button onclick="loadArcaInvoices()">Buscar comprobantes</button></div><div id="arcaStatus" class="status"></div><div id="arcaTable" class="tableWrap" style="margin-top:12px"></div><pre id="arcaOut" class="hidden"></pre></div></section>
 <section id="arca-manual" class="view"><div class="card"><h3>ARCA · Emitir comprobante manual</h3><p>Flujo controlado: primero vista previa, después emisión real con CAE. Remitos y recibos quedan fuera de este módulo.</p><div class="grid"><div class="col-2"><label>Comprobante</label><select id="amTipo"><option value="6" selected>Factura B</option><option value="1">Factura A</option></select></div><div class="col-2"><label>Concepto</label><select id="amConcepto"><option selected>Productos</option><option>Servicios</option><option>Productos y Servicios</option></select></div><div class="col-2"><label>Fecha</label><input id="amFecha" type="date"></div><div class="col-3"><label>Canal / referencia</label><input id="amSourceChannel" value="ARCA_MANUAL"></div><div class="col-3"><label>Operación opcional</label><input id="amSourceOrder" placeholder="Venta / referencia"></div><div class="col-4"><label>Nombre / Razón social receptor *</label><input id="amCustomerName" placeholder="Consumidor Final / nombre real"></div><div class="col-2"><label>Doc. tipo</label><select id="amDocType"><option value="CF" selected>CF</option><option value="DNI">DNI</option><option value="CUIT">CUIT</option></select></div><div class="col-3"><label>Documento</label><input id="amDocNumber" placeholder="DNI / CUIT"></div><div class="col-3"><label>Condición IVA</label><select id="amIvaCond"><option selected>Consumidor Final</option><option>Responsable Inscripto</option><option>Monotributo</option><option>Exento</option></select></div><div class="col-6"><label>Domicilio receptor</label><input id="amAddress" placeholder="Opcional / si viene del comprador"></div><div class="col-6"><label>Localidad receptor *</label><input id="amLocalidad" placeholder="Consumidor Final manual: Ciudad Autónoma de Buenos Aires"></div></div><div class="dividerLine"></div><h3>Conceptos</h3><div id="arcaManualLines"></div><div class="btnrow" style="margin-top:10px"><button class="secondary" onclick="arcaManualAddLine()">Agregar línea</button><button class="secondary" onclick="arcaManualClear()">Limpiar</button></div><div class="dividerLine"></div><div class="grid"><div class="col-12"><label>Notas internas/observaciones</label><textarea id="amNotes" rows="2">Emisión manual controlada desde ERP</textarea></div></div><div class="btnrow" style="margin-top:12px;justify-content:flex-end"><button class="secondary" onclick="arcaManualPreview()">Vista previa</button><button class="danger" onclick="arcaManualEmit()">Emitir comprobante real</button></div><div id="arcaManualStatus" class="status"></div><pre id="arcaManualOut" class="hidden"></pre></div>
+
+<section id="base-conocimiento" class="view">
+  <div class="card">
+    <h3>Gestión · Base de conocimiento</h3>
+    <p>Reglas editables por SKU para que la IA prepare pre-respuestas de Mercado Libre. La IA redacta solo el cuerpo; el saludo y la firma los agrega la app al enviar.</p>
+    <div class="grid">
+      <div class="col-6">
+        <h3>Planilla</h3>
+        <div class="btnrow">
+          <button class="primary" onclick="downloadKnowledgeBase()">Bajar base Excel</button>
+          <button class="secondary" onclick="showKnowledgeSetupSql()">Ver SQL de setup</button>
+        </div>
+        <p class="small">Hojas esperadas: <strong>Reglas SKU</strong> y <strong>Lugares retiro</strong>.</p>
+      </div>
+      <div class="col-6">
+        <h3>Subir cambios</h3>
+        <input id="knowledgeFile" type="file" accept=".xlsx" />
+        <div class="btnrow" style="margin-top:10px">
+          <button class="primary" onclick="uploadKnowledgeBase()">Subir base Excel</button>
+        </div>
+        <p class="small">Si agregás una regla nueva para un SKU, se usa en la pre-respuesta de Preguntas ML.</p>
+      </div>
+    </div>
+    <div id="knowledgeStatus" class="status"></div>
+    <pre id="knowledgeOut" class="hidden"></pre>
+  </div>
+  <div class="card">
+    <h3>Modelo simple</h3>
+    <p><strong>Reglas SKU:</strong> SKU, retiro permitido, lugar de retiro, Flex, Full, Mercado Envíos, Correo/Encomienda, costo de envío, fuente de stock, modo respuesta y notas para IA.</p>
+    <p><strong>Lugares retiro:</strong> código PC/SM/etc., texto público, horario y aclaración. Así no repetimos dirección y horarios por cada SKU.</p>
+    <p><strong>Modo respuesta:</strong> por ahora usar <span class="pill">pre_respuesta</span>. Más adelante, cuando un SKU responda siempre bien, se le suelta la correa con <span class="pill">auto_aprobada</span>.</p>
+  </div>
+</section>
 <section id="planilla-bajar" class="view"><div class="card"><h3>Gestión · Bajar planilla</h3><a class="btn primary" id="downloadCsv" href="#">Descargar inventario CSV</a></div></section><section id="planilla-subir" class="view"><div class="card"><h3>Gestión · Subir planilla</h3><input type="file" id="csvFile" accept=".csv"><div class="btnrow" style="margin-top:12px"><button onclick="uploadCsv()">Subir CSV</button></div><pre id="uploadOut" class="hidden"></pre></div></section>
 <section id="fallas" class="view"><div class="card"><h3>Gestión · Monitor de sync_jobs</h3><p>Solo monitoreo. La ejecución de jobs queda a cargo del autosync del ERP.</p><div class="grid"><div class="col-2"><label>Cantidad visible</label><select id="jobsLimit" class="limitSelect" onchange="loadSyncJobs(0,true)"><option>20</option><option>50</option><option selected>100</option><option>200</option></select></div><div class="col-2"><label>&nbsp;</label><button onclick="loadSyncJobs(0,true)">Actualizar</button></div></div><div id="jobsStatus" class="status"></div><div id="jobsTable" class="tableWrap" style="margin-top:12px"></div><div id="jobsPager" class="btnrow jobsPager"></div><pre id="jobsOut" class="hidden"></pre></div></section>
 
@@ -142,7 +175,7 @@ function qs(id){return document.getElementById(id)}function apiBase(){return(qs(
 function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}function dateAR(x){if(!x)return'';try{return new Date(x).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short',hour12:false})}catch{return x}}function money(n){let x=Number(n||0);return x?('$'+Math.round(x).toLocaleString('es-AR')):''}function shortVer(v){let m=String(v||'').match(/\d+(?:\.\d+){1,3}/);return m?m[0]:String(v||'?')}function jsq(s){return String(s??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ')}
 function setStatus(id,msg,ok=null){let el=qs(id);if(!el)return;el.className='status '+(ok===true?'oktxt':ok===false?'badtxt':ok==='warn'?'warntxt':'');el.textContent=msg||''}function showPre(id,obj){let el=qs(id);el.classList.remove('hidden');el.textContent=typeof obj==='string'?obj:JSON.stringify(obj,null,2)}function setBusy(on,title='Procesando...',msg='No cierres esta pantalla.'){let ov=qs('erpBusyOverlay');if(!ov)return;document.body.classList.toggle('erpBusy',!!on);ov.classList.toggle('active',!!on);if(qs('erpBusyTitle'))qs('erpBusyTitle').textContent=title;if(qs('erpBusyMsg'))qs('erpBusyMsg').textContent=msg}function setArcaAndSalesStatus(ch,msg,ok=null){setStatus('arcaStatus',msg,ok);setStatus(String(ch||'').toLowerCase()+'VentasStatus',msg,ok)}
 function saveSettings(){state.api=apiBase();state.token=token();localStorage.setItem('pc_erp_api',state.api);localStorage.setItem('pc_erp_token',state.token);setStatus('homeStatus','Guardado.',true);syncLinks()}function loadSettings(){state.api=localStorage.getItem('pc_erp_api')||state.api;state.token=localStorage.getItem('pc_erp_token')||'';qs('apiUrl').value=state.api;qs('token').value=state.token;loadViewPrefs();loadConfig();syncLinks()}function syncLinks(){let d=qs('downloadCsv');if(d)d.href=url('/erp/export_inventory')}function prefKey(section,key){return `pc_erp_pref_${section}_${key}`}function saveViewPref(section,key,value){localStorage.setItem(prefKey(section,key),String(value??''))}function loadViewPrefs(){let jl=localStorage.getItem(prefKey('jobs','limit'));if(jl&&qs('jobsLimit'))qs('jobsLimit').value=jl;let ml=localStorage.getItem(prefKey('ventas_ml','limit'));if(ml&&qs('mlVentasLimit'))qs('mlVentasLimit').value=ml;let tl=localStorage.getItem(prefKey('ventas_tn','limit'));if(tl&&qs('tnVentasLimit'))qs('tnVentasLimit').value=tl;let il=localStorage.getItem(prefKey('inventario','limit'));if(il&&qs('invLimit'))qs('invLimit').value=il;let mpl=localStorage.getItem(prefKey('publicaciones_ml','limit'));if(mpl&&qs('mlPubLimit'))qs('mlPubLimit').value=mpl;let tpl=localStorage.getItem(prefKey('publicaciones_tn','limit'));if(tpl&&qs('tnPubLimit'))qs('tnPubLimit').value=tpl}
-function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));qs(id).classList.add('active');document.querySelectorAll('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.view===id));let b=document.querySelector(`.navBtn[data-view="${id}"]`);qs('pageTitle').textContent=b?b.textContent.trim():'ERP';qs('pageCrumb').textContent='Planeta Casa · '+qs('pageTitle').textContent;if(id==='inicio')loadDashboard();if(id==='dashboard')loadDashboard();if(id==='movimientos')loadMovements();if(id==='ml-ventas')loadRecent('ML',state.sales.ML.offset||0);if(id==='tn-ventas')loadRecent('TN',state.sales.TN.offset||0);if(id==='ml-publicaciones')loadPublications('ML',state.publications.ML.offset||0);if(id==='ml-preguntas')loadMLQuestions(state.mlQuestions?.offset||0);if(id==='tn-publicaciones')loadPublications('TN',state.publications.TN.offset||0);if(id==='arca-reportes'){initArcaDates();loadArcaInvoices()}if(id==='arca-manual'){arcaManualInit()}if(id==='inventario'&&!state.inventoryItems.length)searchInventory(state.inventory.offset||0)}document.addEventListener('click',e=>{let b=e.target.closest('.navBtn[data-view]');if(b)showView(b.dataset.view)});
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));qs(id).classList.add('active');document.querySelectorAll('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.view===id));let b=document.querySelector(`.navBtn[data-view="${id}"]`);qs('pageTitle').textContent=b?b.textContent.trim():'ERP';qs('pageCrumb').textContent='Planeta Casa · '+qs('pageTitle').textContent;if(id==='inicio')loadDashboard();if(id==='dashboard')loadDashboard();if(id==='movimientos')loadMovements();if(id==='ml-ventas')loadRecent('ML',state.sales.ML.offset||0);if(id==='tn-ventas')loadRecent('TN',state.sales.TN.offset||0);if(id==='ml-publicaciones')loadPublications('ML',state.publications.ML.offset||0);if(id==='ml-preguntas')loadMLQuestions(state.mlQuestions?.offset||0);if(id==='tn-publicaciones')loadPublications('TN',state.publications.TN.offset||0);if(id==='base-conocimiento'){loadKnowledgeHelp()}if(id==='arca-reportes'){initArcaDates();loadArcaInvoices()}if(id==='arca-manual'){arcaManualInit()}if(id==='inventario'&&!state.inventoryItems.length)searchInventory(state.inventory.offset||0)}document.addEventListener('click',e=>{let b=e.target.closest('.navBtn[data-view]');if(b)showView(b.dataset.view)});
 async function fetchJson(path,opt={}){let r=await fetch(url(path),{...opt,headers:{'Content-Type':'application/json',...(opt.headers||{})}});let txt=await r.text();let data;try{data=JSON.parse(txt)}catch{data={ok:r.ok,text:txt}}if(!r.ok)throw data;return data}async function fetchText(path,opt={}){let r=await fetch(url(path),opt);let txt=await r.text();if(!r.ok)throw txt;return txt}
 async function health(){try{let d=await fetchJson('/admin/arca/status');let v=d.version||d.backend_version||'?';if(qs('footBackendVer'))qs('footBackendVer').textContent=shortVer(v);if(qs('dashBackendVer'))qs('dashBackendVer').textContent=shortVer(v);if(qs('stErp'))qs('stErp').textContent='OK';setStatus('homeStatus','Backend ERP OK · ARCA '+(d.auto_invoice_enabled?'AUTO ON':'AUTO OFF'),true);loadDashboard();return d}catch(e){setStatus('homeStatus','Error ERP status: '+JSON.stringify(e),false)}}
 function dashMoney(n){return money(Number(n||0))||'$0'}
@@ -613,13 +646,93 @@ function mlQStatus(){return state.mlQuestions?.status||'UNANSWERED'}
 function setMLQuestionStatus(st){state.mlQuestions.status=st||'UNANSWERED';qs('mlQAnalysis').innerHTML='';loadMLQuestions(0)}
 function mlQLimit(){return Number(qs('mlQLimit')?.value||20)}
 function mlQPagerHtml(d){let limit=Number(d.limit||mlQLimit()||20),offset=Number(d.offset||0),total=Number(d.total||0);let count=(d.items||[]).length;let from=total?offset+1:0;let to=Math.min(offset+count,total||offset+count);let prev=Math.max(0,offset-limit);let next=offset+limit;let prevDisabled=offset<=0?'disabled':'';let nextDisabled=!d.has_more?'disabled':'';return `<button class="secondary" ${prevDisabled} onclick="loadMLQuestions(${prev})">Anterior</button><span class="pill">Mostrando ${from}–${to}${total?` de ${total}`:''}</span><button class="secondary" ${nextDisabled} onclick="loadMLQuestions(${next})">Siguiente</button>`}
-function mlQCard(q,idx){let item=q.item||{};let title=item.title||q.item_id||'Publicación';let thumb=item.thumbnail||'';let link=item.permalink||'';let answered=q.answer&&q.answer.text;let g=qs('mlQGreetingDefault')?.checked!==false;let sig=qs('mlQSignatureDefault')?.checked!==false;return `<div class="mlQuestionCard"><div class="mlQuestionHead"><div>${thumb?`<img class="mlQuestionImg" src="${esc(thumb)}" alt="">`:`<div class="mlQuestionImg"></div>`}</div><div><strong>${link?`<a href="${esc(link)}" target="_blank">${esc(title)}</a>`:esc(title)}</strong><div class="mlQuestionMeta">Item: <span class="mono">${esc(q.item_id||'')}</span><br>Pregunta: <span class="mono">${esc(q.id||'')}</span> · ${dateAR(q.date_created)}</div></div><div>${statusPill(q.status||'')}</div></div><div class="mlQuestionBody"><div class="mlQuestionText">${esc(q.text||'')}</div>${answered?`<p><strong>Respuesta ML:</strong> ${esc(q.answer.text||'')}</p>`:`<textarea id="mlQText_${idx}" rows="3" placeholder="Escribí solo el cuerpo de la respuesta..." onfocus="mlQSetActive(${idx})" oninput="mlQSetActive(${idx});mlQUpdatePreview(${idx})"></textarea><div class="btnrow" style="margin-top:10px"><label class="inlineCheck"><input id="mlQGreeting_${idx}" type="checkbox" ${g?'checked':''} onchange="mlQUpdatePreview(${idx})"> Saludo inicial</label><label class="inlineCheck"><input id="mlQSignature_${idx}" type="checkbox" ${sig?'checked':''} onchange="mlQUpdatePreview(${idx})"> Firma</label></div><div id="mlQPreview_${idx}" class="mlAnswerPreview">Escribí una respuesta para ver la vista previa.</div><div class="mlQuestionActions"><span class="small">Formato final: saludo opcional con punto y espacio + texto + firma.</span><button class="primary" onclick="answerMLQuestion(${idx})">Responder en ML</button></div>`}</div></div>`}
+function mlQCard(q,idx){let item=q.item||{};let title=item.title||q.item_id||'Publicación';let thumb=item.thumbnail||'';let link=item.permalink||'';let answered=q.answer&&q.answer.text;let g=qs('mlQGreetingDefault')?.checked!==false;let sig=qs('mlQSignatureDefault')?.checked!==false;return `<div class="mlQuestionCard"><div class="mlQuestionHead"><div>${thumb?`<img class="mlQuestionImg" src="${esc(thumb)}" alt="">`:`<div class="mlQuestionImg"></div>`}</div><div><strong>${link?`<a href="${esc(link)}" target="_blank">${esc(title)}</a>`:esc(title)}</strong><div class="mlQuestionMeta">Item: <span class="mono">${esc(q.item_id||'')}</span><br>Pregunta: <span class="mono">${esc(q.id||'')}</span> · ${dateAR(q.date_created)}</div></div><div>${statusPill(q.status||'')}</div></div><div class="mlQuestionBody"><div class="mlQuestionText">${esc(q.text||'')}</div>${answered?`<p><strong>Respuesta ML:</strong> ${esc(q.answer.text||'')}</p>`:`<textarea id="mlQText_${idx}" rows="3" placeholder="Escribí solo el cuerpo de la respuesta..." onfocus="mlQSetActive(${idx})" oninput="mlQSetActive(${idx});mlQUpdatePreview(${idx})"></textarea><div class="btnrow" style="margin-top:10px"><label class="inlineCheck"><input id="mlQGreeting_${idx}" type="checkbox" ${g?'checked':''} onchange="mlQUpdatePreview(${idx})"> Saludo inicial</label><label class="inlineCheck"><input id="mlQSignature_${idx}" type="checkbox" ${sig?'checked':''} onchange="mlQUpdatePreview(${idx})"> Firma</label></div><div id="mlQPreview_${idx}" class="mlAnswerPreview">Escribí una respuesta para ver la vista previa.</div><div class="mlQuestionActions"><span class="small">Formato final: saludo opcional con punto y espacio + texto + firma.</span><div class="btnrow"><button class="secondary" onclick="preanswerMLQuestion(${idx})">Pre-responder IA</button><button class="primary" onclick="answerMLQuestion(${idx})">Responder en ML</button></div></div>`}</div></div>`}
 function renderMLQuestions(items){state.mlQuestions.items=items||[];state.mlQuestions.activeIdx=0;renderMLQuickButtons();if(!items.length){qs('mlQList').innerHTML='<div class="card"><p>No hay preguntas para este filtro.</p></div>';return}qs('mlQList').innerHTML=items.map((q,idx)=>mlQCard(q,idx)).join('');renderMLQuestionPreviews()}
 async function loadMLQuestions(offset=0){loadMLQuestionPrefs();state.mlQuestions.offset=offset;let st=mlQStatus();setStatus('mlQStatusBox','Consultando preguntas ML...');try{let d=await fetchJson(`/admin/ml/questions?status=${encodeURIComponent(st)}&limit=${encodeURIComponent(mlQLimit())}&offset=${encodeURIComponent(offset)}&include_item=true&source=live`);renderMLQuestions(d.items||[]);if(qs('mlQPager'))qs('mlQPager').innerHTML=mlQPagerHtml(d);if(d.ok===false){let msg='Preguntas ML no disponibles: '+(d.error||d.ml_error?.message||d.message||'revisar backend');if(d.setup_sql)msg+=' · Falta crear tabla ml_questions_cache';setStatus('mlQStatusBox',msg,false)}else{let src=d.source?` · ${d.source}`:'';let label=st==='ANSWERED'?'respondidas':'sin responder';setStatus('mlQStatusBox',`OK: ${d.total||0} preguntas ${label}${src}`,true)}}catch(e){setStatus('mlQStatusBox','Error preguntas ML: '+(e.message||e.detail||JSON.stringify(e)),false);console.error('loadMLQuestions',e)}}
 async function deleteMLQuestionMocks(){if(!confirm('Borrar preguntas mock de la base?'))return;setStatus('mlQStatusBox','Borrando mocks...');try{let d=await fetchJson('/admin/ml/questions/mocks',{method:'DELETE'});let n=d.result?.deleted??0;setStatus('mlQStatusBox',`Mocks borrados: ${n}`,true);await loadMLQuestions(0)}catch(e){setStatus('mlQStatusBox','Error borrando mocks: '+(e.message||e.detail||JSON.stringify(e)),false)}}
 function renderMLQAnalysis(d){let loc=d.local_analysis||{};let cats=loc.categories||[];let items=loc.items_ranked||[];let ai=d.ai&&d.ai.ok?d.ai.analysis:null;let html='<div class="card"><h3>Análisis de preguntas respondidas</h3>';html+=`<p>Analizadas: <strong>${esc(d.question_count_analyzed||0)}</strong> de ${esc(d.total_available||0)} disponibles. ${d.ai_used?'Con IA OpenAI.':'Análisis local/heurístico.'}</p>`;if(cats.length){html+='<h3>Patrones repetidos</h3><div class="dashList">'+cats.slice(0,8).map(c=>`<div class="dashItem" style="grid-template-columns:90px 1fr"><span class="pill warn">${esc(c.count)} casos</span><div><strong>${esc(c.category)}</strong><div class="small">${esc(c.recommendation)}</div>${(c.examples||[]).slice(0,2).map(e=>`<div class="small">• ${esc(e.text)}</div>`).join('')}</div></div>`).join('')+'</div>'}if(items.length){html+='<h3 style="margin-top:14px">Publicaciones a revisar</h3><div class="dashList">'+items.slice(0,8).map(it=>`<div class="dashItem" style="grid-template-columns:70px 1fr"><span class="pill">${esc(it.count)} preg.</span><div><strong>${esc(it.item_title||it.item_id)}</strong><div class="small mono">${esc(it.item_id||'')}</div><div class="small">${Object.entries(it.categories||{}).map(([k,v])=>`${k}: ${v}`).join(' · ')}</div></div></div>`).join('')+'</div>'}if(ai){html+='<h3 style="margin-top:14px">Salida IA</h3><pre>'+esc(JSON.stringify(ai,null,2))+'</pre>'}else if(d.ai&&!d.ai.ok){html+='<p class="muted">OpenAI no respondió: '+esc(d.ai.error||d.ai.status_code||'')+'</p>'}html+='</div>';qs('mlQAnalysis').innerHTML=html}
 async function analyzeMLAnsweredQuestions(){setBusy(true,'Analizando preguntas ML','Leyendo respondidas y buscando patrones repetidos...');setStatus('mlQStatusBox','Analizando respondidas...');try{let d=await fetchJson(`/admin/ml/questions/analyze_answered?limit=80&offset=0&use_ai=true`,{method:'POST'});renderMLQAnalysis(d);setStatus('mlQStatusBox','Análisis generado.',true)}catch(e){setStatus('mlQStatusBox','Error análisis: '+(e.message||e.detail||JSON.stringify(e)),false);console.error('analyzeMLAnsweredQuestions',e)}finally{setBusy(false)}}
+
+async function preanswerMLQuestion(idx){
+  let q=(state.mlQuestions.items||[])[idx];
+  if(!q||!q.id){alert('No encontré el ID de la pregunta.');return}
+  setBusy(true,'Generando pre-respuesta','Leyendo SKU, base de conocimiento y stock...');
+  setStatus('mlQStatusBox','Generando pre-respuesta IA...');
+  try{
+    let payload={question:q,use_ai:true};
+    let d=await fetchJson(`/admin/ml/questions/${encodeURIComponent(q.id)}/preanswer?source=live&use_ai=true`,{method:'POST',body:JSON.stringify(payload)});
+    if(d.ok===false){
+      setStatus('mlQStatusBox','No se pudo pre-responder: '+(d.reason||d.error||JSON.stringify(d)),false);
+      return;
+    }
+    let ta=qs('mlQText_'+idx);
+    if(ta){ta.value=d.body||'';mlQSetActive(idx);mlQUpdatePreview(idx);ta.focus()}
+    let extra=[];
+    if(d.sku)extra.push('SKU '+d.sku);
+    if(d.mode)extra.push('modo '+d.mode);
+    if(d.needs_human)extra.push('requiere humano');
+    if(!d.rule_found)extra.push('sin regla SKU');
+    setStatus('mlQStatusBox','Pre-respuesta generada'+(extra.length?' · '+extra.join(' · '):''),true);
+  }catch(e){
+    setStatus('mlQStatusBox','Error pre-respuesta: '+(e.message||e.detail||JSON.stringify(e)),false);
+    console.error('preanswerMLQuestion',e);
+  }finally{
+    setBusy(false);
+  }
+}
+
 async function answerMLQuestion(idx){let q=(state.mlQuestions.items||[])[idx];if(!q||!q.id){alert('No encontré el ID de la pregunta.');return}let raw=(qs('mlQText_'+idx)?.value||'').trim();if(!raw){alert('Escribí la respuesta.');return}let finalText=mlQCompose(idx);if(!confirm('Enviar esta respuesta a Mercado Libre?\n\n'+finalText))return;setBusy(true,'Respondiendo pregunta ML','Enviando respuesta a Mercado Libre...');try{let body={text:raw,greeting_enabled:!!qs('mlQGreeting_'+idx)?.checked,signature_enabled:!!qs('mlQSignature_'+idx)?.checked};let d=await fetchJson(`/admin/ml/questions/${encodeURIComponent(q.id)}/answer`,{method:'POST',body:JSON.stringify(body)});if(d.ok===false){setStatus('mlQStatusBox','No enviado: '+(d.message||d.error||JSON.stringify(d)),false);return}setStatus('mlQStatusBox','Respuesta enviada OK.',true);await loadMLQuestions(state.mlQuestions.offset||0)}catch(e){setStatus('mlQStatusBox','Error respondiendo: '+(e.message||e.detail||JSON.stringify(e)),false);console.error('answerMLQuestion',e)}finally{setBusy(false)}}
+
+
+function loadKnowledgeHelp(){
+  if(qs('knowledgeStatus'))setStatus('knowledgeStatus','Lista para bajar o subir la base de conocimiento.',true);
+}
+async function downloadKnowledgeBase(){
+  try{
+    setStatus('knowledgeStatus','Generando Excel...');
+    let r=await fetch(url('/admin/knowledge/download'));
+    if(!r.ok){let t=await r.text();throw new Error(t)}
+    let blob=await r.blob();
+    let a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='base_conocimiento_planeta_casa.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setStatus('knowledgeStatus','Excel descargado.',true);
+  }catch(e){
+    setStatus('knowledgeStatus','Error bajando base: '+(e.message||e),false);
+  }
+}
+async function uploadKnowledgeBase(){
+  let f=qs('knowledgeFile')?.files?.[0];
+  if(!f){setStatus('knowledgeStatus','Elegí un archivo .xlsx.',false);return}
+  let fd=new FormData();
+  fd.append('file',f);
+  try{
+    setBusy(true,'Subiendo base de conocimiento','Actualizando reglas por SKU y lugares de retiro...');
+    let r=await fetch(url('/admin/knowledge/upload'),{method:'POST',body:fd});
+    let txt=await r.text();
+    let d;try{d=JSON.parse(txt)}catch{d={ok:r.ok,text:txt}}
+    if(!r.ok||d.ok===false){throw d}
+    setStatus('knowledgeStatus',`Base subida OK. Reglas: ${d.result?.rules_upserted||0} · Lugares: ${d.result?.pickup_locations_upserted||0}`,true);
+    showPre('knowledgeOut',JSON.stringify(d,null,2));
+  }catch(e){
+    setStatus('knowledgeStatus','Error subiendo base: '+(e.message||e.detail||JSON.stringify(e)),false);
+    if(e.setup_sql||e.result?.setup_sql)showPre('knowledgeOut',e.setup_sql||e.result.setup_sql);
+  }finally{
+    setBusy(false);
+  }
+}
+async function showKnowledgeSetupSql(){
+  try{
+    let d=await fetchJson('/admin/knowledge/setup_sql');
+    showPre('knowledgeOut',d.sql||JSON.stringify(d,null,2));
+    setStatus('knowledgeStatus','SQL de setup listo para copiar en Supabase si las tablas no existen.',true);
+  }catch(e){
+    setStatus('knowledgeStatus','Error obteniendo SQL: '+(e.message||e.detail||JSON.stringify(e)),false);
+  }
+}
 
 async function uploadCsv(){let f=qs('csvFile').files[0];if(!f){showPre('uploadOut','Elegí un CSV.');return}let fd=new FormData();fd.append('file',f);try{let r=await fetch(url('/erp/import_inventory'),{method:'POST',body:fd});let txt=await r.text();showPre('uploadOut',txt)}catch(e){showPre('uploadOut','Error: '+e)}}async function postText(path,out){try{let txt=await fetchText(path,{method:'POST'});showPre(out,txt)}catch(e){showPre(out,'Error: '+e)}}function statusPill(s){let cls=s==='done'||s==='issued'?'ok':(s==='manual_review'||s==='failed_retry'||s==='error'||s==='rejected'?'bad':(s==='pending'?'warn':'info'));return `<span class="pill ${cls}">${s||''}</span>`}
 function jobsLimit(){return Number(qs('jobsLimit')?.value||100)}
