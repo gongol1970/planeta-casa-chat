@@ -30,7 +30,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 
 @media(max-width:1050px){aside{width:235px}main{margin-left:235px;width:calc(100% - 235px)}.col-2,.col-3,.col-4,.col-5,.col-6,.col-8{grid-column:span 12}.tokenBox{flex-wrap:wrap}.tokenBox input{width:220px}.orderHead,.lineItem,.marketBox{grid-template-columns:1fr}.tableWrap{max-height:none}}
 </style>
-<!-- ML_QUESTIONS_MANUAL_FRONTEND_1_29 -->
+<!-- ML_QUESTIONS_CACHE_SHIPPING_ME_FIX_FRONTEND_1_32 -->
 </head>
 <body>
 <div class="app">
@@ -44,7 +44,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="manual-venta">Venta manual</button></div>
 <div class="navTitle">Gestión</div><div class="sub"><button class="navBtn" data-view="inventario">Inventario</button><button class="navBtn" data-view="movimientos">Ver movimientos de stock</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button><button class="navBtn" data-view="planilla-bajar">Bajar planilla</button><button class="navBtn" data-view="planilla-subir">Subir planilla</button><button class="navBtn" data-view="fallas">Reporte de fallas</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.31<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.32<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
@@ -251,16 +251,59 @@ function channelCustomerHtml(o,ch){
   if(loc)sub.push(loc);
   return `<strong>${esc(displayName)}</strong>${sub.length?`<br><span class="small">${esc(sub.join(' · '))}</span>`:''}`;
 }
+function rawObj(o){
+  let r=o.raw_data||o.raw||o.rawData||{};
+  if(typeof r==='string'){
+    try{return JSON.parse(r)}catch{return {}}
+  }
+  return r&&typeof r==='object'?r:{};
+}
+function deepVal(obj,path){
+  try{return path.split('.').reduce((a,k)=>a&&a[k]!==undefined?a[k]:undefined,obj)}catch{return undefined}
+}
+function firstText(vals){
+  for(let v of vals){
+    if(v===undefined||v===null)continue;
+    if(Array.isArray(v))v=v.join(' ');
+    let s=String(v).trim();
+    if(s)return s;
+  }
+  return '';
+}
+function shippingStatusText(o){
+  let r=rawObj(o);
+  return firstText([
+    o.shipping_status,o.tn_shipping_status,o.ml_shipping_status,o.fulfillment_status,o.delivery_status,
+    o.status_shipping,o.shipment_status,
+    deepVal(r,'shipping.status'),deepVal(r,'shipment.status'),deepVal(r,'shipping_status'),
+    deepVal(r,'order.shipping.status'),deepVal(r,'logistic.status')
+  ]).toLowerCase();
+}
+function shippingSubstatusText(o){
+  let r=rawObj(o);
+  return firstText([
+    o.ml_shipping_substatus,o.shipping_substatus,o.substatus,o.shipment_substatus,
+    deepVal(r,'shipping.substatus'),deepVal(r,'shipment.substatus'),deepVal(r,'shipping_substatus'),
+    deepVal(r,'order.shipping.substatus'),deepVal(r,'logistic.substatus')
+  ]).toLowerCase();
+}
 function shippingStateLabel(o,ch){
   let logistic=logisticLabel(o,ch);
-  let raw=String(o.shipping_status||o.tn_shipping_status||o.ml_shipping_status||o.fulfillment_status||o.delivery_status||'').toLowerCase();
-  let sub=String(o.ml_shipping_substatus||o.shipping_substatus||'').toLowerCase();
+  let raw=shippingStatusText(o);
+  let sub=shippingSubstatusText(o);
   let opt=String(o.shipping_option||o.tn_shipping_option||'');
   let blob=(raw+' '+sub+' '+opt.toLowerCase()).trim();
+
   if(blob.includes('cancel'))return 'Cancelado';
   if(blob.includes('delivered'))return 'Entregado';
-  if(blob.includes('shipped')||blob.includes('in_transit')||blob.includes('in_route')||blob.includes('on_the_way')||blob.includes('picked_up'))return 'En camino';
-  if(logistic==='FULL'&&(blob.includes('ready_to_ship')||blob.includes('pending')||blob.includes('handling')))return 'Procesando en bodega';
+
+  // Mercado Libre puede mantener status=ready_to_ship aunque el paquete ya fue retirado.
+  // En ese caso manda substatus=picked_up: para el vendedor ya está en camino, no hay acción pendiente.
+  if(sub.includes('picked_up')||blob.includes('shipped')||blob.includes('in_transit')||blob.includes('in_route')||blob.includes('on_the_way'))return 'En camino';
+
+  // No tocar comportamiento FULL/FLEX: Full queda como bodega; Flex conserva su lógica propia.
+  if(logistic==='FULL'&&(blob.includes('ready_to_ship')||blob.includes('pending')||blob.includes('handling')||blob.includes('packed')))return 'Procesando en bodega';
+
   if(blob.includes('ready_to_ship'))return 'Listo para despachar';
   if(blob.includes('not_shipped')||blob.includes('unpacked')||blob.includes('unfulfilled'))return 'Sin despachar';
   if(blob.includes('pending'))return 'Pendiente';
@@ -340,7 +383,24 @@ async function loadPublications(market,offset=0,savePref=false){let key=market==
 
 function listingStatusLabel(st){let s=String(st||'').toLowerCase();if(s.includes('active'))return 'Activa';if(s.includes('paused')||s.includes('pause'))return 'Pausada';if(s.includes('inactive'))return 'Inactiva';return st||'-'}
 function listingStatusClass(st){let s=String(st||'').toLowerCase();if(s.includes('active'))return 'ok';if(s.includes('paused')||s.includes('pause'))return 'warn';if(s.includes('inactive'))return 'inactive';return 'info'}
-function saleNeedsAction(o,ch){let logistic=logisticLabel(o,ch);let state=shippingStateLabel(o,ch).toLowerCase();let raw=String(o.shipping_status||o.tn_shipping_status||o.ml_shipping_status||o.fulfillment_status||o.delivery_status||'').toLowerCase();let sub=String(o.ml_shipping_substatus||o.shipping_substatus||'').toLowerCase();if(state.includes('entregado')||state.includes('en camino')||state.includes('procesando')||state.includes('cancelado'))return '';if(logistic==='FULL')return '';if(logistic==='Sin envío'||raw.includes('to_be_agreed')||raw.includes('not_specified'))return 'A coordinar con comprador';if(logistic==='FLEX'&&!state.includes('entregado'))return 'Revisar Flex / coordinar entrega';if(ch==='TN'&&String(logistic).toLowerCase().includes('retiro')&&!state.includes('entregado'))return 'Coordinar retiro';return ''}
+function saleNeedsAction(o,ch){
+  let logistic=logisticLabel(o,ch);
+  let state=shippingStateLabel(o,ch).toLowerCase();
+  let raw=shippingStatusText(o);
+  let sub=shippingSubstatusText(o);
+
+  if(state.includes('entregado')||state.includes('en camino')||state.includes('procesando')||state.includes('cancelado'))return '';
+  if(logistic==='FULL')return '';
+
+  // No inventar acción para Mercado Envíos si ML ya tiene el paquete o si el estado está en tránsito.
+  // Full/Flex se dejan igual que estaban.
+  if(ch==='ML'&&logistic==='Mercado Envíos'&&(sub.includes('picked_up')||state.includes('en camino')))return '';
+
+  if(logistic==='Sin envío'||raw.includes('to_be_agreed')||raw.includes('not_specified'))return 'A coordinar con comprador';
+  if(logistic==='FLEX'&&!state.includes('entregado'))return 'Revisar Flex / coordinar entrega';
+  if(ch==='TN'&&String(logistic).toLowerCase().includes('retiro')&&!state.includes('entregado'))return 'Coordinar retiro';
+  return '';
+}
 async function searchInventory(offset=0,savePref=false){let q=qs('invSearch').value.trim();let lim=invLimit();let market=qs('invMarket')?.value||'';if(savePref)saveViewPref('inventario','limit',lim);state.inventory.offset=offset;setStatus('invStatus','Buscando inventario + publicaciones...');try{let d=await fetchJson(`/admin/inventory/search?q=${encodeURIComponent(q)}&limit=${encodeURIComponent(lim)}&offset=${encodeURIComponent(offset)}&marketplace=${encodeURIComponent(market)}&include_listings=true`);state.inventoryItems=d.items||[];state.inventory.total=Number(d.total||0);renderInventory();let linked=Number(d.publications_visible??state.inventoryItems.reduce((a,i)=>a+(Array.isArray(i.listings)?i.listings.length:0),0));if(qs('invPager'))qs('invPager').innerHTML=inventoryPagerHtml(d);let filtro=market?` · canal ${market}`:'';setStatus('invStatus',`Inventario: ${state.inventoryItems.length} de ${state.inventory.total} ítems${filtro} · Publicaciones visibles: ${linked}`,true)}catch(e){setStatus('invStatus','Error inventario: '+JSON.stringify(e),false)}}function listingMarket(l){return String(l.marketplace||l.channel||'').toUpperCase()}function listingProductId(l){return l.external_product_id??l.listing_id??l.item_id??l.product_id??l.external_full_id??''}function listingVariantId(l){return l.external_variant_id??l.variant_id??l.variation_id??''}function listingPrice(l){return l.price??l.marketplace_price??l.target_price??''}function listingStock(l){return l.stock??l.available_quantity??l.marketplace_stock??''}function listingStatus(l){return l.status??l.state??''}function listingUrl(l){return l.url??l.permalink??''}
 function renderListingsForItem(item){let market=qs('invMarket')?.value||'';let arr=(Array.isArray(item.listings)?item.listings:[]).filter(l=>!market||listingMarket(l)===market);if(!arr.length)return '<span class="muted">Sin publicaciones vinculadas para este filtro.</span>';arr.sort((a,b)=>(listingMarket(a)+listingProductId(a)+listingVariantId(a)).localeCompare(listingMarket(b)+listingProductId(b)+listingVariantId(b)));return arr.map((l,idx)=>{let m=listingMarket(l),pid=listingProductId(l),vid=listingVariantId(l),price=listingPrice(l),stock=listingStock(l),st=listingStatus(l);let key=esc(`${item.sku}_${idx}`);return `<div class="marketBox"><div><span class="pill ${m==='ML'?'info':'ok'}">${esc(m||'?')}</span></div><div class="mono id">Pub: ${esc(pid)}</div><div class="mono id">Var: ${esc(vid)}</div><div><input class="priceInput" id="price_${key}" value="${esc(price)}" title="Precio marketplace"></div><div><input class="stockInput" value="${esc(stock)}" disabled title="Stock marketplace informado"></div><div><span class="pill marketStatus ${listingStatusClass(st)}">${esc(listingStatusLabel(st))}</span></div></div>`}).join('')}
 function renderInventory(){let items=state.inventoryItems||[];let tbody='';if(!items.length){tbody='<tr><td colspan="4" class="muted" style="text-align:center;padding:24px">Sin resultados para este filtro.</td></tr>'}else{tbody=items.map((i,idx)=>`<tr><td><strong class="mono">${esc(i.sku)}</strong><br><span class="small">${esc(i.item_type||'')}</span></td><td>${esc(i.name||'')}<br><span class="small">${esc(i.category||'')}</span></td><td><div class="invStockBox"><div><input class="stockInput" type="number" step="1" id="stock_${idx}" value="${esc(i.stock??0)}"><br><span class="small">actual ERP: ${esc(i.stock??0)}</span></div><button class="ok" onclick="saveInventoryStock(${idx})">Guardar stock</button></div><div id="rowStatus_${idx}" class="small"></div></td><td>${renderListingsForItem(i)}</td></tr>`).join('')}qs('invResults').innerHTML=`<table class="inventoryTable"><thead><tr><th>SKU</th><th>Producto</th><th>Stock ERP editable</th><th>Publicaciones / variantes / precio / stock</th></tr></thead><tbody>${tbody}</tbody></table>`}
