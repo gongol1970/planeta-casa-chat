@@ -151,11 +151,33 @@ function dashChannelBox(obj,ch){return (obj&&obj.channels&&obj.channels[ch])?obj
 function dashInvChannelBox(obj,ch){return (obj&&obj.channels&&obj.channels[ch])?obj.channels[ch]:{count:0,total_amount:0,items:[]}}
 function dashMiniItem(it){let num=it.sale_number||it.external_order_id||'';let ch=it.channel||'';let cust=it.customer_name||'Sin nombre';let amt=dashMoney(it.total);return `<div class="dashItem"><div><span class="pill ${ch==='ML'?'info':'ok'}">${esc(ch)}</span></div><div><strong>${esc(num)}</strong><br><span class="small">${esc(cust)} · ${dateAR(it.created_at)}</span></div><div><strong>${amt}</strong></div></div>`}
 function dashShippingRows(p){let rows=[];let chs=p.channels||{};Object.keys(chs).forEach(ch=>{let types=chs[ch].types||{};Object.keys(types).forEach(t=>{rows.push({channel:ch,type:t,count:types[t].count||0,total:types[t].total_amount||0})})});rows.sort((a,b)=>a.channel.localeCompare(b.channel)||b.count-a.count);if(!rows.length)return '<div class="dashEmpty">Sin pendientes de envío en la ventana actual.</div>';return `<table class="dashTable"><thead><tr><th>Canal</th><th>Tipo de envío</th><th>Cantidad</th><th>Importe</th></tr></thead><tbody>${rows.map(r=>`<tr><td><span class="pill ${r.channel==='ML'?'info':'ok'}">${esc(r.channel)}</span></td><td><strong>${esc(r.type)}</strong></td><td>${esc(r.count)}</td><td>${dashMoney(r.total)}</td></tr>`).join('')}</tbody></table>`}
+async function refreshShippingForDashboard(){
+  let now=Date.now();
+  if(loadDashboard._refreshingShipping)return;
+  if(loadDashboard._lastShippingRefreshAt && now-loadDashboard._lastShippingRefreshAt<45000)return;
+  loadDashboard._refreshingShipping=true;
+  setStatus('homeStatus','Actualizando envíos antes del dashboard...');
+  try{
+    let calls=[
+      fetchJson('/admin/ml/orders/refresh_shipping_pending?limit=80&days=30&scan_limit=300',{method:'POST'}),
+      fetchJson('/admin/tn/orders/refresh_shipping_pending?limit=80&days=30&scan_limit=300',{method:'POST'})
+    ];
+    let res=await Promise.allSettled(calls);
+    let bad=res.filter(x=>x.status==='rejected');
+    if(bad.length)console.warn('Dashboard shipping refresh parcial',bad.map(x=>x.reason));
+    loadDashboard._lastShippingRefreshAt=Date.now();
+  }catch(e){
+    console.warn('refreshShippingForDashboard',e);
+  }finally{
+    loadDashboard._refreshingShipping=false;
+  }
+}
 async function loadDashboard(force=false){
   if(loadDashboard.loading&&!force)return;
   loadDashboard.loading=true;
   setStatus('homeStatus','Actualizando dashboard...');
   try{
+    await refreshShippingForDashboard();
     let d=await fetchJson('/admin/dashboard/summary?invoice_hours=168&shipping_days=14');
     let v=d.version||'?';
     dashSet('dashBackendVer',shortVer(v));dashSet('footBackendVer',shortVer(v));
@@ -365,7 +387,8 @@ function orderCard(o,ch){
   let actionHtml=act?`<span class="logisticsAction">${esc(act)}</span>`:'';
   let totalSub=o.total_products&&Number(o.total_products)!==Number(o.total)?`<br><span class="small">Productos: ${money(o.total_products)}</span>`:'';
   let logisticClass=logistic==='FULL'?'dark':logistic==='FLEX'?'ok':logistic==='Sin envío'?'warn':'info';
-  let needsVisualAction=!!act || (ch==='ML'&&logistic==='FLEX'&&!String(logState||'').toLowerCase().includes('entregado'));
+  let stateLower=String(logState||'').toLowerCase();
+  let needsVisualAction=!!act || (ch==='ML'&&logistic==='FLEX'&&(stateLower.includes('pendiente')||stateLower.includes('listo')||stateLower.includes('sin despachar')));
   return `<div class="orderCard ${needsVisualAction?'actionSale':''}"><div class="orderHead"><div><strong>${esc(orderNumber(o,ch))}</strong>${sub?`<br><span class="small">${sub}</span>`:''}<br><span class="small">${dateAR(o.display_created_at||o.created_at||o.ml_date_created)}</span></div><div>${channelCustomerHtml(o,ch)}</div><div class="orderLogisticsBlock"><span class="pill ${logisticClass} shippingPill">${esc(logistic)}</span><br><span class="orderPayStatus">${esc(orderStatusLabel(o,ch))}</span>${stateHtml}${actionHtml}</div><div><strong>${money(o.total)}</strong>${totalSub}<br><span class="small">${countLabel(lines.length)}</span></div><div>${invoiceButton(o,ch)}</div></div><div class="orderLines">${display}</div></div>`
 }
 
