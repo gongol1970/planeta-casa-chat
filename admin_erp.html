@@ -48,7 +48,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button></div>
 <div class="navTitle">Gestión</div><div class="sub"><button class="navBtn" data-view="inventario">Inventario</button><button class="navBtn" data-view="movimientos">Ver movimientos de stock</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="base-conocimiento">Base de Conocimiento IA</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button><button class="navBtn" data-view="fallas">Reporte de fallas</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.39<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.40<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
@@ -290,8 +290,14 @@ function showView(id){
   document.querySelectorAll('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
   clearAlertForView(id);
   let b=document.querySelector(`.navBtn[data-view="${id}"]`);
-  qs('pageTitle').textContent=b?b.textContent.replace(/\s+\d+\s*$/,'').trim():'ERP';
-  qs('pageCrumb').textContent='Planeta Casa · '+qs('pageTitle').textContent;
+  let cleanTitle='ERP';
+  if(b){
+    let clone=b.cloneNode(true);
+    clone.querySelectorAll('.navAlertBadge').forEach(x=>x.remove());
+    cleanTitle=(clone.textContent||'').replace(/\s+\d+\s*$/,'').trim()||'ERP';
+  }
+  qs('pageTitle').textContent=cleanTitle;
+  qs('pageCrumb').textContent='Planeta Casa · '+cleanTitle;
   if(id==='inicio')loadDashboard();
   if(id==='dashboard')loadDashboard();
   if(id==='movimientos')loadMovements();
