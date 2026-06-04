@@ -1,4 +1,4 @@
-<!-- HUBIAX_FULL_INBOUND_MENU_KNOWLEDGE_SAFE_V1_51 -->
+<!-- HUBIAX_KNOWLEDGE_ERROR_TRAP_V1_52 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -48,7 +48,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button></div>
 <div class="navTitle">Gestión</div><div class="sub"><div class="navParent">Inventario</div><div class="sub2"><button class="navBtn" data-view="inventario">Productos</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="full-inbound">Envío a Full</button></div><button class="navBtn" data-view="movimientos">Ver movimientos de stock</button><button class="navBtn" data-view="base-conocimiento">Base de Conocimiento IA</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button><button class="navBtn" data-view="fallas">Reporte de fallas</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.51<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.52<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
@@ -869,12 +869,19 @@ async function uploadKnowledgeBase(){
     let r=await fetch(url('/admin/knowledge/upload'),{method:'POST',body:fd});
     let txt=await r.text();
     let d;try{d=JSON.parse(txt)}catch{d={ok:r.ok,text:txt}}
-    if(!r.ok||d.ok===false){throw d}
-    setStatus('knowledgeStatus',`Base subida OK. Reglas: ${d.result?.rules_upserted||0} · Lugares: ${d.result?.pickup_locations_upserted||0} · Prompts: ${d.result?.prompts_upserted||0}`,true);
+    if(!r.ok){throw d}
+    let res=d.result||{};
+    if(d.ok===false && !d.partial_ok && !res.partial_ok){throw d}
+    let msg=`Base subida OK. Reglas: ${res.rules_upserted||0} · Lugares: ${res.pickup_locations_upserted||0} · Prompts: ${res.prompts_upserted||0}`;
+    if(d.partial_ok||res.partial_ok){
+      let es=res.error_summary||{};
+      msg=`Base subida parcial. Reglas: ${res.rules_upserted||0} · Lugares: ${res.pickup_locations_upserted||0} · Prompts: ${res.prompts_upserted||0} · Errores: ${es.total||res.errors?.length||0}`;
+    }
+    setStatus('knowledgeStatus',msg,true);
     showPre('knowledgeOut',JSON.stringify(d,null,2));
   }catch(e){
     setStatus('knowledgeStatus','Error subiendo base: '+(e.message||e.detail||JSON.stringify(e)),false);
-    if(e.setup_sql||e.result?.setup_sql)showPre('knowledgeOut',e.setup_sql||e.result.setup_sql);
+    showPre('knowledgeOut',JSON.stringify(e,null,2));
   }finally{
     setBusy(false);
   }
