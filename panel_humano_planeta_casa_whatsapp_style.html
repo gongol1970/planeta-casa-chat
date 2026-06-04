@@ -19,14 +19,14 @@
   <button class="secondary" onclick="loadConversations()">Actualizar</button>
   <button class="gold" onclick="enableSoundManually()" title="Habilita y prueba el sonido">Probar sonido</button>
 </header>
-<div id="app"><aside id="sidebar"><div id="conversationList"></div></aside><main id="main"><div id="chatHeader"><div id="chatTitle">Sin conversación seleccionada</div><button onclick="takeover()">Tomar</button><button class="warn" onclick="releaseBot()">Liberar bot</button><button class="danger" onclick="closeConversation()">Cerrar</button></div><div id="messages"><div id="empty">Elegí una conversación de la izquierda.</div></div><div id="trainer"><div class="hint"><b>Enseñanza para Placia</b><br>Escribí natural: “Acá pensaste mal porque...”</div><textarea id="lessonInput" placeholder="Retá a Placia / dejale una enseñanza de esta conversación..."></textarea><button class="gold" onclick="saveLearning()">Guardar enseñanza</button></div><div id="composer"><textarea id="messageInput" placeholder="Escribí como humano..." onkeydown="handleComposerKey(event)"></textarea><button onclick="sendHuman()">Enviar</button></div></main></div><div id="toast"></div>
+<div id="app"><aside id="sidebar"><div id="conversationList"></div></aside><main id="main"><div id="chatHeader"><div id="chatTitle">Sin conversación seleccionada</div><button onclick="takeover()">Tomar</button><button class="warn" onclick="releaseBot()">Liberar bot</button><button class="danger" onclick="closeConversation()">Cerrar</button><button class="secondary" onclick="deleteLearningForConversation()" title="Borra sólo correcciones/enseñanzas guardadas; no toca el chat">Borrar correcciones</button></div><div id="messages"><div id="empty">Elegí una conversación de la izquierda.</div></div><div id="trainer"><div class="hint"><b>Enseñanza para Placia</b><br>Escribí natural: “Acá pensaste mal porque...”</div><textarea id="lessonInput" placeholder="Corregí a Placia / dejale una enseñanza general de esta conversación..."></textarea><button class="gold" onclick="saveLearning()">Guardar enseñanza</button></div><div id="composer"><textarea id="messageInput" placeholder="Escribí como humano..." onkeydown="handleComposerKey(event)"></textarea><button onclick="sendHuman()">Enviar</button></div></main></div><div id="toast"></div>
 <script>
 let currentConversation=null,conversations=[],refreshTimer=null,firstConversationLoad=true,originalTitle=document.title,audioCtx=null,soundUnlocked=false,titleAlertTimer=null,previousConversationState=new Map();
 const INACTIVITY_ALERT_MS=60*60*1000,DEFAULT_BASE="https://planeta-casa-erp.onrender.com";
 function init(){document.getElementById("baseUrl").value=localStorage.getItem("pc_admin_base")||DEFAULT_BASE;document.getElementById("token").value=localStorage.getItem("pc_admin_token")||"";document.getElementById("soundType").value=localStorage.getItem("pc_admin_sound")||"alarma";document.addEventListener("click",unlockSound,{once:true});document.addEventListener("keydown",unlockSound,{once:true});document.addEventListener("visibilitychange",()=>{if(!document.hidden)clearTitleAlert()});loadConversations();refreshTimer=setInterval(()=>{loadConversations(false);if(currentConversation)loadMessages(currentConversation.id,false)},8000)}
 function getBase(){return document.getElementById("baseUrl").value.trim().replace(/\/$/,"")}function getToken(){return document.getElementById("token").value.trim()}function getSoundType(){return document.getElementById("soundType").value||"alarma"}
 function saveConfig(){localStorage.setItem("pc_admin_base",getBase());localStorage.setItem("pc_admin_token",getToken());localStorage.setItem("pc_admin_sound",getSoundType());showToast("Guardado.")}
-async function apiGet(path){const sep=path.includes("?")?"&":"?";const r=await fetch(`${getBase()}${path}${sep}token=${encodeURIComponent(getToken())}`);return await r.json()}async function apiPost(path,body){const sep=path.includes("?")?"&":"?";const r=await fetch(`${getBase()}${path}${sep}token=${encodeURIComponent(getToken())}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});return await r.json()}
+async function apiGet(path){const sep=path.includes("?")?"&":"?";const r=await fetch(`${getBase()}${path}${sep}token=${encodeURIComponent(getToken())}`);return await r.json()}async function apiPost(path,body){const sep=path.includes("?")?"&":"?";const r=await fetch(`${getBase()}${path}${sep}token=${encodeURIComponent(getToken())}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});return await r.json()}async function apiDelete(path){const sep=path.includes("?")?"&":"?";const r=await fetch(`${getBase()}${path}${sep}token=${encodeURIComponent(getToken())}`,{method:"DELETE"});return await r.json()}function mediaUrl(messageId){return `${getBase()}/admin/messages/${encodeURIComponent(messageId)}/media?token=${encodeURIComponent(getToken())}`}
 function fmtDate(s){if(!s)return"";try{return new Date(s).toLocaleString("es-AR")}catch{return s}}function fmtShortTime(s){if(!s)return"";try{return new Date(s).toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})}catch{return s}}function normalizePhone(v){const raw=String(v||"").trim();return raw?(raw.startsWith("+")?raw:"+"+raw):""}
 function isUuidLike(v){const s=String(v||"").trim().replace(/^\+/,"");return/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s)}function isRealWhatsAppId(v){const raw=String(v||"").trim();if(!raw)return false;if(raw.startsWith("web_"))return true;if(raw.includes("-"))return false;const digits=raw.replace(/\D/g,"");return digits===raw.replace(/^\+/,"")&&digits.length>=8&&digits.length<=20}
 function isGhostConversation(c){const id=String(c.id||"").trim().toUpperCase(),wa=String(c.wa_id||"").trim().toUpperCase(),name=String(c.customer_name||"").trim().toUpperCase(),status=String(c.status||"").trim().toUpperCase(),technical=["BOT","SYSTEM","STATUS","META","WEBHOOK","NONE","NULL","UNDEFINED"],valid=["BOT","HUMAN","CLOSED"];if(!c.wa_id&&!c.customer_name)return true;if(!valid.includes(status))return true;if(technical.includes(id)||technical.includes(wa)||technical.includes(name))return true;if(isUuidLike(c.wa_id)||String(c.wa_id||"").includes("-"))return true;if(!isRealWhatsAppId(c.wa_id))return true;return false}
@@ -43,30 +43,66 @@ function renderConversations(){const list=document.getElementById("conversationL
 function selectConversation(c){clearTitleAlert();currentConversation=c;renderConversations();document.getElementById("chatTitle").innerText=`${c.customer_name||normalizePhone(c.wa_id)} · ${c.status}`;loadMessages(c.id,true)}
 async function loadMessages(conversationId,showErrors=true,forceBottom=false){try{const data=await apiGet(`/admin/messages/${encodeURIComponent(conversationId)}?limit=500`);if(!data.ok){if(showErrors)alert(data.error||"Error cargando mensajes");return}if(data.conversation){currentConversation=data.conversation;document.getElementById("chatTitle").innerText=`${currentConversation.customer_name||normalizePhone(currentConversation.wa_id)} · ${currentConversation.status}`}renderMessages(data.items||[],forceBottom)}catch(e){if(showErrors)alert("No pude cargar mensajes.");console.error(e)}}
 function renderMessages(items,forceBottom=false){
-  lastMessages=items||[];
+  // Orden blindado en frontend también: sólo mensajes reales del chat.
+  // Las correcciones/enseñanzas viven en ai_learning_events y NO se renderizan acá.
+  items=(items||[]).slice().sort((a,b)=>{
+    const ta=parseTimeMs(a.created_at),tb=parseTimeMs(b.created_at);
+    if(ta!==tb)return ta-tb;
+    return String(a.id||"").localeCompare(String(b.id||""));
+  });
+  lastMessages=items;
   const box=document.getElementById("messages");
 
-  // No romperle la lectura a Gonzalo: sólo autoscrollea si ya estaba abajo
-  // o si la acción fue manual/enviar/tomar/liberar/cerrar.
   const distanceFromBottom=box.scrollHeight-box.scrollTop-box.clientHeight;
   const wasNearBottom=distanceFromBottom<80;
   const previousScrollTop=box.scrollTop;
 
   box.innerHTML="";
-  if(!items.length){
-    box.innerHTML=`<div id="empty">Sin mensajes.</div>`;
-    return;
-  }
+  if(!items.length){box.innerHTML=`<div id="empty">Sin mensajes.</div>`;return;}
+
   items.forEach((m,idx)=>{
     const bubble=document.createElement("div");
     bubble.className=`msg ${m.direction}`;
+
     const text=document.createElement("div");
     text.className="msg-text";
     text.innerHTML=linkify(escapeHtml(m.body||""));
+    bubble.appendChild(text);
+
+    const payload=m.payload||{};
+    const pType=String(payload.type||"").toLowerCase();
+    const hasMedia=payload.media_id&&(pType==="image"||pType==="audio");
+    if(hasMedia&&m.id){
+      const mediaBox=document.createElement("div");
+      mediaBox.style.marginTop="6px";
+      if(pType==="image"){
+        const img=document.createElement("img");
+        img.src=mediaUrl(m.id);
+        img.alt="Imagen enviada por el cliente";
+        img.style.maxWidth="260px";
+        img.style.maxHeight="260px";
+        img.style.borderRadius="8px";
+        img.style.display="block";
+        img.style.cursor="pointer";
+        img.onclick=()=>window.open(mediaUrl(m.id),"_blank");
+        mediaBox.appendChild(img);
+        const open=document.createElement("a");
+        open.href=mediaUrl(m.id);open.target="_blank";open.textContent="Ver imagen";open.style.display="inline-block";open.style.marginTop="4px";
+        mediaBox.appendChild(open);
+      }else if(pType==="audio"){
+        const audio=document.createElement("audio");
+        audio.controls=true;
+        audio.preload="none";
+        audio.src=mediaUrl(m.id);
+        audio.style.width="260px";
+        mediaBox.appendChild(audio);
+      }
+      bubble.appendChild(mediaBox);
+    }
+
     const meta=document.createElement("div");
     meta.className="meta";
     meta.textContent=`${m.direction} · ${fmtDate(m.created_at)}`;
-    bubble.appendChild(text);
     bubble.appendChild(meta);
 
     if(String(m.direction||"").toUpperCase()==="BOT"){
@@ -75,21 +111,17 @@ function renderMessages(items,forceBottom=false){
       const btn=document.createElement("button");
       btn.type="button";
       btn.className="teachMsgBtn";
-      btn.textContent="✍️ Retar";
-      btn.title="Guardar enseñanza sobre esta respuesta puntual";
+      btn.textContent="✏️ Corregir";
+      btn.title="Guardar corrección sobre esta respuesta puntual";
       btn.onclick=(ev)=>{ev.stopPropagation();teachBotMessage(idx)};
       actions.appendChild(btn);
       bubble.appendChild(actions);
     }
-
     box.appendChild(bubble);
   });
 
-  if(forceBottom||wasNearBottom){
-    box.scrollTop=box.scrollHeight;
-  }else{
-    box.scrollTop=previousScrollTop;
-  }
+  if(forceBottom||wasNearBottom)box.scrollTop=box.scrollHeight;
+  else box.scrollTop=previousScrollTop;
 }
 async function takeover(){if(!currentConversation)return alert("Elegí una conversación.");const data=await apiPost("/admin/takeover",{wa_id:currentConversation.wa_id,operator:"Gonzalo",note:"Tomado desde panel"});if(!data.ok)return alert(data.error||"Error");await loadConversations(false);await loadMessages(currentConversation.id,true)}async function releaseBot(){if(!currentConversation)return alert("Elegí una conversación.");const data=await apiPost("/admin/release",{wa_id:currentConversation.wa_id,operator:"Gonzalo",note:"Liberado desde panel"});if(!data.ok)return alert(data.error||"Error");await loadConversations(false);await loadMessages(currentConversation.id,true)}async function closeConversation(){if(!currentConversation)return alert("Elegí una conversación.");if(!confirm("¿Cerrar conversación?"))return;const data=await apiPost("/admin/close",{wa_id:currentConversation.wa_id,operator:"Gonzalo",note:"Cerrado desde panel"});if(!data.ok)return alert(data.error||"Error");await loadConversations(false);await loadMessages(currentConversation.id,true)}async function sendHuman(){if(!currentConversation)return alert("Elegí una conversación.");const input=document.getElementById("messageInput"),body=input.value.trim();if(!body)return;input.value="";const data=await apiPost("/admin/send",{wa_id:currentConversation.wa_id,body,operator:"Gonzalo"});if(!data.ok)alert(data.error||"El mensaje quedó registrado, pero puede no haberse enviado.");await loadConversations(false);await loadMessages(currentConversation.id,true)}
 
@@ -99,27 +131,16 @@ async function teachBotMessage(index){
   const botMsg=lastMessages[index];
   if(!botMsg||String(botMsg.direction||"").toUpperCase()!=="BOT")return alert("No encuentro esa respuesta de Placia.");
   const prevIn=previousInboundBefore(index);
-  const comment=prompt("¿Qué hizo mal Placia en ESTA respuesta? Escribí natural.","");
+  const preview=String(botMsg.body||"").slice(0,500);
+  const comment=prompt(`Vas a corregir ESTA respuesta de Placia:\n\n"${preview}"\n\n¿Qué hizo mal o qué debería aprender?`,"");
   if(!comment||!comment.trim())return;
-  const payload={
-    source:"placia_whatsapp",
-    channel:"WHATSAPP",
-    conversation_id:String(currentConversation.id||""),
-    external_id:String(currentConversation.wa_id||""),
-    message_id:String(botMsg.id||botMsg.message_id||""),
-    parent_message_id:prevIn?String(prevIn.id||prevIn.message_id||""):null,
-    customer_message:prevIn?prevIn.body||null:null,
-    ai_answer:botMsg.body||null,
-    human_answer:null,
-    gonzalo_comment:comment.trim(),
-    status:"pending"
-  };
+  const payload={source:"placia_whatsapp",channel:"WHATSAPP",conversation_id:String(currentConversation.id||""),external_id:String(currentConversation.wa_id||""),message_id:String(botMsg.id||botMsg.message_id||""),parent_message_id:prevIn?String(prevIn.id||prevIn.message_id||""):null,customer_message:prevIn?prevIn.body||null:null,ai_answer:botMsg.body||null,human_answer:null,gonzalo_comment:comment.trim(),status:"pending"};
   const data=await apiPost("/admin/ai/learning_events",payload);
-  if(!data.ok)return alert(data.error||"No pude guardar la enseñanza puntual.");
-  showToast("Reto guardado sobre esa respuesta puntual.");
+  if(!data.ok)return alert(data.error||"No pude guardar la corrección puntual.");
+  showToast("Corrección guardada sobre esa respuesta puntual. No se envió al cliente.");
 }
 function latestByDirection(dir){const d=String(dir||"").toUpperCase();for(let i=lastMessages.length-1;i>=0;i--){if(String(lastMessages[i].direction||"").toUpperCase()===d)return lastMessages[i]}return null}
-async function saveLearning(){if(!currentConversation)return alert("Elegí una conversación.");const input=document.getElementById("lessonInput"),comment=input.value.trim();if(!comment)return alert("Escribí qué tiene que aprender Placia.");const lastIn=latestByDirection("IN"),lastBot=latestByDirection("BOT"),lastHuman=latestByDirection("HUMAN");const payload={source:"placia_whatsapp",channel:"WHATSAPP",conversation_id:String(currentConversation.id||""),external_id:String(currentConversation.wa_id||""),customer_message:lastIn?lastIn.body||null:null,ai_answer:lastBot?lastBot.body||null:null,human_answer:lastHuman?lastHuman.body||null:null,gonzalo_comment:comment,status:"pending"};const data=await apiPost("/admin/ai/learning_events",payload);if(!data.ok)return alert(data.error||"No pude guardar la enseñanza.");input.value="";showToast("Enseñanza guardada para Placia.")}function handleComposerKey(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendHuman()}}function escapeHtml(text){return String(text).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}function linkify(text){return text.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank">$1</a>')}init();
+async function saveLearning(){if(!currentConversation)return alert("Elegí una conversación.");const input=document.getElementById("lessonInput"),comment=input.value.trim();if(!comment)return alert("Escribí qué tiene que aprender Placia.");const lastIn=latestByDirection("IN"),lastBot=latestByDirection("BOT"),lastHuman=latestByDirection("HUMAN");const payload={source:"placia_whatsapp",channel:"WHATSAPP",conversation_id:String(currentConversation.id||""),external_id:String(currentConversation.wa_id||""),customer_message:lastIn?lastIn.body||null:null,ai_answer:lastBot?lastBot.body||null:null,human_answer:lastHuman?lastHuman.body||null:null,gonzalo_comment:comment,status:"pending"};const data=await apiPost("/admin/ai/learning_events",payload);if(!data.ok)return alert(data.error||"No pude guardar la enseñanza.");input.value="";showToast("Corrección/enseñanza guardada para Placia. No se envió al cliente.")}async function deleteLearningForConversation(){if(!currentConversation)return alert("Elegí una conversación.");if(!confirm("¿Borrar las correcciones/enseñanzas guardadas para esta conversación? No borra mensajes del chat."))return;const data=await apiDelete(`/admin/ai/learning_events/by_conversation/${encodeURIComponent(currentConversation.id)}?source=placia_whatsapp`);if(!data.ok)return alert(data.error||"No pude borrar correcciones.");showToast(`Correcciones borradas: ${data.deleted||0}. El chat no se tocó.`)}function handleComposerKey(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendHuman()}}function escapeHtml(text){return String(text).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}function linkify(text){return text.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank">$1</a>')}init();
 </script>
 </body>
 </html>
