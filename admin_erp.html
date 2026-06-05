@@ -566,7 +566,7 @@ function orderCard(o,ch){
   let stateHtml=logState?`<span class="shippingAction ${stateCls}">${esc(logState)}</span>`:'';
   let actionHtml=act?`<span class="logisticsAction">${esc(act)}</span>`:'';
   let totalSub=o.total_products&&Number(o.total_products)!==Number(o.total)?`<br><span class="small">Productos: ${money(o.total_products)}</span>`:'';
-  let logisticClass=logistic==='FULL'?'dark':logistic==='FLEX'?'ok':logistic==='Sin envío'?'warn':'info';
+  let logisticClass=logistic==='FULL'?'dark':logistic==='FLEX'?'ok':logistic==='Sin envío'?'dark':'info';
   let stateLower=String(logState||'').toLowerCase();
   let needsVisualAction=!!act || (ch==='ML'&&logistic==='FLEX'&&(stateLower.includes('pendiente')||stateLower.includes('listo')||stateLower.includes('sin despachar')));
   return `<div class="orderCard ${needsVisualAction?'actionSale':''}"><div class="orderHead"><div><strong>${esc(orderNumber(o,ch))}</strong>${sub?`<br><span class="small">${sub}</span>`:''}<br><span class="small">${dateAR(o.display_created_at||o.created_at||o.ml_date_created)}</span></div><div>${channelCustomerHtml(o,ch)}</div><div class="orderLogisticsBlock"><span class="pill ${logisticClass} shippingPill">${esc(logistic)}</span><br><span class="orderPayStatus">${esc(orderStatusLabel(o,ch))}</span>${stateHtml}${actionHtml}</div><div><strong>${money(o.total)}</strong>${totalSub}<br><span class="small">${countLabel(lines.length)}</span></div><div>${invoiceButton(o,ch)}</div></div><div class="orderLines">${display}</div></div>`
