@@ -48,9 +48,9 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Tienda Nube</div><div class="sub"><button class="navBtn" data-view="tn-publicaciones">Publicaciones</button><button class="navBtn" data-view="tn-ventas">Ventas</button><button class="navBtn" data-view="tn-clientes">Clientes</button></div>
 
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button></div>
-<div class="navTitle">Gestión</div><div class="sub"><div class="navParent">Inventario</div><div class="sub2"><button class="navBtn" data-view="inventario">Productos</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="full-inbound">Envío a Full</button></div><button class="navBtn" data-view="clientes">Clientes ML / TN</button><button class="navBtn" data-view="movimientos">Ver movimientos de stock</button><button class="navBtn" data-view="base-conocimiento">Base de Conocimiento IA</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button><button class="navBtn" data-view="fallas">Reporte de fallas</button></div>
+<div class="navTitle">Gestión</div><div class="sub"><div class="navParent">Inventario</div><div class="sub2"><button class="navBtn" data-view="inventario">Productos</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="full-inbound">Envío a Full</button><button class="navBtn" data-view="movimientos">Movimientos de stock</button></div><button class="navBtn" data-view="clientes">Clientes ML / TN</button><button class="navBtn" data-view="base-conocimiento">Base de Conocimiento IA</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button><button class="navBtn" data-view="fallas">Reporte de fallas</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.60<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.61<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
@@ -1025,15 +1025,15 @@ async function loadCustomers(ch){
     state['customers_'+ch]=d.items||[];
     renderCustomers(ch);
     setStatus(customerStatusId(ch),`Clientes ${(ch==='ALL'?'ML / TN':ch)}: ${(d.items||[]).length}${d.total!=null?' de '+d.total:''}`,true);
-  }catch(e){setStatus(customerStatusId(ch),'Error clientes: '+JSON.stringify(e),false)}
+  }catch(e){setStatus(customerStatusId(ch),'Error clientes: '+(e?.detail?JSON.stringify(e.detail):(e?.message||JSON.stringify(e)||'sin detalle')),false)}
 }
-function customerDisplayName(c){return c.fiscal_name||c.name||c.source_label||'Sin nombre'}
+function customerDisplayName(c){return c.fiscal_name||c.name||c.display_name||c.source_label||c.nickname||c.doc_number||'Sin nombre'}
 function customerSortKey(c){return normalizar(customerDisplayName(c)+' '+(c.doc_number||''))}
 function customersSorted(ch){return [...(state['customers_'+ch]||[])].sort((a,b)=>customerSortKey(a).localeCompare(customerSortKey(b),'es'))}
 function renderCustomers(ch){
   let rows=customersSorted(ch);
   let showChannel=ch==='ALL';
-  let body=rows.map((c,idx)=>`<tr>${showChannel?`<td><span class="pill dark">${esc(c.last_order_channel||c.source_origin||'-')}</span></td>`:''}<td><strong>${esc(customerDisplayName(c))}</strong><br><span class="small">${esc(c.source_label||'')}</span></td><td>${esc([c.doc_type,c.doc_number].filter(Boolean).join(' ')||'-')}<br><span class="small">${esc(c.iva_condition||'')}</span></td><td>${esc(c.email||'-')}<br><span class="small">${esc(c.phone||'')}</span></td><td>${esc(c.city||'')}${c.province?' · '+esc(c.province):''}<br><span class="small">${esc(c.address||'')}</span></td><td>${esc(c.last_order_id||'')}<br><span class="small">${dateAR(c.last_order_date||c.updated_at)}</span></td><td><button class="secondary" onclick="editCustomer('${ch}',${idx})">Editar</button></td></tr>`).join('')||`<tr><td colspan="${showChannel?7:6}" class="muted" style="text-align:center;padding:22px">Sin clientes para esta búsqueda.</td></tr>`;
+  let body=rows.map((c,idx)=>`<tr>${showChannel?`<td><span class="pill dark">${esc(c.last_order_channel||c.channel||c.source_origin||c.source||'-')}</span></td>`:''}<td><strong>${esc(customerDisplayName(c))}</strong><br><span class="small">${esc(c.source_label||'')}</span></td><td>${esc([c.doc_type,c.doc_number].filter(Boolean).join(' ')||'-')}<br><span class="small">${esc(c.iva_condition||'')}</span></td><td>${esc(c.email||'-')}<br><span class="small">${esc(c.phone||'')}</span></td><td>${esc(c.city||'')}${c.province?' · '+esc(c.province):''}<br><span class="small">${esc(c.address||'')}</span></td><td>${esc(c.last_order_id||'')}<br><span class="small">${dateAR(c.last_order_date||c.updated_at)}</span></td><td><button class="secondary" onclick="editCustomer('${ch}',${idx})">Editar</button></td></tr>`).join('')||`<tr><td colspan="${showChannel?7:6}" class="muted" style="text-align:center;padding:22px">Sin clientes para esta búsqueda.</td></tr>`;
   qs(customerTableId(ch)).innerHTML=`<table><thead><tr>${showChannel?'<th>Canal</th>':''}<th>Cliente</th><th>Documento</th><th>Contacto</th><th>Ubicación</th><th>Última venta</th><th>Acción</th></tr></thead><tbody>${body}</tbody></table>`;
 }
 function editCustomer(ch,idx){
@@ -1051,7 +1051,7 @@ async function saveCustomer(ch,id){
     qs(customerToolsId(ch)).innerHTML='';
     await loadCustomers(ch);
     setStatus(customerStatusId(ch),'Cliente actualizado OK',true);
-  }catch(e){setStatus('customerEditStatus','Error guardando cliente: '+JSON.stringify(e),false)}
+  }catch(e){setStatus('customerEditStatus','Error guardando cliente: '+(e?.detail?JSON.stringify(e.detail):(e?.message||JSON.stringify(e)||'sin detalle')),false)}
 }
 
 function fullInboundSelectedFile(){return qs('fullInboundPdf')?.files?.[0]||null}
