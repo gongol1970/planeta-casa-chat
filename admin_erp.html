@@ -50,7 +50,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button></div>
 <div class="navTitle">Gestión</div><div class="sub"><div class="navParent">Inventario</div><div class="sub2"><button class="navBtn" data-view="inventario">Productos</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="full-inbound">Envío a Full</button><button class="navBtn" data-view="movimientos">Movimientos de stock</button></div><button class="navBtn" data-view="clientes">Clientes ML / TN</button><button class="navBtn" data-view="base-conocimiento">Base de Conocimiento IA</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.65<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.66<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
@@ -618,6 +618,41 @@ function invoiceButton(o,ch){
   }
   return `<div class="invoiceMiniWrap"><span class="invoiceStatusIcon none" title="Sin factura">📄⚠️</span></div>`;
 }
+function isTnMotoShipping(o){
+  let opt=String(o.shipping_option||o.tn_shipping_option||'').toLowerCase();
+  return opt.includes('moto')||opt.includes('motomensaj')||opt.includes('mensajería')||opt.includes('mensajeria');
+}
+function canMarkTnDelivered(o,ch){
+  if(ch!=='TN')return false;
+  if(!isTnMotoShipping(o))return false;
+  let st=String(shippingStateLabel(o,ch)||'').toLowerCase();
+  let raw=shippingStatusText(o);
+  let already=!!(o.tn_manual_delivered||o.manual_delivered)||st.includes('entregado')||raw.includes('delivered')||raw.includes('manual_delivered');
+  if(already)return false;
+  return st.includes('en camino')||raw.includes('shipped');
+}
+function tnDeliveredButton(o,ch){
+  if(!canMarkTnDelivered(o,ch))return '';
+  let oid=String(o.external_order_id||'');
+  if(!oid)return '';
+  let label=String(orderNumber(o,ch)||oid).replace(/'/g,'');
+  return `<br><button class="secondary smallBtn" onclick="markTnMotoDelivered('${esc(oid)}','${esc(label)}')">Entregado</button>`;
+}
+async function markTnMotoDelivered(orderId,label){
+  if(!confirm(`Marcar ${label||orderId} como ENTREGADO en el ERP?\n\nEsto no cambia el estado real en Tienda Nube; solo cierra la entrega manual/moto en el ERP.`))return;
+  setBusy(true,'Marcando entregado','Cerrando entrega manual TN...');
+  setStatus('tnVentasStatus','Marcando entregado...');
+  try{
+    let d=await fetchJson(`/admin/tn/orders/${encodeURIComponent(orderId)}/mark_delivered_manual`,{method:'POST'});
+    setStatus('tnVentasStatus',`OK: ${label||orderId} marcado Entregado`,true);
+    await loadRecent('TN',state.sales.TN.offset||0);
+    loadDashboard(true);
+  }catch(e){
+    setStatus('tnVentasStatus','Error marcando entregado: '+(e.message||e.detail||JSON.stringify(e)),false);
+    console.error('markTnMotoDelivered',e);
+  }finally{setBusy(false)}
+}
+
 function orderCard(o,ch){
   let lines=linesForOrder(o);
   let display=lines.map(l=>`<div class="lineItem"><div><strong>${esc(l.sku)}</strong></div><div>${esc(l.name||'')}</div><div>Cant: <strong>${esc(l.quantity)}</strong></div><div>${l.unit_price!==''?money(l.unit_price):''}</div><div>${l.prev!==undefined?`Stock ${esc(l.prev)} → ${esc(l.next)}`:(l.subtotal?money(l.subtotal):'')}</div></div>`).join('')||'<div class="muted">Sin líneas visibles todavía.</div>';
@@ -627,12 +662,13 @@ function orderCard(o,ch){
   let act=saleNeedsAction(o,ch);
   let stateCls=shippingStateClass(logState);
   let stateHtml=logState?`<span class="shippingAction ${stateCls}">${esc(logState)}</span>`:'';
+  let manualDeliveredHtml=tnDeliveredButton(o,ch);
   let actionHtml=act?`<span class="logisticsAction">${esc(act)}</span>`:'';
   let totalSub=o.total_products&&Number(o.total_products)!==Number(o.total)?`<br><span class="small">Productos: ${money(o.total_products)}</span>`:'';
   let logisticClass=logistic==='FULL'?'dark':logistic==='FLEX'?'ok':logistic==='Sin envío'?'dark':'info';
   let stateLower=String(logState||'').toLowerCase();
   let needsVisualAction=!!act || (ch==='ML'&&logistic==='FLEX'&&(stateLower.includes('pendiente')||stateLower.includes('listo')||stateLower.includes('sin despachar')));
-  return `<div class="orderCard ${needsVisualAction?'actionSale':''}"><div class="orderHead"><div><strong>${esc(orderNumber(o,ch))}</strong>${sub?`<br><span class="small">${sub}</span>`:''}<br><span class="small">${dateAR(o.display_created_at||o.created_at||o.ml_date_created)}</span></div><div>${channelCustomerHtml(o,ch)}</div><div class="orderLogisticsBlock"><span class="pill ${logisticClass} shippingPill">${esc(logistic)}</span><br><span class="orderPayStatus">${esc(orderStatusLabel(o,ch))}</span>${stateHtml}${actionHtml}</div><div><strong>${money(o.total)}</strong>${totalSub}<br><span class="small">${countLabel(lines.length)}</span></div><div>${invoiceButton(o,ch)}</div></div><div class="orderLines">${display}</div></div>`
+  return `<div class="orderCard ${needsVisualAction?'actionSale':''}"><div class="orderHead"><div><strong>${esc(orderNumber(o,ch))}</strong>${sub?`<br><span class="small">${sub}</span>`:''}<br><span class="small">${dateAR(o.display_created_at||o.created_at||o.ml_date_created)}</span></div><div>${channelCustomerHtml(o,ch)}</div><div class="orderLogisticsBlock"><span class="pill ${logisticClass} shippingPill">${esc(logistic)}</span><br><span class="orderPayStatus">${esc(orderStatusLabel(o,ch))}</span>${stateHtml}${manualDeliveredHtml}${actionHtml}</div><div><strong>${money(o.total)}</strong>${totalSub}<br><span class="small">${countLabel(lines.length)}</span></div><div>${invoiceButton(o,ch)}</div></div><div class="orderLines">${display}</div></div>`
 }
 
 
