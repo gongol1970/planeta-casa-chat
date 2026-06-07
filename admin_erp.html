@@ -50,7 +50,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button></div>
 <div class="navTitle">Gestión</div><div class="sub"><div class="navParent">Inventario</div><div class="sub2"><button class="navBtn" data-view="inventario">Productos</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="full-inbound">Envío a Full</button><button class="navBtn" data-view="movimientos">Movimientos de stock</button></div><button class="navBtn" data-view="clientes">Clientes ML / TN</button><button class="navBtn" data-view="base-conocimiento">Base de Conocimiento IA</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.68<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.69<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
@@ -672,7 +672,9 @@ function orderCard(o,ch){
   let totalSub=o.total_products&&Number(o.total_products)!==Number(o.total)?`<br><span class="small">Productos: ${money(o.total_products)}</span>`:'';
   let logisticClass=logistic==='FULL'?'dark':logistic==='FLEX'?'ok':logistic==='Sin envío'?'dark':'info';
   let stateLower=String(logState||'').toLowerCase();
-  let needsVisualAction=!!act || (ch==='ML'&&logistic==='FLEX'&&(stateLower.includes('pendiente')||stateLower.includes('listo')||stateLower.includes('sin despachar')));
+  let mlLogisticNeedsSeller = ch==='ML' && logistic!=='FULL' && logistic!=='Sin envío';
+  let mlPendingNeedsSeller = mlLogisticNeedsSeller && (stateLower.includes('pendiente')||stateLower.includes('listo')||stateLower.includes('sin despachar'));
+  let needsVisualAction=!!act || mlPendingNeedsSeller;
   return `<div class="orderCard ${needsVisualAction?'actionSale':''}"><div class="orderHead"><div><strong>${esc(orderNumber(o,ch))}</strong>${sub?`<br><span class="small">${sub}</span>`:''}<br><span class="small">${dateAR(o.display_created_at||o.created_at||o.ml_date_created)}</span></div><div>${channelCustomerHtml(o,ch)}</div><div class="orderLogisticsBlock"><span class="pill ${logisticClass} shippingPill">${esc(logistic)}</span><br><span class="orderPayStatus">${esc(orderStatusLabel(o,ch))}</span>${stateHtml}${manualDeliveredHtml}${actionHtml}</div><div><strong>${money(o.total)}</strong>${totalSub}<br><span class="small">${countLabel(lines.length)}</span></div><div>${invoiceButton(o,ch)}</div></div><div class="orderLines">${display}</div></div>`
 }
 
