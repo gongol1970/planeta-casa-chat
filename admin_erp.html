@@ -50,7 +50,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button></div>
 <div class="navTitle">Gestión</div><div class="sub"><div class="navParent">Inventario</div><div class="sub2"><button class="navBtn" data-view="inventario">Productos</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="full-inbound">Envío a Full</button><button class="navBtn" data-view="movimientos">Movimientos de stock</button></div><button class="navBtn" data-view="clientes">Clientes ML / TN</button><button class="navBtn" data-view="base-conocimiento">Base de Conocimiento IA</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.66<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.67<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
@@ -639,12 +639,13 @@ function tnDeliveredButton(o,ch){
   return `<br><button class="secondary smallBtn" onclick="markTnMotoDelivered('${esc(oid)}','${esc(label)}')">Entregado</button>`;
 }
 async function markTnMotoDelivered(orderId,label){
-  if(!confirm(`Marcar ${label||orderId} como ENTREGADO en el ERP?\n\nEsto no cambia el estado real en Tienda Nube; solo cierra la entrega manual/moto en el ERP.`))return;
-  setBusy(true,'Marcando entregado','Cerrando entrega manual TN...');
+  if(!confirm(`Marcar ${label||orderId} como ENTREGADO?\n\nPrimero intento reflejarlo en Tienda Nube. Si TN lo rechaza, igual queda cerrado en el ERP y se guarda el error.`))return;
+  setBusy(true,'Marcando entregado','Intentando marcar entregado en Tienda Nube y cerrando ERP...');
   setStatus('tnVentasStatus','Marcando entregado...');
   try{
-    let d=await fetchJson(`/admin/tn/orders/${encodeURIComponent(orderId)}/mark_delivered_manual`,{method:'POST'});
-    setStatus('tnVentasStatus',`OK: ${label||orderId} marcado Entregado`,true);
+    let d=await fetchJson(`/admin/tn/orders/${encodeURIComponent(orderId)}/mark_delivered_manual?sync_tn=true`,{method:'POST'});
+    let tnMsg=d.tn_api_ok?'TN actualizado + ERP cerrado':'ERP cerrado; TN no aceptó delivered (ver raw/debug)';
+    setStatus('tnVentasStatus',`OK: ${label||orderId} marcado Entregado · ${tnMsg}`,true);
     await loadRecent('TN',state.sales.TN.offset||0);
     loadDashboard(true);
   }catch(e){
