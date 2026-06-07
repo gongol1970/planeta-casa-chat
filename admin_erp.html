@@ -50,7 +50,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button></div>
 <div class="navTitle">Gestión</div><div class="sub"><div class="navParent">Inventario</div><div class="sub2"><button class="navBtn" data-view="inventario">Productos</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="full-inbound">Envío a Full</button><button class="navBtn" data-view="movimientos">Movimientos de stock</button></div><button class="navBtn" data-view="clientes">Clientes ML / TN</button><button class="navBtn" data-view="base-conocimiento">Base de Conocimiento IA</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.64<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.65<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
@@ -120,8 +120,19 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
     </div>
 
     <div class="col-12 card">
+      <div class="dashStatusLine">
+        <div>
+          <h3>Control operativo</h3>
+          <p>Facturas pendientes/problemáticas y sync_jobs de stock con error/revisión.</p>
+        </div>
+        <button class="secondary" onclick="loadSyncJobs(0,true);showView('fallas')">Ver detalle técnico</button>
+      </div>
+      <div id="dashFailuresSummary" class="dashList" style="margin-top:12px"></div>
+    </div>
+
+    <div class="col-12 card">
       <h3>Accesos rápidos</h3>
-      <div class="btnrow"><button class="secondary" onclick="showView('ml-ventas')">Ventas ML</button><button class="secondary" onclick="showView('tn-ventas')">Ventas TN</button><button class="secondary" onclick="showView('inventario')">Inventario</button><button class="secondary" onclick="showView('movimientos')">Movimientos stock</button><button class="secondary" onclick="showView('arca-manual')">Comprobante manual</button><button class="secondary" onclick="showView('dashboard')">Fallas / jobs en Dashboard</button></div>
+      <div class="btnrow"><button class="secondary" onclick="showView('ml-ventas')">Ventas ML</button><button class="secondary" onclick="showView('tn-ventas')">Ventas TN</button><button class="secondary" onclick="showView('inventario')">Inventario</button><button class="secondary" onclick="showView('movimientos')">Movimientos stock</button><button class="secondary" onclick="showView('arca-manual')">Comprobante manual</button><button class="secondary" onclick="showView('dashboard')"></div>
     </div>
   </div>
 </section>
@@ -353,13 +364,63 @@ async function refreshShippingForDashboard(){
     loadDashboard._refreshingShipping=false;
   }
 }
+function dashboardJobsPagerHtml(j){
+  j=j||{};
+  let total=Number(j.count||0), limit=Number(j.limit||5), offset=Number(j.offset||0);
+  if(total<=limit)return '';
+  let from=total?offset+1:0;
+  let to=Math.min(offset+limit,total);
+  let prev=Math.max(0,offset-limit);
+  let next=offset+limit;
+  return `<div class="btnrow" style="margin-top:8px"><span class="small">Mostrando ${from}-${to} de ${total}</span><button class="secondary" ${offset<=0?'disabled':''} onclick="loadDashboardStockJobsPage(${prev})">Anterior 5</button><button class="secondary" ${next>=total?'disabled':''} onclick="loadDashboardStockJobsPage(${next})">Siguientes 5</button></div>`;
+}
+
+function dashboardStockJobRows(jobsBox){
+  jobsBox=jobsBox||{};
+  let jobs=jobsBox.items||[];
+  let total=Number(jobsBox.count||0);
+  let blocks=[];
+  blocks.push(`<div class="dashMini"><b>${esc(total)}</b><span class="small">sync_jobs de stock con error/revisión</span></div>`);
+  blocks.push(`<p class="small">Son jobs de sincronización de stock. Se muestran de 5 en 5. La columna clave para decidir acción es <strong>Stock actual</strong>.</p>`);
+  if(jobs.length){
+    blocks.push(`<table class="dashTable"><thead><tr><th>Fecha</th><th>Market</th><th>SKU</th><th>Stock actual</th><th>Stock job</th><th>Estado</th><th>Intentos</th></tr></thead><tbody>${jobs.map(j=>`<tr><td>${dateAR(j.updated_at||j.created_at)}</td><td>${esc(j.marketplace||'')}</td><td><strong class="mono">${esc(j.sku||'')}</strong><br><span class="small">${esc(j.item_name||'')}</span></td><td><strong>${esc(j.current_stock??'-')}</strong></td><td>${esc(j.target_stock??'-')}</td><td>${esc(j.status||'')}</td><td>${esc(j.attempts??'')}</td></tr>`).join('')}</tbody></table>`);
+    blocks.push(dashboardJobsPagerHtml(jobsBox));
+  }else{
+    blocks.push('<div class="dashEmpty">No hay sync_jobs de stock con error/revisión.</div>');
+  }
+  return blocks.join('');
+}
+
+async function loadDashboardStockJobsPage(offset){
+  state.dashboardJobs=state.dashboardJobs||{offset:0,limit:5};
+  state.dashboardJobs.offset=Math.max(0,Number(offset||0));
+  await loadDashboard(true);
+}
+
+function dashFailureRows(f){
+  f=f||{};
+  let inv=(f.invoices&&f.invoices.items)||[];
+  let jobsBox=(f.sync_jobs)||{items:[],count:0,limit:5,offset:0};
+  let blocks=[];
+  if(inv.length){
+    blocks.push(`<div class="dashMini"><b>${esc((f.invoices&&f.invoices.count)||inv.length)}</b><span class="small">facturas / ventas pendientes o con revisión</span></div>`);
+    blocks.push(`<table class="dashTable"><thead><tr><th>Fecha</th><th>Tipo</th><th>Canal</th><th>Operación</th><th>Cliente</th><th>Motivo</th><th>Total</th></tr></thead><tbody>${inv.slice(0,8).map(x=>`<tr><td>${dateAR(x.created_at)}</td><td>${esc(x.kind==='invoice'?'Comprobante':'Venta')}</td><td>${esc(x.channel||'')}</td><td>${esc(x.sale_number||x.external_order_id||'')}</td><td>${esc(x.customer_name||'')}</td><td>${esc(x.reason||x.status||'')}</td><td>${dashMoney(x.total)}</td></tr>`).join('')}</tbody></table>`);
+  }
+  blocks.push(dashboardStockJobRows(jobsBox));
+  let errs=[...((f.invoices&&f.invoices.errors)||[]),...((f.sync_jobs&&f.sync_jobs.errors)||[])];
+  if(errs.length)blocks.push(`<div class="status badtxt">Errores leyendo control operativo: ${esc(errs.join(' · '))}</div>`);
+  return blocks.join('')||'<div class="dashEmpty">No hay fallas operativas detectadas.</div>';
+}
+
+
 async function loadDashboard(force=false){
   if(loadDashboard.loading&&!force)return;
   loadDashboard.loading=true;
   setStatus('homeStatus','Actualizando dashboard...');
   try{
     await refreshShippingForDashboard();
-    let d=await fetchJson('/admin/dashboard/summary?invoice_hours=168&shipping_days=14');
+    state.dashboardJobs=state.dashboardJobs||{offset:0,limit:5};
+    let d=await fetchJson(`/admin/dashboard/summary?invoice_hours=168&shipping_days=14&sync_jobs_limit=${encodeURIComponent(state.dashboardJobs.limit||5)}&sync_jobs_offset=${encodeURIComponent(state.dashboardJobs.offset||0)}`);
     let v=d.version||'?';
     dashSet('dashBackendVer',shortVer(v));dashSet('footBackendVer',shortVer(v));
     if(qs('stErp'))qs('stErp').textContent='OK';
@@ -380,6 +441,7 @@ async function loadDashboard(force=false){
     dashSet('dashShipCount',ps.count??0);dashSet('dashShipAmount',dashMoney(ps.total_amount));
     let st=qs('dashShippingTable');if(st)st.innerHTML=dashShippingRows(ps);
     let sl=qs('dashShippingList');if(sl)sl.innerHTML=(ps.items||[]).length?(ps.items||[]).slice(0,10).map(it=>`<div class="dashItem"><div><span class="pill ${it.channel==='ML'?'info':'ok'}">${esc(it.channel)}</span></div><div><strong>${esc(it.sale_number||it.external_order_id||'')}</strong><br><span class="small">${esc(it.customer_name||'')} · ${esc(it.logistic_type||'')} · ${esc(it.shipping_status||'')}</span></div><div><strong>${dashMoney(it.total)}</strong></div></div>`).join(''):'<div class="dashEmpty">No hay ventas pendientes de envío.</div>';
+    let failuresBox=qs('dashFailuresSummary');if(failuresBox)failuresBox.innerHTML=dashFailureRows(d.failures||{});
     let poll=d.pollers||{};
     // Los boxes viejos ya no se muestran, pero quedan por compatibilidad si existen.
     if(qs('stTn'))qs('stTn').textContent=poll.tn_auto_poll_enabled?'ON':'OFF';
