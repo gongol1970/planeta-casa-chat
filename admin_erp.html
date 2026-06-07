@@ -35,6 +35,32 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 @media(max-width:1050px){aside{width:235px}main{margin-left:235px;width:calc(100% - 235px)}.col-2,.col-3,.col-4,.col-5,.col-6,.col-8{grid-column:span 12}.tokenBox{flex-wrap:wrap}.tokenBox input{width:220px}.orderHead,.lineItem,.marketBox{grid-template-columns:1fr}.tableWrap{max-height:none}}
 
 .arcaSuggest{position:absolute;left:0;right:0;top:100%;z-index:200;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);max-height:240px;overflow:auto;display:none}.arcaSuggestItem{padding:9px 10px;border-bottom:1px solid #eee2c8;cursor:pointer}.arcaSuggestItem:hover{background:#fff7ed}.fieldRel{position:relative}.successBox{background:#ecfdf3;border:1px solid #75d0a4;color:#064e3b;border-radius:14px;padding:12px 14px;margin-top:12px;font-weight:800}
+
+
+/* MOBILE_RESPONSIVE_FIX_1_70 */
+@media (max-width: 820px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden;font-size:14px}
+  .app{display:block;min-height:100vh;width:100%}
+  aside{position:relative;left:auto;top:auto;bottom:auto;width:100%;height:auto;max-height:none;box-shadow:none;border-bottom:1px solid rgba(220,197,143,.25)}
+  .brand{padding:14px 14px 10px}.brandTop{grid-template-columns:46px 1fr auto;gap:10px}.appMark{width:46px;height:46px}.brandName{font-size:22px}.brandTenantLogo{height:34px;min-width:50px;max-width:68px}.brand p{font-size:12px;margin-top:8px}.globalAlertBell{width:44px;height:44px;font-size:30px;margin-top:8px}
+  nav{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px 12px;overflow:visible;max-height:none}
+  .navTitle{grid-column:1/-1;margin:10px 0 0;padding:6px 4px}.sub,.sub2{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0;padding-left:0}.sub:before,.sub2:before{display:none}.sub .navBtn,.sub2 .navBtn,.navBtn{justify-content:center;text-align:center;min-height:42px;padding:9px 8px;font-size:13px}.navParent{grid-column:1/-1;justify-content:center;padding:7px 8px}.sidebarFoot{font-size:11px;padding:8px 14px}
+  main{margin-left:0;width:100%;padding:14px 12px 72px}
+  .topbar{display:block;margin-bottom:14px}.topbar h2{font-size:28px;line-height:1.05}.crumb{font-size:13px;margin-bottom:12px}.tokenBox{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}.tokenBox>div{grid-column:1/-1}.tokenBox input{width:100%;font-size:13px;padding:9px}.tokenBox button{width:100%}
+  .grid{display:block}.col-2,.col-3,.col-4,.col-5,.col-6,.col-8,.col-12{grid-column:auto}.card,.dashHero,.stat{padding:14px;margin-bottom:12px;border-radius:16px}.card h3,.dashHero h3{font-size:20px;line-height:1.15}.card p{font-size:14px;line-height:1.35}.dashStatusLine{display:block}.dashRefresh{margin-top:10px;width:100%}.dashGridSmall{grid-template-columns:1fr}.dashItem{grid-template-columns:1fr;gap:4px}.dashBig{font-size:30px}.dashMoney{font-size:20px}
+  input,select,textarea{font-size:16px;min-height:42px}button,.btn{min-height:42px;padding:10px 12px}.btnrow{gap:8px}.btnrow button,.btnrow .btn{flex:1 1 auto}
+  .tableWrap{max-height:none;overflow-x:auto;-webkit-overflow-scrolling:touch}table{min-width:720px}.inventoryWrap{overflow-x:auto}.inventoryTable{min-width:900px}
+  .orderCard{border-radius:16px;margin:10px 0}.orderHead{grid-template-columns:1fr!important;gap:8px;padding:12px}.orderHead>div{min-width:0}.orderLines{padding:8px 12px}.lineItem{grid-template-columns:1fr!important;gap:3px;padding:8px 0}.lineItem div{overflow-wrap:anywhere}.invoiceMiniWrap,.arcaActionsWrap{justify-content:flex-start}.shippingPill{margin-left:0}.orderLogisticsBlock{line-height:1.45}
+  .marketBox{grid-template-columns:1fr!important;gap:7px}.marketBox .pubvar{grid-template-columns:1fr;white-space:normal}.marketBox .stockInput,.marketBox .priceInput,.stockInput,.priceInput{width:100%}.invStockBox{justify-content:flex-start;text-align:left}.invStockBox .stockControls{align-items:flex-start}
+  .mlQuestionHead{grid-template-columns:72px 1fr;gap:10px}.mlQuestionHead>.btnrow{grid-column:1/-1}.mlQuestionImg{width:64px;height:64px}.mlQuestionText{font-size:15px}.mlQuickDock{position:static;margin:12px 0 0;padding:10px;border-radius:14px}.mlQuickButtons{display:grid;grid-template-columns:1fr 1fr}.mlQuickButtons button{width:100%}
+  .kebabPanel{position:fixed;right:12px;left:12px;top:auto;bottom:16px;min-width:auto;z-index:999;background:#fff}.arcaUserCell,.arcaDateCell,.arcaCbteCell,.arcaChannelCell,.arcaCompactDoc{white-space:normal}
+  pre{max-height:360px;font-size:11px;overflow:auto}.limitSelect{max-width:100%}
+}
+
+@media (max-width: 420px){
+  main{padding:12px 10px 70px}.topbar h2{font-size:26px}.brandName{font-size:20px}.sub,.sub2,nav{gap:5px}.sub .navBtn,.sub2 .navBtn,.navBtn{font-size:12.5px;padding:8px 6px}.tokenBox{grid-template-columns:1fr 1fr}.card,.dashHero,.stat{padding:12px}.mlQuickButtons{grid-template-columns:1fr}.lineItem,.lineItem *{font-size:12px!important}.orderHead{font-size:13px}
+}
+
 </style>
 <!-- UI_ALERTS_INVENTORY_FILTERS_FRONTEND_1_39 -->
 </head>
@@ -50,7 +76,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button></div>
 <div class="navTitle">Gestión</div><div class="sub"><div class="navParent">Inventario</div><div class="sub2"><button class="navBtn" data-view="inventario">Productos</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="full-inbound">Envío a Full</button><button class="navBtn" data-view="movimientos">Movimientos de stock</button></div><button class="navBtn" data-view="clientes">Clientes ML / TN</button><button class="navBtn" data-view="base-conocimiento">Base de Conocimiento IA</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.69<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.70<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
