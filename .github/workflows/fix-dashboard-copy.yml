@@ -1,0 +1,41 @@
+name: Fix dashboard copy
+
+on:
+  push:
+    paths:
+      - .github/workflows/fix-dashboard-copy.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix-copy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace dashboard text
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('admin_erp.html')
+          text = path.read_text(encoding='utf-8')
+          old = 'Resumen operativo real: ventas, facturación y envíos. Sin horóscopo de endpoints.'
+          new = 'Resumen operativo de ventas, facturación y envíos basado en datos reales.'
+          if old not in text:
+              print('Text not found; nothing to change')
+              raise SystemExit(0)
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          print('Dashboard copy fixed')
+          PY
+      - name: Commit change
+        run: |
+          if git diff --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add admin_erp.html
+          git commit -m "Fix dashboard copy"
+          git push
