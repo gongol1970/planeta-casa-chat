@@ -39,3 +39,4 @@ jobs:
           git add admin_erp.html
           git commit -m "Fix dashboard copy"
           git push
+# rerun
