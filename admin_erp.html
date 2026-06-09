@@ -105,7 +105,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button></div>
 <div class="navTitle">Gestión</div><div class="sub"><div class="navParent">Inventario</div><div class="sub2"><button class="navBtn" data-view="inventario">Productos</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="full-inbound">Envío a Full</button><button class="navBtn" data-view="movimientos">Movimientos de stock</button></div><button class="navBtn" data-view="clientes">Clientes ML / TN</button><button class="navBtn" data-view="base-conocimiento">Base de Conocimiento IA</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.75<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.76<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
@@ -114,7 +114,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
     <div class="dashStatusLine">
       <div>
         <h3>Inicio / Dashboard</h3>
-        <p>Resumen operativo de ventas, facturación y envíos.</p>
+        <p>Resumen operativo real: ventas, facturación y envíos. Sin horóscopo de endpoints.</p>
       </div>
       <button class="secondary dashRefresh" onclick="loadDashboard(true)">Actualizar</button>
     </div>
@@ -218,8 +218,8 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 
 <section id="combos" class="view"><div class="card"><h3>Gestión · Combos / Kits</h3><p>Alta, edición y baja de combos. El stock del combo se calcula desde sus componentes.</p><div class="grid"><div class="col-6"><label>Buscar combo</label><input id="comboSearch" oninput="debouncedSearch('combo')" placeholder="SKU, producto o componente"></div><div class="col-2"><label>Cantidad</label><select id="comboLimit" onchange="loadCombos()"><option>20</option><option selected>50</option><option>100</option><option>200</option></select></div><div class="col-4"><label>&nbsp;</label><div class="btnrow"><button onclick="loadCombos()">Buscar</button><button class="primary" onclick="toggleInventoryTool('bundle')">Agregar combo</button></div></div></div><div id="comboTools" class="hidden" style="margin-top:12px"></div><div id="comboStatus" class="status"></div><div id="comboResults" class="tableWrap inventoryWrap" style="margin-top:12px"></div></div></section>
 <section id="full-inbound" class="view"><div class="card"><h3>Gestión · Inventario · Envío a Full</h3><p>Detecta el PDF de preparación de Mercado Libre Full y descuenta del stock ERP las unidades que salen hacia bodega.</p><div class="grid"><div class="col-6"><label>PDF instrucciones ML Full</label><input id="fullInboundPdf" type="file" accept="application/pdf"></div><div class="col-6"><label>&nbsp;</label><div class="btnrow"><button onclick="previewFullInboundPdf()">Detectar PDF</button><button class="primary" onclick="applyFullInboundPdf(false)">Descontar stock</button><button class="secondary" onclick="applyFullInboundPdf(true)">Simular</button></div></div></div><div id="fullInboundStatus" class="status"></div><div id="fullInboundResult" class="tableWrap" style="margin-top:12px"></div><pre id="fullInboundOut" class="hidden"></pre></div></section>
-<section id="arca-reportes" class="view"><div class="card"><h3>ARCA · Reporte de facturación</h3><p>Comprobantes del ERP. Por defecto muestra el mes calendario anterior completo.</p><div class="grid"><div class="col-2"><label>Desde</label><input id="arcaDesde" type="date"></div><div class="col-2"><label>Hasta</label><input id="arcaHasta" type="date"></div><div class="col-2"><label>Tipo de comprobante</label><select id="arcaTipo"><option>Todos</option><option>A</option><option>B</option></select></div><div class="col-2"><label>Canal de venta</label><select id="arcaCanal"><option>Todos</option><option>TN</option><option>ML</option><option>MANUAL</option></select></div><div class="col-2"><label>Concepto</label><select id="arcaConcepto"><option>Todos</option><option>Productos</option><option>Servicios</option><option>Productos y Servicios</option></select></div><div class="col-2"><label>Límite visible</label><select id="arcaLimit"><option>20</option><option selected>100</option><option>200</option></select></div></div><div class="btnrow" style="margin-top:12px"><button onclick="loadArcaInvoices()">Buscar comprobantes</button><button class="secondary" onclick="downloadArcaExcel()">Descargar Excel completo</button></div><div id="arcaStatus" class="status"></div><div id="arcaTable" class="tableWrap" style="margin-top:12px"></div><pre id="arcaOut" class="hidden"></pre></div></section>
-<section id="arca-manual" class="view"><div class="card"><h3>ARCA · Emitir comprobante manual</h3><p>Flujo controlado: primero vista previa, después emisión real con CAE. Remitos y recibos quedan fuera de este módulo.</p><div class="grid"><div class="col-2"><label>Comprobante</label><select id="amTipo"><option value="6" selected>Factura B</option><option value="1">Factura A</option></select></div><div class="col-2"><label>Concepto</label><select id="amConcepto"><option selected>Productos</option><option>Servicios</option><option>Productos y Servicios</option></select></div><div class="col-2"><label>Fecha</label><input id="amFecha" type="date"></div><div class="col-3"><label>Canal / referencia</label><input id="amSourceChannel" value="ARCA_MANUAL"></div><div class="col-3"><label>Operación opcional</label><input id="amSourceOrder" placeholder="Venta / referencia"></div><div class="col-4"><label>Nombre / Razón social receptor *</label><input id="amCustomerName" placeholder="Consumidor Final / nombre real"></div><div class="col-2"><label>Doc. tipo</label><select id="amDocType"><option value="CF" selected>CF</option><option value="DNI">DNI</option><option value="CUIT">CUIT</option></select></div><div class="col-3"><label>Documento</label><div style="display:flex;gap:6px"><input id="amDocNumber" placeholder="DNI / CUIT" onblur="arcaLookupCustomerA5(false)" onkeydown="if(event.key==='Enter'){event.preventDefault();arcaLookupCustomerA5(true)}"><button type="button" class="secondary" style="padding:10px 11px" onclick="arcaLookupCustomerA5(true)">ARCA</button></div></div><div class="col-3"><label>Condición IVA</label><select id="amIvaCond"><option selected>Consumidor Final</option><option>Responsable Inscripto</option><option>Monotributo</option><option>Exento</option></select></div><div class="col-6"><label>Domicilio receptor</label><input id="amAddress" placeholder="Opcional / si viene del comprador"></div><div class="col-6"><label>Localidad receptor *</label><input id="amLocalidad" placeholder="Consumidor Final manual: Ciudad Autónoma de Buenos Aires"></div></div><div class="dividerLine"></div><h3>Conceptos</h3><div id="arcaManualLines"></div><div class="btnrow" style="margin-top:10px"><button class="secondary" onclick="arcaManualAddLine()">Agregar línea</button><button class="secondary" onclick="arcaManualClear()">Limpiar</button></div><div class="dividerLine"></div><div class="grid"><div class="col-12"><label>Notas internas/observaciones</label><textarea id="amNotes" rows="2">Emisión manual controlada desde ERP</textarea></div></div><div style="height:18px"></div><div class="btnrow" style="justify-content:flex-end;align-items:center"><label style="display:flex;align-items:center;gap:10px;margin:0 16px 0 0;text-transform:none;letter-spacing:0;font-size:15px;font-weight:900;color:#111;background:#fff7ed;border:1px solid #f7c56b;border-radius:14px;padding:12px 14px"><input id="amModificaStock" type="checkbox" style="width:18px;height:18px;margin:0"> Modifica stock</label><select id="amStockReason" title="Motivo stock" style="width:170px"><option value="comprobante" selected>Comprobante</option><option value="devolucion">Devolución</option><option value="ajuste">Ajuste</option><option value="no aplica">No aplica</option></select><button class="secondary" onclick="arcaManualPreview()">Vista previa</button><button class="danger" onclick="arcaManualEmit()">Emitir comprobante real</button></div><div id="arcaManualStatus" class="status"></div><pre id="arcaManualOut" class="hidden"></pre></div></section>
+<section id="arca-reportes" class="view"><div class="card"><h3>ARCA · Reporte de facturación</h3><p>Comprobantes del ERP. Por defecto muestra el mes calendario anterior completo.</p><div class="grid"><div class="col-4"><label>Buscar</label><input id="arcaSearch" placeholder="SKU, factura, cliente, documento, canal..." oninput="renderArcaInvoices()"></div><div class="col-2"><label>Desde</label><input id="arcaDesde" type="date"></div><div class="col-2"><label>Hasta</label><input id="arcaHasta" type="date"></div><div class="col-2"><label>Tipo de comprobante</label><select id="arcaTipo"><option>Todos</option><option>A</option><option>B</option></select></div><div class="col-2"><label>Canal de venta</label><select id="arcaCanal"><option>Todos</option><option>TN</option><option>ML</option><option>MANUAL</option></select></div><div class="col-2"><label>Concepto</label><select id="arcaConcepto"><option>Todos</option><option>Productos</option><option>Servicios</option><option>Productos y Servicios</option></select></div><div class="col-2"><label>Límite visible</label><select id="arcaLimit"><option>20</option><option selected>100</option><option>200</option></select></div></div><div class="btnrow" style="margin-top:12px"><button onclick="loadArcaInvoices()">Buscar comprobantes</button><button class="secondary" onclick="downloadArcaExcel()">Descargar Excel completo</button></div><div id="arcaStatus" class="status"></div><div id="arcaTable" class="tableWrap" style="margin-top:12px"></div><pre id="arcaOut" class="hidden"></pre></div></section>
+<section id="arca-manual" class="view"><div class="card"><h3>ARCA · Emitir comprobante manual</h3><p>Flujo controlado: primero vista previa, después emisión real con CAE. Remitos y recibos quedan fuera de este módulo.</p><div class="grid"><div class="col-2"><label>Comprobante</label><select id="amTipo"><option value="6" selected>Factura B</option><option value="1">Factura A</option><option value="8">Nota de Crédito B</option><option value="3">Nota de Crédito A</option><option value="7">Nota de Débito B</option><option value="2">Nota de Débito A</option></select></div><div class="col-2"><label>Concepto</label><select id="amConcepto"><option selected>Productos</option><option>Servicios</option><option>Productos y Servicios</option></select></div><div class="col-2"><label>Fecha</label><input id="amFecha" type="date"></div><div class="col-3"><label>Canal / referencia</label><input id="amSourceChannel" value="ARCA_MANUAL"></div><div class="col-3"><label>Operación opcional</label><input id="amSourceOrder" placeholder="Venta / referencia"></div><input id="amAssocInvoiceId" type="hidden"><input id="amAssocCbteTipo" type="hidden"><input id="amAssocPtoVta" type="hidden"><input id="amAssocCbteNro" type="hidden"><input id="amAssocInvoiceDate" type="hidden"><input id="amAssocCae" type="hidden"><div class="col-4"><label>Nombre / Razón social receptor *</label><input id="amCustomerName" placeholder="Consumidor Final / nombre real"></div><div class="col-2"><label>Doc. tipo</label><select id="amDocType"><option value="CF" selected>CF</option><option value="DNI">DNI</option><option value="CUIT">CUIT</option></select></div><div class="col-3"><label>Documento</label><div style="display:flex;gap:6px"><input id="amDocNumber" placeholder="DNI / CUIT" onblur="arcaLookupCustomerA5(false)" onkeydown="if(event.key==='Enter'){event.preventDefault();arcaLookupCustomerA5(true)}"><button type="button" class="secondary" style="padding:10px 11px" onclick="arcaLookupCustomerA5(true)">ARCA</button></div></div><div class="col-3"><label>Condición IVA</label><select id="amIvaCond"><option selected>Consumidor Final</option><option>Responsable Inscripto</option><option>Monotributo</option><option>Exento</option></select></div><div class="col-6"><label>Domicilio receptor</label><input id="amAddress" placeholder="Opcional / si viene del comprador"></div><div class="col-6"><label>Localidad receptor *</label><input id="amLocalidad" placeholder="Consumidor Final manual: Ciudad Autónoma de Buenos Aires"></div></div><div class="dividerLine"></div><h3>Conceptos</h3><div id="arcaManualLines"></div><div class="btnrow" style="margin-top:10px"><button class="secondary" onclick="arcaManualAddLine()">Agregar línea</button><button class="secondary" onclick="arcaManualClear()">Limpiar</button></div><div class="dividerLine"></div><div class="grid"><div class="col-12"><label>Notas internas/observaciones</label><textarea id="amNotes" rows="2">Emisión manual controlada desde ERP</textarea></div></div><div style="height:18px"></div><div class="btnrow" style="justify-content:flex-end;align-items:center"><label style="display:flex;align-items:center;gap:10px;margin:0 16px 0 0;text-transform:none;letter-spacing:0;font-size:15px;font-weight:900;color:#111;background:#fff7ed;border:1px solid #f7c56b;border-radius:14px;padding:12px 14px"><input id="amModificaStock" type="checkbox" style="width:18px;height:18px;margin:0"> Modifica stock</label><select id="amStockReason" title="Motivo stock" style="width:170px"><option value="comprobante" selected>Comprobante</option><option value="devolucion">Devolución</option><option value="ajuste">Ajuste</option><option value="no aplica">No aplica</option></select><button class="secondary" onclick="arcaManualPreview()">Vista previa</button><button class="danger" onclick="arcaManualEmit()">Emitir comprobante real</button></div><div id="arcaManualStatus" class="status"></div><pre id="arcaManualOut" class="hidden"></pre></div></section>
 
 <section id="base-conocimiento" class="view">
   <div class="card">
@@ -796,8 +796,8 @@ function renderCombos(){let items=state.comboItems||[];let tbody='';if(!items.le
 async function saveInventoryStock(idx){let item=state.inventoryItems[idx];let el=qs('rowStatus_'+idx);if(String(item.item_type||'').toLowerCase()==='bundle'){if(el){el.textContent='Bundle: el stock se calcula desde componentes.';el.style.color='var(--muted)'}return}let sku=item.sku;let newStock=Number(qs('stock_'+idx).value);if(!Number.isFinite(newStock)){el.textContent='Stock inválido';return}el.textContent='Guardando...';try{let d=await fetchJson('/admin/stock/set',{method:'POST',body:JSON.stringify({sku,new_stock:Math.trunc(newStock),channel:'ADMIN',notes:'Ajuste desde inventario editable integrado',dry_run:false})});item.stock=Math.trunc(newStock);el.textContent='OK: stock guardado. Refrescando vista...';el.style.color='var(--ok)';await searchInventory(state.inventory.offset||0,false);setStatus('invStatus',`Stock guardado para ${sku}. Vista refrescada con el mismo filtro.`,true)}catch(e){el.textContent='Error: '+JSON.stringify(e);el.style.color='var(--bad)'}}
 function movementKind(m){let t=String(m.movement_type||'').toLowerCase();let ch=String(m.channel||'').toUpperCase();if(t.includes('sale'))return`<span class="movementSale">Venta ${esc(ch)}</span>`;if(ch==='ADMIN'||t.includes('adjust')||t.includes('manual'))return`<span class="movementManual">Ajuste manual</span>`;return`<span class="movementUpdate">${esc(m.movement_type||ch||'Movimiento')}</span>`}async function loadMovements(){let sku=qs('movSku')?.value.trim()||'';let lim=Number(qs('movLimit')?.value||100);setStatus('movStatus','Cargando bitácora...');try{let d=await fetchJson(`/admin/stock/movements?limit=${encodeURIComponent(lim)}${sku?'&sku='+encodeURIComponent(sku):''}`);let rows=d.items||[];qs('movTable').innerHTML=`<table><thead><tr><th>Fecha</th><th>Tipo</th><th>SKU</th><th>Cantidad</th><th>Stock</th><th>Referencia</th><th>Notas</th></tr></thead><tbody>${rows.map(m=>`<tr><td>${dateAR(m.created_at)}</td><td>${movementKind(m)}<br><span class="small">${esc(m.channel||'')}</span></td><td><strong class="mono">${esc(m.sku)}</strong></td><td><strong>${esc(m.quantity)}</strong></td><td>${esc(m.previous_stock)} → <strong>${esc(m.new_stock)}</strong></td><td><span class="mono">${esc(m.reference_type||'')}</span><br><span class="small">${esc(m.reference_id||'')}</span></td><td>${esc(m.notes||'')}</td></tr>`).join('')||'<tr><td colspan="7" class="muted" style="text-align:center">Sin movimientos.</td></tr>'}</tbody></table>`;setStatus('movStatus',`OK: ${rows.length} movimientos`,true)}catch(e){setStatus('movStatus','Error movimientos: '+JSON.stringify(e),false)}}function clearMovSku(){qs('movSku').value='';loadMovements()}
 function prevMonthRange(){let d=new Date();let firstPrev=new Date(d.getFullYear(),d.getMonth()-1,1);let fmt=x=>x.toISOString().slice(0,10);return{from:fmt(firstPrev),to:fmt(d)}}function initArcaDates(){let r=prevMonthRange();if(qs('arcaDesde')&&!qs('arcaDesde').value)qs('arcaDesde').value=r.from;if(qs('arcaHasta')&&!qs('arcaHasta').value)qs('arcaHasta').value=r.to}
-function arcaTypeLabel(r){return r.cbte_tipo_label||((Number(r.cbte_tipo)===1?'Factura A':Number(r.cbte_tipo)===6?'Factura B':'Comprobante'))}
-function arcaTypeShort(r){let t=arcaTypeLabel(r).toUpperCase();if(t.includes(' A'))return 'FAC A';if(t.includes(' B'))return 'FAC B';return t.replace('FACTURA','FAC')}
+function arcaTypeLabel(r){let n=Number(r.cbte_tipo||0);return r.cbte_tipo_label||({1:'Factura A',2:'Nota de Débito A',3:'Nota de Crédito A',6:'Factura B',7:'Nota de Débito B',8:'Nota de Crédito B'}[n]||'Comprobante')}
+function arcaTypeShort(r){let t=arcaTypeLabel(r).toUpperCase();let l=t.includes(' A')?'A':(t.includes(' B')?'B':'');if(t.includes('CRED'))return 'NC '+l;if(t.includes('DEB'))return 'ND '+l;if(t.includes('FACT'))return 'FAC '+l;return t}
 function arcaChannelLabel(r){let ch=String(r.source_channel_display||r.source_channel||'');let up=ch.toUpperCase().replace(/[\s-]/g,'_');return (up==='ARCA_MANUAL'||up==='MANUAL'||up==='ARCA')?'MANUAL':ch}
 function arcaNumberCaeBlock(r){let p=String(r.pto_vta||'').padStart(4,'0');let n=r.cbte_nro?String(r.cbte_nro).padStart(8,'0'):'BORRADOR';let cae=r.cae?`CAE ${esc(r.cae)}`:(String(r.status||'').toLowerCase()==='pending_to_invoice'?'Pendiente para facturar':'Sin CAE');return `<div class="arcaCbteCell"><strong>${esc(arcaTypeShort(r))}</strong><br>${esc(p+'-'+n)}<br><span class="small">${cae}</span></div>`}
 function arcaStatusIcon(r){
@@ -817,12 +817,30 @@ function arcaActions(r){
   let view=id?`<button onclick="openInvoiceHtml('${esc(r.id||'')}')">Ver / imprimir PDF</button>`:'';
   let facturar=(ch&&oid&&!r.cae)?`<button onclick="issueInvoiceFromArcaReport('${esc(ch)}','${esc(oid)}')">Facturar</button>`:'';
   let borrador=(ch&&oid&&!r.cae)?`<button onclick="createInvoiceDraft('${esc(ch)}','${esc(oid)}')">Actualizar borrador</button>`:'';
-  let nc=id?`<button onclick="alert('Próximo: Nota de Crédito')">Nota de Crédito</button>`:'';
-  let nd=id?`<button onclick="alert('Próximo: Nota de Débito')">Nota de Débito</button>`:'';
+  let nc=(id&&r.cae)?`<button onclick="arcaStartNoteFromInvoice('${esc(r.id||'')}','NC')">Nota de Crédito</button>`:'';
+  let nd=(id&&r.cae)?`<button onclick="arcaStartNoteFromInvoice('${esc(r.id||'')}','ND')">Nota de Débito</button>`:'';
   return `<div class="arcaActionsWrap"><details class="kebabMenu"><summary title="Más acciones">⋮</summary><div class="kebabPanel">${facturar}${view}${borrador}${nc}${nd}</div></details></div>`;
 }
 async function issueInvoiceFromArcaReport(ch,orderId){
   await issueInvoiceFromSale(ch,orderId,{fromArcaReport:true});
+}
+function arcaInvoiceSearchText(r){
+  let parts=[
+    r.invoice_date,r.created_at,r.cbte_tipo_label,arcaTypeShort(r),r.cbte_nro,r.pto_vta,r.cae,
+    r.customer_name,r.source_customer_name,r.customer_doc_type,r.customer_doc_number,r.customer_iva_condition,
+    r.source_channel,r.source_user,r.source_order_id,r.source_order_number,r.source_order_api_id,r.source_pack_id,r.source_shipping_id,
+    r.importe_total
+  ];
+  (r.lines||[]).forEach(l=>parts.push(l.sku,l.description,l.name,l.title,l.quantity,l.unit_price_gross,l.total_gross));
+  return normalizar(parts.filter(v=>v!==null&&v!==undefined).join(' '));
+}
+function renderArcaInvoices(){
+  let rows=(state.arcaRows||[]);
+  let q=normalizar(qs('arcaSearch')?.value||'');
+  if(q){rows=rows.filter(r=>arcaInvoiceSearchText(r).includes(q))}
+  qs('arcaTable').innerHTML=`<table><thead><tr><th>Fecha</th><th>Comprobante</th><th>Cliente fiscal</th><th>Documento</th><th>IVA</th><th>Canal</th><th>Usuario</th><th>Total</th><th>Estado</th><th>⋮</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="arcaDateCell">${esc(r.invoice_date||String(r.created_at||'').slice(0,10)||'')}</td><td>${arcaNumberCaeBlock(r)}</td><td><div class="arcaFiscalName">${esc(r.customer_name||r.source_customer_name||'-')}</div><span class="small">${esc(r.customer_city||'')}${r.customer_province?' · '+esc(r.customer_province):''}</span></td><td class="arcaCompactDoc">${esc(arcaDoc(r))}</td><td>${esc(r.customer_iva_condition||'-')}</td><td class="arcaChannelCell">${esc(arcaChannelLabel(r))}</td><td class="arcaUserCell">${esc(r.source_user||'')}</td><td><strong>${money(r.importe_total)}</strong></td><td>${arcaStatusIcon(r)}</td><td>${arcaActions(r)}</td></tr>`).join('')||'<tr><td colspan="10" class="muted" style="text-align:center">Sin comprobantes para ese filtro.</td></tr>'}</tbody></table>`;
+  let total=(state.arcaRows||[]).length;
+  setStatus('arcaStatus',`OK: ${rows.length}${q?' filtrados de '+total:''} comprobantes`,true)
 }
 async function loadArcaInvoices(){
   initArcaDates();setStatus('arcaStatus','Consultando comprobantes...');
@@ -833,13 +851,67 @@ async function loadArcaInvoices(){
     if(tipo!=='Todos')p+=`&cbte_tipo=${encodeURIComponent(tipo)}`;
     if(canal!=='Todos')p+=`&channel=${encodeURIComponent(canal)}`;
     if(concepto!=='Todos')p+=`&concept=${encodeURIComponent(concepto)}`;
-    let d=await fetchJson(p);let rows=d.items||[];
-    qs('arcaTable').innerHTML=`<table><thead><tr><th>Fecha</th><th>Comprobante</th><th>Cliente fiscal</th><th>Documento</th><th>IVA</th><th>Canal</th><th>Usuario</th><th>Total</th><th>Estado</th><th>⋮</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="arcaDateCell">${esc(r.invoice_date||String(r.created_at||'').slice(0,10)||'')}</td><td>${arcaNumberCaeBlock(r)}</td><td><div class="arcaFiscalName">${esc(r.customer_name||r.source_customer_name||'-')}</div><span class="small">${esc(r.customer_city||'')}${r.customer_province?' · '+esc(r.customer_province):''}</span></td><td class="arcaCompactDoc">${esc(arcaDoc(r))}</td><td>${esc(r.customer_iva_condition||'-')}</td><td class="arcaChannelCell">${esc(arcaChannelLabel(r))}</td><td class="arcaUserCell">${esc(r.source_user||'')}</td><td><strong>${money(r.importe_total)}</strong></td><td>${arcaStatusIcon(r)}</td><td>${arcaActions(r)}</td></tr>`).join('')||'<tr><td colspan="10" class="muted" style="text-align:center">Sin comprobantes ni ventas pendientes para el rango.</td></tr>'}</tbody></table>`;
-    setStatus('arcaStatus',`OK: ${rows.length} comprobantes`,true)
+    let d=await fetchJson(p);state.arcaRows=d.items||[];renderArcaInvoices();
   }catch(e){setStatus('arcaStatus','Error ARCA: '+JSON.stringify(e),false)}
 }
 function arcaReportQueryBase(){let p=`date_from=${encodeURIComponent(qs('arcaDesde')?.value||'')}&date_to=${encodeURIComponent(qs('arcaHasta')?.value||'')}`;let tipo=qs('arcaTipo')?.value||'Todos',canal=qs('arcaCanal')?.value||'Todos',concepto=qs('arcaConcepto')?.value||'Todos';if(tipo!=='Todos')p+=`&cbte_tipo=${encodeURIComponent(tipo)}`;if(canal!=='Todos')p+=`&channel=${encodeURIComponent(canal)}`;if(concepto!=='Todos')p+=`&concept=${encodeURIComponent(concepto)}`;return p}
 function downloadArcaExcel(){initArcaDates();window.open(url('/admin/arca/facturas/export_excel?'+arcaReportQueryBase()),'_blank')}
+
+function arcaTipoNotaDesdeOriginal(orig,kind){
+  let tipo=Number(orig.cbte_tipo||0);
+  let letra=(orig.cbte_letra||arca_cbte_letter_from_tipo_js(tipo)||'B').toUpperCase();
+  if(kind==='NC')return letra==='A'?3:8;
+  return letra==='A'?2:7;
+}
+function arca_cbte_letter_from_tipo_js(tipo){tipo=Number(tipo||0);if([1,2,3].includes(tipo))return 'A';if([6,7,8].includes(tipo))return 'B';return ''}
+function arcaLineUnitGross(l){
+  let q=Number(l.quantity||1)||1;
+  return Number(l.unit_price_gross||l.unit_price_display||l.unit_price||0)||((Number(l.total_gross||l.subtotal_display||l.subtotal||0)||0)/q);
+}
+async function arcaStartNoteFromInvoice(invoiceId,kind){
+  try{
+    setStatus('arcaStatus',`Preparando ${kind==='NC'?'Nota de Crédito':'Nota de Débito'}...`);
+    let d=await fetchJson('/admin/arca/facturas/'+encodeURIComponent(invoiceId));
+    let inv=d.invoice||{};
+    if(!inv.cae){alert('El comprobante original no tiene CAE. No puedo asociar NC/ND.');return}
+    let tipoNota=arcaTipoNotaDesdeOriginal(inv,kind);
+    arcaManualClear();
+    qs('amTipo').value=String(tipoNota);
+    qs('amConcepto').value=inv.concept||inv.concepto||'Productos';
+    qs('amFecha').value=new Date().toISOString().slice(0,10);
+    qs('amSourceChannel').value='ARCA_MANUAL';
+    qs('amSourceOrder').value=`${kind}-${inv.source_channel||''}-${inv.source_order_number||inv.source_order_id||invoiceId}-${Date.now()}`;
+    qs('amCustomerName').value=inv.customer_name||inv.source_customer_name||'Consumidor Final';
+    qs('amDocType').value=inv.customer_doc_type||'CF';
+    qs('amDocNumber').value=inv.customer_doc_number||'';
+    qs('amIvaCond').value=inv.customer_iva_condition||'Consumidor Final';
+    qs('amAddress').value=inv.customer_address||'';
+    qs('amLocalidad').value=inv.customer_localidad||inv.customer_city||'';
+    qs('amAssocInvoiceId').value=inv.id||invoiceId;
+    qs('amAssocCbteTipo').value=inv.cbte_tipo||'';
+    qs('amAssocPtoVta').value=inv.pto_vta||'';
+    qs('amAssocCbteNro').value=inv.cbte_nro||'';
+    qs('amAssocInvoiceDate').value=inv.invoice_date||String(inv.created_at||'').slice(0,10)||'';
+    qs('amAssocCae').value=inv.cae||'';
+    let nro=`${String(inv.pto_vta||'').padStart(4,'0')}-${String(inv.cbte_nro||'').padStart(8,'0')}`;
+    qs('amNotes').value=`${kind==='NC'?'Nota de crédito':'Nota de débito'} asociada a ${arcaTypeShort(inv)} ${nro} · CAE ${inv.cae||''}`;
+    if(qs('amModificaStock'))qs('amModificaStock').checked=false;
+    if(qs('amStockReason'))qs('amStockReason').value=(kind==='NC'?'devolucion':'comprobante');
+    qs('arcaManualLines').innerHTML='';arcaManualSeq=0;
+    let lines=(inv.lines||[]);
+    if(!lines.length){lines=[{sku:'',description:'Ajuste sobre comprobante original',quantity:1,unit_price_gross:Number(inv.importe_total||0),iva_pct:21}]}
+    lines.forEach(l=>arcaManualAddLine({
+      sku:l.sku||'',
+      description:l.description||l.name||'Producto',
+      quantity:l.quantity||1,
+      unit_price_gross:arcaLineUnitGross(l),
+      iva_pct:l.iva_pct||21
+    }));
+    showView('arca-manual');
+    setStatus('arcaManualStatus',`${kind==='NC'?'Nota de Crédito':'Nota de Débito'} preparada desde ${arcaTypeShort(inv)} ${nro}. Revisá/importes y emití.`,true);
+  }catch(e){setStatus('arcaStatus','No pude preparar NC/ND: '+(e.message||JSON.stringify(e)),false)}
+}
+
 async function arcaCheck(){setStatus('arcaStatus','Probando configuración ARCA...');try{let d=await fetchJson('/admin/arca/check');showPre('arcaOut',d);setStatus('arcaStatus','Configuración ARCA OK',true)}catch(e){showPre('arcaOut',e);setStatus('arcaStatus','Error ARCA',false)}}
 
 async function loadArcaTestPreviews(){setStatus('arcaStatus','Armando pruebas sin CAE...');try{let d=await fetchJson('/admin/arca/previews/test-batch?ml_limit=10&tn_limit=5');let rows=d.items||[];qs('arcaPreviewTable').innerHTML=`<table><thead><tr><th>Canal</th><th>Orden</th><th>Tipo</th><th>Cliente</th><th>Documento</th><th>Ítems</th><th>Neto</th><th>IVA</th><th>IVA contenido</th><th>Total</th><th>Acción</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.source_channel||'')}</td><td>${esc(r.source_order_number||r.source_order_id||'')}</td><td>${esc(r.cbte_tipo_label||'')}</td><td>${esc(r.customer_name||'')}</td><td>${esc((r.customer_doc_type||'')+' '+(r.customer_doc_number||''))}</td><td>${esc(r.line_count??'')}</td><td>${money(r.importe_neto)}</td><td>${money(r.importe_iva)}</td><td>${money(r.iva_contenido)}</td><td><strong>${money(r.importe_total)}</strong></td><td><a class="btn secondary" target="_blank" href="${url('/admin/arca/previews/'+encodeURIComponent(r.source_channel)+'/'+encodeURIComponent(r.source_order_id)+'/html')}">Ver preview</a></td></tr>`).join('')||'<tr><td colspan="11" class="muted" style="text-align:center">Sin previews.</td></tr>'}</tbody></table>`;setStatus('arcaStatus',`OK: ${rows.length} pruebas sin CAE armadas`,true)}catch(e){setStatus('arcaStatus','Error previews: '+JSON.stringify(e),false);showPre('arcaOut',e)}}
@@ -955,7 +1027,7 @@ async function arcaLookupCustomerA5(force){
   }catch(e){setStatus('arcaManualStatus','No pude traer datos de ARCA: '+(e.detail?.arca_padron_error||e.message||JSON.stringify(e)),false)}
 }
 function arcaManualClear(){
-  ['amSourceOrder','amCustomerName','amDocNumber','amAddress','amNotes'].forEach(id=>{if(qs(id))qs(id).value=''})
+  ['amSourceOrder','amCustomerName','amDocNumber','amAddress','amNotes','amAssocInvoiceId','amAssocCbteTipo','amAssocPtoVta','amAssocCbteNro','amAssocInvoiceDate','amAssocCae'].forEach(id=>{if(qs(id))qs(id).value=''})
   if(qs('amCustomerName'))qs('amCustomerName').value='Consumidor Final';
   if(qs('amDocType'))qs('amDocType').value='CF';
   if(qs('amIvaCond'))qs('amIvaCond').value='Consumidor Final';
@@ -979,6 +1051,12 @@ function arcaManualBody(dryRun=true,confirmar=false){
     customer_name:qs('amCustomerName').value.trim(),customer_doc_type:qs('amDocType').value,customer_doc_number:qs('amDocNumber').value.trim(),customer_iva_condition:qs('amIvaCond').value,
     customer_address:qs('amAddress').value.trim()||null,customer_localidad:qs('amLocalidad').value.trim()||null,customer_email:null,
     source_channel:qs('amSourceChannel').value.trim()||'ARCA_MANUAL',source_order_id:qs('amSourceOrder').value.trim()||null,source_order_number:qs('amSourceOrder').value.trim()||null,
+    associated_invoice_id:qs('amAssocInvoiceId')?.value||null,
+    associated_cbte_tipo:qs('amAssocCbteTipo')?.value?Number(qs('amAssocCbteTipo').value):null,
+    associated_pto_vta:qs('amAssocPtoVta')?.value?Number(qs('amAssocPtoVta').value):null,
+    associated_cbte_nro:qs('amAssocCbteNro')?.value?Number(qs('amAssocCbteNro').value):null,
+    associated_invoice_date:qs('amAssocInvoiceDate')?.value||null,
+    associated_cae:qs('amAssocCae')?.value||null,
     notes:qs('amNotes').value.trim()||null,
     modifica_stock:!!(qs('amModificaStock')&&qs('amModificaStock').checked),
     stock_movement_reason:qs('amStockReason')?qs('amStockReason').value:'comprobante',
@@ -1003,8 +1081,7 @@ async function arcaManualEmit(){
     let link=d.html_path?url(d.html_path):'';
     qs('arcaManualStatus').className='status oktxt';
     qs('arcaManualStatus').innerHTML=`<div class="successBox">Emitido OK · ${esc(nro)} · CAE ${esc(d.cae||'')}${esc(sm)}${link?`<div style="margin-top:8px"><button class="secondary" onclick="window.open('${esc(link)}','_blank')">Ver / imprimir / guardar PDF</button></div>`:''}</div>`;
-    setTimeout(()=>{arcaManualClear();setStatus('arcaManualStatus',`Emitido OK · ${nro} · CAE ${d.cae||''}`,true)},2000);
-    loadArcaInvoices();
+    setTimeout(()=>{arcaManualClear();showView('arca-reportes');loadArcaInvoices();setStatus('arcaStatus',`Emitido OK · ${nro} · CAE ${d.cae||''}`,true);window.scrollTo({top:0,behavior:'smooth'})},2200);
   }catch(e){setStatus('arcaManualStatus','Error emisión: '+(e.message||JSON.stringify(e)),false);showPre('arcaManualOut',e)}
   finally{if(btn){btn.disabled=false;btn.textContent='Emitir comprobante real'}}
 }
