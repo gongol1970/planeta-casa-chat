@@ -105,7 +105,7 @@ table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;ove
 <div class="navTitle">Local físico</div><div class="sub"><button class="navBtn" data-view="arca-manual">Emitir comprobante manual</button></div>
 <div class="navTitle">Gestión</div><div class="sub"><div class="navParent">Inventario</div><div class="sub2"><button class="navBtn" data-view="inventario">Productos</button><button class="navBtn" data-view="combos">Combos / Kits</button><button class="navBtn" data-view="full-inbound">Envío a Full</button><button class="navBtn" data-view="movimientos">Movimientos de stock</button></div><button class="navBtn" data-view="clientes">Clientes ML / TN</button><button class="navBtn" data-view="base-conocimiento">Base de Conocimiento IA</button><button class="navBtn" data-view="arca-reportes">ARCA reportes</button></div>
 <div class="navTitle">Sistema</div><div class="sub"><button class="navBtn" data-view="configuracion">Configuración</button></div>
-</nav><div class="sidebarFoot">Frontend: 1.76<br>Backend: <span id="footBackendVer">?</span></div>
+</nav><div class="sidebarFoot">Frontend: 1.77<br>Backend: <span id="footBackendVer">?</span></div>
 </aside>
 <main>
 <div class="topbar"><div><h2 id="pageTitle">Inicio</h2><div class="crumb" id="pageCrumb">Panel operativo</div></div><div class="tokenBox"><div><label>API</label><input id="apiUrl" value="https://planeta-casa-erp.onrender.com"></div><div><label>ADMIN_TOKEN</label><input id="token" type="password" placeholder="Token"></div><button class="primary" onclick="saveSettings()">Guardar</button><button class="secondary" onclick="health()">Probar</button></div></div>
@@ -393,7 +393,44 @@ function showView(id){
 function toggleMobileMenu(){let a=document.querySelector('aside');if(!a)return;a.classList.toggle('mobileOpen');document.body.classList.toggle('mobileMenuOpen',a.classList.contains('mobileOpen'))}
 function closeMobileMenu(){let a=document.querySelector('aside');if(!a)return;a.classList.remove('mobileOpen');document.body.classList.remove('mobileMenuOpen')}
 document.addEventListener('click',e=>{let b=e.target.closest('.navBtn[data-view]');if(b){showView(b.dataset.view);closeMobileMenu()}});
-async function fetchJson(path,opt={}){let r=await fetch(url(path),{...opt,headers:{'Content-Type':'application/json',...(opt.headers||{})}});let txt=await r.text();let data;try{data=JSON.parse(txt)}catch{data={ok:r.ok,text:txt}}if(!r.ok)throw data;return data}async function fetchText(path,opt={}){let r=await fetch(url(path),opt);let txt=await r.text();if(!r.ok)throw txt;return txt}
+function errText(e){
+  if(!e)return 'Error desconocido';
+  if(typeof e==='string')return e;
+  if(e.message)return e.message;
+  if(e.detail){
+    if(typeof e.detail==='string')return e.detail;
+    try{return JSON.stringify(e.detail,null,2)}catch{}
+  }
+  if(e.error)return typeof e.error==='string'?e.error:JSON.stringify(e.error,null,2);
+  try{return JSON.stringify(e,null,2)}catch{return String(e)}
+}
+function saveLastArcaError(e,ctx={}){
+  try{localStorage.setItem('hubiax_last_arca_error',JSON.stringify({at:new Date().toISOString(),ctx,error:e},null,2))}catch{}
+}
+async function fetchJson(path,opt={}){
+  let r,txt='',data=null;
+  try{
+    r=await fetch(url(path),{...opt,headers:{'Content-Type':'application/json',...(opt.headers||{})}});
+    txt=await r.text();
+    try{data=JSON.parse(txt)}catch{data={ok:r.ok,text:txt}}
+  }catch(networkError){
+    let out={ok:false,network:true,message:networkError?.message||String(networkError),path,method:opt.method||'GET'};
+    if(String(path).includes('/admin/arca/'))saveLastArcaError(out,{path,method:opt.method||'GET'});
+    throw out;
+  }
+  if(!r.ok){
+    let out={ok:false,http_status:r.status,http_status_text:r.statusText,path,method:opt.method||'GET',response:data,raw_text:txt};
+    if(data&&typeof data==='object'){
+      if(data.detail!==undefined)out.detail=data.detail;
+      if(data.message!==undefined)out.message=data.message;
+      if(data.error!==undefined)out.error=data.error;
+    }
+    if(String(path).includes('/admin/arca/'))saveLastArcaError(out,{path,method:opt.method||'GET'});
+    throw out;
+  }
+  return data;
+}
+async function fetchText(path,opt={}){let r=await fetch(url(path),opt);let txt=await r.text();if(!r.ok)throw {ok:false,http_status:r.status,path,raw_text:txt};return txt}
 async function health(){try{let d=await fetchJson('/admin/arca/status');let v=d.version||d.backend_version||'?';if(qs('footBackendVer'))qs('footBackendVer').textContent=shortVer(v);if(qs('dashBackendVer'))qs('dashBackendVer').textContent=shortVer(v);if(qs('stErp'))qs('stErp').textContent='OK';setStatus('homeStatus','Backend ERP OK · ARCA '+(d.auto_invoice_enabled?'AUTO ON':'AUTO OFF'),true);loadDashboard();return d}catch(e){setStatus('homeStatus','Error ERP status: '+JSON.stringify(e),false)}}
 function dashMoney(n){return money(Number(n||0))||'$0'}
 function dashSet(id,val){let el=qs(id);if(el)el.textContent=val}
@@ -852,7 +889,7 @@ async function loadArcaInvoices(){
     if(canal!=='Todos')p+=`&channel=${encodeURIComponent(canal)}`;
     if(concepto!=='Todos')p+=`&concept=${encodeURIComponent(concepto)}`;
     let d=await fetchJson(p);state.arcaRows=d.items||[];renderArcaInvoices();
-  }catch(e){setStatus('arcaStatus','Error ARCA: '+JSON.stringify(e),false)}
+  }catch(e){saveLastArcaError(e,{fn:'loadArcaInvoices'});setStatus('arcaStatus','Error ARCA: '+errText(e),false);showPre('arcaOut',e)}
 }
 function arcaReportQueryBase(){let p=`date_from=${encodeURIComponent(qs('arcaDesde')?.value||'')}&date_to=${encodeURIComponent(qs('arcaHasta')?.value||'')}`;let tipo=qs('arcaTipo')?.value||'Todos',canal=qs('arcaCanal')?.value||'Todos',concepto=qs('arcaConcepto')?.value||'Todos';if(tipo!=='Todos')p+=`&cbte_tipo=${encodeURIComponent(tipo)}`;if(canal!=='Todos')p+=`&channel=${encodeURIComponent(canal)}`;if(concepto!=='Todos')p+=`&concept=${encodeURIComponent(concepto)}`;return p}
 function downloadArcaExcel(){initArcaDates();window.open(url('/admin/arca/facturas/export_excel?'+arcaReportQueryBase()),'_blank')}
@@ -1064,7 +1101,7 @@ function arcaManualBody(dryRun=true,confirmar=false){
   };
 }
 async function arcaManualPreview(){
-  try{setStatus('arcaManualStatus','Generando vista previa...');let body=arcaManualBody(true,false);let d=await fetchJson('/admin/arca/comprobantes/manual/preview',{method:'POST',body:JSON.stringify(body)});showPre('arcaManualOut',d);setStatus('arcaManualStatus',`Preview OK · próximo ${d.cbte_letra} ${String(d.pto_vta).padStart(4,'0')}-${String(d.proximo).padStart(8,'0')} · total ${money(d.importe_total)}`,true)}catch(e){setStatus('arcaManualStatus','Error preview: '+(e.message||JSON.stringify(e)),false);showPre('arcaManualOut',e)}}
+  try{setStatus('arcaManualStatus','Generando vista previa...');let body=arcaManualBody(true,false);let d=await fetchJson('/admin/arca/comprobantes/manual/preview',{method:'POST',body:JSON.stringify(body)});showPre('arcaManualOut',d);setStatus('arcaManualStatus',`Preview OK · próximo ${d.cbte_letra} ${String(d.pto_vta).padStart(4,'0')}-${String(d.proximo).padStart(8,'0')} · total ${money(d.importe_total)}`,true)}catch(e){saveLastArcaError(e,{fn:'arcaManualPreview'});setStatus('arcaManualStatus','Error preview: '+errText(e),false);showPre('arcaManualOut',e)}}
 async function arcaManualEmit(){
   hideArcaMonitor();
   let btn=document.querySelector('#arca-manual button.danger');
@@ -1082,7 +1119,7 @@ async function arcaManualEmit(){
     qs('arcaManualStatus').className='status oktxt';
     qs('arcaManualStatus').innerHTML=`<div class="successBox">Emitido OK · ${esc(nro)} · CAE ${esc(d.cae||'')}${esc(sm)}${link?`<div style="margin-top:8px"><button class="secondary" onclick="window.open('${esc(link)}','_blank')">Ver / imprimir / guardar PDF</button></div>`:''}</div>`;
     setTimeout(()=>{arcaManualClear();showView('arca-reportes');loadArcaInvoices();setStatus('arcaStatus',`Emitido OK · ${nro} · CAE ${d.cae||''}`,true);window.scrollTo({top:0,behavior:'smooth'})},2200);
-  }catch(e){setStatus('arcaManualStatus','Error emisión: '+(e.message||JSON.stringify(e)),false);showPre('arcaManualOut',e)}
+  }catch(e){saveLastArcaError(e,{fn:'arcaManualEmit'});setStatus('arcaManualStatus','Error emisión: '+errText(e),false);showPre('arcaManualOut',e)}
   finally{if(btn){btn.disabled=false;btn.textContent='Emitir comprobante real'}}
 }
 
