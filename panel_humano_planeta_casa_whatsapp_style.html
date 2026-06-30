@@ -6,38 +6,83 @@
   <title>Pia - Planeta Casa</title>
   <link rel="icon" type="image/png" href="./chat.png?v=2" />
   <style>
-    :root{--gold:#cdae5e;--gold-dark:#9d8648;--green2:#128c7e;--bg:#ece5dd;--muted:#667085;--border:#ddd;--danger:#b42318;--human-bg:#fff3cd}*{box-sizing:border-box}html{width:100%;max-width:100%;overflow-x:hidden}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#111;width:100%;max-width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;overflow-x:hidden}header{background:var(--gold);color:white;padding:6px 8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:0 0 auto}header strong{margin-right:auto;font-size:14px;text-shadow:0 1px 1px rgba(0,0,0,.25)}input,textarea,button,select{font-family:inherit;font-size:16px}input,textarea,select{border:1px solid var(--border);border-radius:8px;padding:7px}button{border:none;border-radius:8px;padding:7px 10px;background:var(--green2);color:white;cursor:pointer;font-weight:bold;white-space:nowrap;font-size:14px}button.secondary{background:#344054}button.warn{background:#f79009;color:#111}button.danger{background:var(--danger)}button.gold{background:var(--gold-dark)}#app{display:grid;grid-template-columns:320px 1fr;min-height:0;min-width:0;width:100%;max-width:100%;flex:1 1 auto;overflow:hidden}#sidebar{background:#f7f7f7;border-right:1px solid var(--border);overflow-y:auto;min-height:0}.conv{min-height:56px;padding:7px 9px;border-bottom:1px solid var(--border);cursor:pointer;background:white;display:flex;flex-direction:column;justify-content:center;gap:3px}.conv:hover,.conv.active{background:#e7f7f3}.conv.status-human{background:var(--human-bg)}.conv.status-human.active{background:#ffe69c}.conv-line{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}.waid{font-weight:bold;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.phone-line,.time-line{color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.time-line{flex:0 0 auto}.status{font-size:10px;border-radius:999px;padding:2px 6px;color:white;background:#667085;white-space:nowrap;line-height:1.2;flex:0 0 auto}.status.BOT{background:#1570ef}.status.HUMAN{background:#12b76a}.status.CLOSED{background:#667085}.small{color:var(--muted);font-size:11px;margin-top:2px}#main{display:flex;flex-direction:column;min-width:0;min-height:0}#chatHeader{background:white;border-bottom:1px solid var(--border);padding:6px 8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:0 0 auto}#chatTitle{font-weight:bold;margin-right:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:150px}#messages{flex:1 1 auto;min-height:0;overflow-y:auto;padding:9px 12px;display:flex;flex-direction:column;gap:5px;align-items:stretch}.msg{display:flex;flex-direction:column;width:auto;max-width:72%;padding:6px 9px 4px;border-radius:8px;line-height:1.25;font-size:15px;box-shadow:0 1px 1px rgba(0,0,0,.08)}.msg.IN{align-self:flex-start;background:white;border-top-left-radius:3px}.msg.BOT{align-self:flex-end;background:#dcf8c6;border-top-right-radius:3px}.msg.HUMAN{align-self:flex-end;background:#d1e9ff;border-top-right-radius:3px}.msg.SYSTEM{align-self:center;max-width:78%;background:#fff6d6;color:#7a4b00;font-size:13px;text-align:center;border-radius:8px}.msg-text{display:block;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal}.meta{display:block;margin-top:3px;font-size:10px;color:#667085;line-height:1.1;text-align:right}.msg.IN .meta{text-align:left}#composer{background:#f0f0f0;border-top:1px solid var(--border);padding:7px;display:flex;gap:7px;flex:0 0 auto;padding-bottom:max(7px,env(safe-area-inset-bottom));width:100%;max-width:100%;overflow:hidden}#messageInput{flex:1 1 auto;min-width:0;min-height:38px;max-height:90px;resize:vertical;font-size:16px}#composer button{flex:0 0 auto}#empty{margin:auto;color:var(--muted);text-align:center;padding:20px}#toast{position:fixed;right:14px;bottom:14px;z-index:9999;background:#111827;color:white;padding:10px 12px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);display:none;max-width:360px;font-size:13px}a{color:#056162;text-decoration:underline}.teachMsgBtn{align-self:flex-end;margin-top:4px;background:#9d8648;color:#fff;border-radius:999px;padding:4px 8px;font-size:11px;line-height:1}.msgActions{display:flex;justify-content:flex-end;margin-top:2px}.msg.IN .msgActions{justify-content:flex-start}@media(max-width:800px){header{padding:6px;gap:6px;flex-wrap:nowrap}header strong{font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}header button{height:32px;padding:5px 8px;font-size:12px;border-radius:7px}.iconBtn{width:34px;padding:5px 0;font-size:17px}#app{grid-template-columns:1fr;grid-template-rows:auto 1fr;min-width:0;width:100%;max-width:100%}#sidebar{height:112px;max-height:112px;border-right:none;border-bottom:1px solid var(--border);overflow-y:auto;flex:0 0 auto}.conv{height:56px;min-height:56px;max-height:56px;padding:6px 8px}#chatHeader{padding:5px 6px;gap:5px;min-height:36px}#chatTitle{font-size:13px;flex:1 1 100%;min-width:0}#chatHeader button{padding:5px 8px;font-size:12px;border-radius:7px}#messages{padding:7px 8px;gap:4px}.msg{max-width:92%;font-size:14px;padding:5px 8px 4px}#composer{padding:6px;gap:6px;padding-bottom:max(6px,env(safe-area-inset-bottom));position:sticky;bottom:0}#messageInput{min-height:38px;max-height:78px;font-size:16px;resize:none}input,textarea,select{font-size:16px}}
-
-#configOverlay{position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:9997;display:none;align-items:center;justify-content:center;padding:14px}
-#configOverlay.open{display:flex}
-#configBox{width:min(520px,96vw);background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 18px 48px rgba(0,0,0,.28);overflow:hidden}
-#configHead{padding:10px 12px;background:#111827;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px}
-#configHead strong{font-size:14px}
-#configBody{padding:12px;display:flex;flex-direction:column;gap:8px}
-#configBody label{font-size:12px;color:var(--muted);font-weight:bold}
-#configBody input,#configBody select{width:100%;font-size:16px}
-#configFoot{padding:10px 12px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:#fff}
-.configHint{font-size:12px;color:var(--muted);line-height:1.3}
-@media(max-width:800px){#configBox{width:96vw}.configHideMobile{display:none}}
-
-#teachOverlay{position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:9998;display:none;align-items:center;justify-content:center;padding:14px}
-#teachOverlay.open{display:flex}
-#teachBox{width:min(760px,96vw);max-height:88vh;background:#fffdf8;border:1px solid var(--border);border-radius:14px;box-shadow:0 18px 48px rgba(0,0,0,.28);display:flex;flex-direction:column;overflow:hidden}
-#teachHead{padding:10px 12px;background:#111827;color:#fff;display:flex;gap:10px;align-items:center;justify-content:space-between}
-#teachHead strong{font-size:14px}
-#teachBody{padding:12px;overflow:auto}
-#teachQuestion,#teachAnswer{border:1px solid #eee2c8;background:#fff;border-radius:10px;padding:9px;margin:6px 0 10px;white-space:pre-wrap;max-height:135px;overflow:auto;font-size:13px;line-height:1.3}
-#teachComment{width:100%;min-height:155px;resize:vertical;font-size:14px;line-height:1.35}
-#teachFoot{padding:10px 12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:8px;align-items:center;background:#fff}
-#teachHint{font-size:12px;color:var(--muted)}
-@media(max-width:800px){#teachBox{width:98vw;max-height:92vh}#teachComment{min-height:125px}}
-</style>
+    :root{--gold:#cdae5e;--gold-dark:#9d8648;--green2:#128c7e;--bg:#ece5dd;--muted:#667085;--border:#ddd;--danger:#b42318;--human-bg:#fff3cd}
+    *{box-sizing:border-box}
+    html{width:100%;max-width:100%;overflow-x:hidden}
+    body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#111;width:100%;max-width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;overflow-x:hidden}
+    header{background:var(--gold);color:white;padding:6px 8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:0 0 auto}
+    header strong{margin-right:auto;font-size:14px;text-shadow:0 1px 1px rgba(0,0,0,.25)}
+    input,textarea,button,select{font-family:inherit;font-size:16px}
+    input,textarea,select{border:1px solid var(--border);border-radius:8px;padding:7px}
+    button{border:none;border-radius:8px;padding:7px 10px;background:var(--green2);color:white;cursor:pointer;font-weight:bold;white-space:nowrap;font-size:14px}
+    button.secondary{background:#344054}
+    button.warn{background:#f79009;color:#111}
+    button.danger{background:var(--danger)}
+    button.gold{background:var(--gold-dark)}
+    #app{display:grid;grid-template-columns:320px 1fr;min-height:0;min-width:0;width:100%;max-width:100%;flex:1 1 auto;overflow:hidden}
+    #sidebar{background:#f7f7f7;border-right:1px solid var(--border);overflow-y:auto;min-height:0}
+    .conv{min-height:56px;padding:7px 9px;border-bottom:1px solid var(--border);cursor:pointer;background:white;display:flex;flex-direction:column;justify-content:center;gap:3px}
+    .conv:hover,.conv.active{background:#e7f7f3}
+    .conv.status-human{background:var(--human-bg)}
+    .conv.status-human.active{background:#ffe69c}
+    .conv-line{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+    .waid{font-weight:bold;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+    .phone-line,.time-line{color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .time-line{flex:0 0 auto}
+    .status{font-size:10px;border-radius:999px;padding:2px 6px;color:white;background:#667085;white-space:nowrap;line-height:1.2;flex:0 0 auto}
+    .status.BOT{background:#1570ef}.status.HUMAN{background:#12b76a}.status.CLOSED{background:#667085}
+    .small{color:var(--muted);font-size:11px;margin-top:2px}
+    #main{display:flex;flex-direction:column;min-width:0;min-height:0}
+    #chatHeader{background:white;border-bottom:1px solid var(--border);padding:6px 8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:0 0 auto}
+    #chatTitle{font-weight:bold;margin-right:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:150px}
+    #messages{flex:1 1 auto;min-height:0;overflow-y:auto;padding:9px 12px;display:flex;flex-direction:column;gap:5px;align-items:stretch;overflow-anchor:none}
+    .msg{display:flex;flex-direction:column;width:auto;max-width:72%;padding:6px 9px 4px;border-radius:8px;line-height:1.25;font-size:15px;box-shadow:0 1px 1px rgba(0,0,0,.08)}
+    .msg.IN{align-self:flex-start;background:white;border-top-left-radius:3px}
+    .msg.BOT{align-self:flex-end;background:#dcf8c6;border-top-right-radius:3px}
+    .msg.HUMAN{align-self:flex-end;background:#d1e9ff;border-top-right-radius:3px}
+    .msg.SYSTEM{align-self:center;max-width:78%;background:#fff6d6;color:#7a4b00;font-size:13px;text-align:center;border-radius:8px}
+    .msg-text{display:block;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal}
+    .meta{display:block;margin-top:3px;font-size:10px;color:#667085;line-height:1.1;text-align:right}.msg.IN .meta{text-align:left}
+    #composer{background:#f0f0f0;border-top:1px solid var(--border);padding:7px;display:flex;gap:7px;flex:0 0 auto;padding-bottom:max(7px,env(safe-area-inset-bottom));width:100%;max-width:100%;overflow:hidden}
+    #messageInput{flex:1 1 auto;min-width:0;min-height:38px;max-height:90px;resize:vertical;font-size:16px}
+    #composer button{flex:0 0 auto}
+    #empty{margin:auto;color:var(--muted);text-align:center;padding:20px}
+    #toast{position:fixed;right:14px;bottom:14px;z-index:9999;background:#111827;color:white;padding:10px 12px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);display:none;max-width:360px;font-size:13px}
+    a{color:#056162;text-decoration:underline}
+    .teachMsgBtn{align-self:flex-end;margin-top:4px;background:#9d8648;color:#fff;border-radius:999px;padding:4px 8px;font-size:11px;line-height:1}
+    .msgActions{display:flex;justify-content:flex-end;margin-top:2px}.msg.IN .msgActions{justify-content:flex-start}
+    #configOverlay{position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:9997;display:none;align-items:center;justify-content:center;padding:14px}
+    #configOverlay.open{display:flex}
+    #configBox{width:min(520px,96vw);background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 18px 48px rgba(0,0,0,.28);overflow:hidden}
+    #configHead{padding:10px 12px;background:#111827;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    #configHead strong{font-size:14px}
+    #configBody{padding:12px;display:flex;flex-direction:column;gap:8px}
+    #configBody label{font-size:12px;color:var(--muted);font-weight:bold}
+    #configBody input,#configBody select{width:100%;font-size:16px}
+    #configFoot{padding:10px 12px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:#fff}
+    .configHint{font-size:12px;color:var(--muted);line-height:1.3}
+    #teachOverlay{position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:9998;display:none;align-items:center;justify-content:center;padding:14px}
+    #teachOverlay.open{display:flex}
+    #teachBox{width:min(760px,96vw);max-height:88vh;background:#fffdf8;border:1px solid var(--border);border-radius:14px;box-shadow:0 18px 48px rgba(0,0,0,.28);display:flex;flex-direction:column;overflow:hidden}
+    #teachHead{padding:10px 12px;background:#111827;color:#fff;display:flex;gap:10px;align-items:center;justify-content:space-between}
+    #teachHead strong{font-size:14px}
+    #teachBody{padding:12px;overflow:auto}
+    #teachQuestion,#teachAnswer{border:1px solid #eee2c8;background:#fff;border-radius:10px;padding:9px;margin:6px 0 10px;white-space:pre-wrap;max-height:135px;overflow:auto;font-size:13px;line-height:1.3}
+    #teachComment{width:100%;min-height:155px;resize:vertical;font-size:14px;line-height:1.35}
+    #teachFoot{padding:10px 12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:8px;align-items:center;background:#fff}
+    #teachHint{font-size:12px;color:var(--muted)}
+    @media(max-width:800px){
+      header{padding:6px;gap:6px;flex-wrap:nowrap}header strong{font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}header button{height:32px;padding:5px 8px;font-size:12px;border-radius:7px}.iconBtn{width:34px;padding:5px 0;font-size:17px}.configHideMobile{display:none}
+      #app{grid-template-columns:1fr;grid-template-rows:auto 1fr;min-width:0;width:100%;max-width:100%}#sidebar{height:112px;max-height:112px;border-right:none;border-bottom:1px solid var(--border);overflow-y:auto;flex:0 0 auto}.conv{height:56px;min-height:56px;max-height:56px;padding:6px 8px}
+      #chatHeader{padding:5px 6px;gap:5px;min-height:36px}#chatTitle{font-size:13px;flex:1 1 100%;min-width:0}#chatHeader button{padding:5px 8px;font-size:12px;border-radius:7px}#messages{padding:7px 8px;gap:4px}.msg{max-width:92%;font-size:14px;padding:5px 8px 4px}#composer{padding:6px;gap:6px;padding-bottom:max(6px,env(safe-area-inset-bottom));position:sticky;bottom:0}#messageInput{min-height:38px;max-height:78px;font-size:16px;resize:none}input,textarea,select{font-size:16px}#configBox{width:96vw}#teachBox{width:98vw;max-height:92vh}#teachComment{min-height:125px}
+    }
+  </style>
 </head>
 <body>
 <header>
   <strong>Pia - Planeta Casa</strong>
   <button class="secondary iconBtn" onclick="openConfig()" title="Configuración">⚙</button>
-  <button class="secondary" onclick="loadConversations()">Actualizar</button>
+  <button class="secondary" onclick="refreshTick(true)">Actualizar</button>
   <button class="gold configHideMobile" onclick="enableSoundManually()" title="Habilita y prueba el sonido">Probar sonido</button>
 </header>
 <div id="configOverlay" onclick="if(event.target.id==='configOverlay')closeConfig()">
@@ -55,143 +100,53 @@
     <div id="configFoot"><button class="secondary" type="button" onclick="enableSoundManually()">Probar sonido</button><button type="button" onclick="saveConfig()">Guardar</button></div>
   </div>
 </div>
-<div id="app"><aside id="sidebar"><div id="conversationList"></div></aside><main id="main"><div id="chatHeader"><div id="chatTitle">Sin conversación seleccionada</div><button onclick="takeover()">Tomar</button><button class="warn" onclick="releaseBot()">Liberar bot</button><button class="danger" onclick="closeConversation()">Cerrar</button></div><div id="messages"><div id="empty">Elegí una conversación de la izquierda.</div></div><div id="composer"><textarea id="messageInput" placeholder="Escribí como humano..." onkeydown="handleComposerKey(event)"></textarea><button onclick="sendHuman()">Enviar</button></div></main></div><div id="teachOverlay" onclick="if(event.target.id==='teachOverlay')closeTeachBox()"><div id="teachBox" role="dialog" aria-modal="true" aria-labelledby="teachTitle"><div id="teachHead"><strong id="teachTitle">Corregir respuesta de Pia</strong><button class="secondary" type="button" onclick="closeTeachBox()">Cerrar</button></div><div id="teachBody"><label>Pregunta del cliente</label><div id="teachQuestion"></div><label>Respuesta de Pia</label><div id="teachAnswer"></div><label>Feedback / enseñanza para Pia</label><textarea id="teachComment" placeholder="Escribí qué hizo mal o qué debería aprender...&#10;Enter guarda · Shift+Enter baja línea" onkeydown="handleTeachKey(event)"></textarea></div><div id="teachFoot"><span id="teachHint">Enter guarda · Shift+Enter baja línea. No se envía al cliente.</span><div style="display:flex;gap:8px"><button class="secondary" type="button" onclick="closeTeachBox()">Cancelar</button><button class="gold" type="button" onclick="submitTeachFeedback()">Guardar feedback</button></div></div></div></div><div id="toast"></div>
+<div id="app">
+  <aside id="sidebar"><div id="conversationList"></div></aside>
+  <main id="main">
+    <div id="chatHeader"><div id="chatTitle">Sin conversación seleccionada</div><button onclick="takeover()">Tomar</button><button class="warn" onclick="releaseBot()">Liberar bot</button><button class="danger" onclick="closeConversation()">Cerrar</button></div>
+    <div id="messages"><div id="empty">Elegí una conversación de la izquierda.</div></div>
+    <div id="composer"><textarea id="messageInput" placeholder="Escribí como humano..." onkeydown="handleComposerKey(event)"></textarea><button onclick="sendHuman()">Enviar</button></div>
+  </main>
+</div>
+<div id="teachOverlay" onclick="if(event.target.id==='teachOverlay')closeTeachBox()">
+  <div id="teachBox" role="dialog" aria-modal="true" aria-labelledby="teachTitle">
+    <div id="teachHead"><strong id="teachTitle">Corregir respuesta de Pia</strong><button class="secondary" type="button" onclick="closeTeachBox()">Cerrar</button></div>
+    <div id="teachBody"><label>Pregunta del cliente</label><div id="teachQuestion"></div><label>Respuesta de Pia</label><div id="teachAnswer"></div><label>Feedback / enseñanza para Pia</label><textarea id="teachComment" placeholder="Escribí qué hizo mal o qué debería aprender...&#10;Enter guarda · Shift+Enter baja línea" onkeydown="handleTeachKey(event)"></textarea></div>
+    <div id="teachFoot"><span id="teachHint">Enter guarda · Shift+Enter baja línea. No se envía al cliente.</span><div style="display:flex;gap:8px"><button class="secondary" type="button" onclick="closeTeachBox()">Cancelar</button><button class="gold" type="button" onclick="submitTeachFeedback()">Guardar feedback</button></div></div>
+  </div>
+</div>
+<div id="toast"></div>
 <script>
-let currentConversation=null,conversations=[],refreshTimer=null,firstConversationLoad=true,originalTitle=document.title,audioCtx=null,soundUnlocked=false,titleAlertTimer=null,previousConversationState=new Map(),teachDraft=null,lastMessages=[];
-const INACTIVITY_ALERT_MS=15*60*1000,DEFAULT_BASE="https://planeta-casa-erp.onrender.com";
-function init(){document.getElementById("baseUrl").value=localStorage.getItem("pc_admin_base")||DEFAULT_BASE;document.getElementById("token").value=localStorage.getItem("pc_admin_token")||"";document.getElementById("soundType").value=localStorage.getItem("pc_admin_sound")||"alarma";document.addEventListener("click",unlockSound,{once:true});document.addEventListener("keydown",unlockSound,{once:true});document.addEventListener("visibilitychange",()=>{if(!document.hidden)clearTitleAlert()});loadConversations();refreshTimer=setInterval(()=>{loadConversations(false);if(currentConversation)loadMessages(currentConversation.id,false)},8000)}
+let currentConversation=null,conversations=[],refreshTimer=null,refreshBusy=false,firstConversationLoad=true,originalTitle=document.title,audioCtx=null,soundUnlocked=false,titleAlertTimer=null,previousConversationState=new Map(),teachDraft=null,lastMessages=[],lastRenderedSignature="";
+const notifiedInboundMessages=new Set();
+const INACTIVITY_ALERT_MS=15*60*1000,DEFAULT_BASE="https://planeta-casa-erp.onrender.com",REFRESH_MS=8000;
+function init(){document.getElementById("baseUrl").value=localStorage.getItem("pc_admin_base")||DEFAULT_BASE;document.getElementById("token").value=localStorage.getItem("pc_admin_token")||"";document.getElementById("soundType").value=localStorage.getItem("pc_admin_sound")||"alarma";document.addEventListener("click",unlockSound,{once:true});document.addEventListener("keydown",unlockSound,{once:true});document.addEventListener("visibilitychange",()=>{if(!document.hidden)clearTitleAlert()});refreshTick(true);refreshTimer=setInterval(()=>refreshTick(false),REFRESH_MS)}
+async function refreshTick(showErrors=false){if(refreshBusy)return;refreshBusy=true;try{await loadConversations(showErrors,true);if(currentConversation)await loadMessages(currentConversation.id,false,false)}finally{refreshBusy=false}}
 function getBase(){return document.getElementById("baseUrl").value.trim().replace(/\/$/,"")}function getToken(){return document.getElementById("token").value.trim()}function getSoundType(){return document.getElementById("soundType").value||"alarma"}
 function saveConfig(){localStorage.setItem("pc_admin_base",getBase());localStorage.setItem("pc_admin_token",getToken());localStorage.setItem("pc_admin_sound",getSoundType());closeConfig();showToast("Guardado.")}
 function openConfig(){document.getElementById("configOverlay").classList.add("open");setTimeout(()=>document.getElementById("baseUrl").focus(),30)}function closeConfig(){document.getElementById("configOverlay").classList.remove("open")}
 async function apiGet(path){const sep=path.includes("?")?"&":"?";const r=await fetch(`${getBase()}${path}${sep}token=${encodeURIComponent(getToken())}`);return await r.json()}async function apiPost(path,body){const sep=path.includes("?")?"&":"?";const r=await fetch(`${getBase()}${path}${sep}token=${encodeURIComponent(getToken())}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});return await r.json()}async function apiDelete(path){const sep=path.includes("?")?"&":"?";const r=await fetch(`${getBase()}${path}${sep}token=${encodeURIComponent(getToken())}`,{method:"DELETE"});return await r.json()}function mediaUrl(messageId){return `${getBase()}/admin/messages/${encodeURIComponent(messageId)}/media?token=${encodeURIComponent(getToken())}`}
-function fmtDate(s){if(!s)return"";try{return new Date(s).toLocaleString("es-AR")}catch{return s}}function fmtShortTime(s){if(!s)return"";try{return new Date(s).toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})}catch{return s}}function normalizePhone(v){const raw=String(v||"").trim();return raw?(raw.startsWith("+")?raw:"+"+raw):""}
+function fmtDate(s){if(!s)return"";try{return new Date(s).toLocaleString("es-AR")}catch{return s}}function fmtShortTime(s){if(!s)return"";try{return new Date(s).toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})}catch{return s}}function normalizePhone(v){const raw=String(v||"").trim();return raw?(raw.startsWith("+")?raw:"+"+raw):""}function parseTimeMs(s){const t=s?new Date(s).getTime():NaN;return Number.isFinite(t)?t:0}
 function isUuidLike(v){const s=String(v||"").trim().replace(/^\+/,"");return/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s)}function isRealWhatsAppId(v){const raw=String(v||"").trim();if(!raw)return false;if(raw.startsWith("web_"))return true;if(raw.includes("-"))return false;const digits=raw.replace(/\D/g,"");return digits===raw.replace(/^\+/,"")&&digits.length>=8&&digits.length<=20}
 function isGhostConversation(c){const id=String(c.id||"").trim().toUpperCase(),wa=String(c.wa_id||"").trim().toUpperCase(),name=String(c.customer_name||"").trim().toUpperCase(),status=String(c.status||"").trim().toUpperCase(),technical=["BOT","SYSTEM","STATUS","META","WEBHOOK","NONE","NULL","UNDEFINED"],valid=["BOT","HUMAN","CLOSED"];if(!c.wa_id&&!c.customer_name)return true;if(!valid.includes(status))return true;if(technical.includes(id)||technical.includes(wa)||technical.includes(name))return true;if(isUuidLike(c.wa_id)||String(c.wa_id||"").includes("-"))return true;if(!isRealWhatsAppId(c.wa_id))return true;return false}
-function visibleConversations(){return(conversations||[]).filter(c=>!isGhostConversation(c))}function conversationKey(c){return String(c.id||c.wa_id||"")}function conversationState(c){return{status:String(c.status||"").toUpperCase(),last:c.last_message_at||"",wa_id:c.wa_id||"",name:c.customer_name||""}}function parseTimeMs(s){const t=s?new Date(s).getTime():NaN;return Number.isFinite(t)?t:0}
-function isInboundDirection(v){const d=String(v||"").trim().toUpperCase();return d==="IN"||d==="INBOUND"||d==="USER"||d==="CLIENT"||d==="CUSTOMER"}
-async function latestMessageDirection(conversationId){try{const data=await apiGet(`/admin/messages/${encodeURIComponent(conversationId)}?limit=5`);const items=data.items||[];if(!items.length)return"";items.sort((a,b)=>parseTimeMs(b.created_at)-parseTimeMs(a.created_at));return String(items[0].direction||"").toUpperCase()}catch(e){console.warn("No pude verificar dirección del último mensaje",e);return""}}
+function visibleConversations(){return(conversations||[]).filter(c=>!isGhostConversation(c))}function conversationKey(c){return String(c.id||c.wa_id||"")}function conversationState(c){return{status:String(c.status||"").toUpperCase(),last:c.last_message_at||"",wa_id:c.wa_id||"",name:c.customer_name||""}}function conversationStateMap(items){const map=new Map();(items||[]).forEach(c=>map.set(conversationKey(c),conversationState(c)));return map}
+function normalizeDirection(v){return String(v||"").trim().toUpperCase()}function isInboundDirection(v){const d=normalizeDirection(v);return d==="IN"||d==="INBOUND"||d==="USER"||d==="CLIENT"||d==="CUSTOMER"}function isVisibleMessageDirection(v){const d=normalizeDirection(v);return isInboundDirection(d)||d==="BOT"||d==="HUMAN"||d==="OUT"||d==="OUTBOUND"||d==="AGENT"||d==="OPERATOR"}
+function messageKey(m){return String(m.id||m.message_id||`${m.created_at||""}|${m.direction||""}|${(m.body||"").slice(0,60)}`)}function sortMessages(items){return(items||[]).slice().sort((a,b)=>{const ta=parseTimeMs(a.created_at),tb=parseTimeMs(b.created_at);if(ta!==tb)return ta-tb;return messageKey(a).localeCompare(messageKey(b))})}function messageSignature(items){return(items||[]).map(m=>`${messageKey(m)}:${normalizeDirection(m.direction)}:${m.created_at||""}:${m.body||""}`).join("\n")}function lastRealMessages(items){return sortMessages(items).filter(m=>isVisibleMessageDirection(m.direction)&&parseTimeMs(m.created_at)>0)}
+async function latestConversationActivity(conversationId){const data=await apiGet(`/admin/messages/${encodeURIComponent(conversationId)}?limit=20`);const real=lastRealMessages(data.items||[]);const latest=real[real.length-1]||null;const previous=real.length>1?real[real.length-2]:null;const gapMs=latest?(previous?parseTimeMs(latest.created_at)-parseTimeMs(previous.created_at):INACTIVITY_ALERT_MS+1):0;return{latest,previous,gapMs}}
 function unlockSound(){try{const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;if(!audioCtx)audioCtx=new Ctx();if(audioCtx.state==="suspended")audioCtx.resume();soundUnlocked=true}catch(e){console.warn("No pude habilitar audio",e)}}function enableSoundManually(){unlockSound();playNotifySound(true);localStorage.setItem("pc_admin_sound",getSoundType());showToast("Sonido habilitado y probado.")}
-function tone(gain,start,freq,duration,type="sine",vol=0.85){const osc=audioCtx.createOscillator();osc.type=type;osc.frequency.setValueAtTime(freq,start);osc.connect(gain);osc.start(start);osc.stop(start+duration)}
-function playNotifySound(force=false){try{if(!soundUnlocked&&!force)return;if(!audioCtx)unlockSound();if(!audioCtx)return;const now=audioCtx.currentTime,gain=audioCtx.createGain(),kind=getSoundType();gain.connect(audioCtx.destination);gain.gain.setValueAtTime(0.0001,now);if(kind==="campana"){gain.gain.exponentialRampToValueAtTime(0.75,now+0.03);tone(gain,now,1046,0.42,"sine");tone(gain,now+0.18,784,0.55,"sine");gain.gain.exponentialRampToValueAtTime(0.0001,now+0.9)}else if(kind==="triple"){gain.gain.exponentialRampToValueAtTime(0.9,now+0.02);[880,660,990,740].forEach((f,i)=>tone(gain,now+i*0.16,f,0.13,"square"));gain.gain.exponentialRampToValueAtTime(0.0001,now+0.82)}else{gain.gain.exponentialRampToValueAtTime(0.95,now+0.02);[740,980,740,980,740,980].forEach((f,i)=>tone(gain,now+i*0.18,f,0.16,"square"));tone(gain,now+1.16,880,0.45,"sine");gain.gain.exponentialRampToValueAtTime(0.0001,now+1.75)}}catch(e){console.warn("No pude reproducir sonido",e)}}
-function startTitleAlert(){if(!document.hidden||titleAlertTimer)return;let on=false;titleAlertTimer=setInterval(()=>{on=!on;document.title=on?"🔔 Atención humana - Pia":originalTitle},900)}function clearTitleAlert(){if(titleAlertTimer)clearInterval(titleAlertTimer);titleAlertTimer=null;document.title=originalTitle}function showToast(text,ms=4500){const t=document.getElementById("toast");t.textContent=text;t.style.display="block";clearTimeout(showToast._timer);showToast._timer=setTimeout(()=>{t.style.display="none"},ms)}function firePanelNotification(text){playNotifySound();startTitleAlert();showToast(text||"Nueva actividad para atención humana")}
-async function evaluateConversationNotifications(items){const nowMap=new Map(),notifications=[],checks=[];(items||[]).forEach(c=>{const key=conversationKey(c),current=conversationState(c);nowMap.set(key,current);if(firstConversationLoad)return;const prev=previousConversationState.get(key);if(!prev)return;const becameHuman=current.status==="HUMAN"&&prev.status!=="HUMAN",lastChanged=current.last&&current.last!==prev.last,prevMs=parseTimeMs(prev.last),currMs=parseTimeMs(current.last),inactive=prevMs&&currMs&&(currMs-prevMs>=INACTIVITY_ALERT_MS);if(becameHuman&&lastChanged){checks.push({conversation:c,current,reason:"became_human"});return}if(current.status==="HUMAN"&&lastChanged&&inactive){checks.push({conversation:c,current,reason:"reactivated_after_inactivity"})}});for(const chk of checks){const dir=await latestMessageDirection(chk.conversation.id);if(isInboundDirection(dir)){if(chk.reason==="became_human")notifications.push(`Derivado a humano: ${chk.current.name||normalizePhone(chk.current.wa_id)}`);else notifications.push(`Cliente volvió a escribir tras más de 15 minutos: ${chk.current.name||normalizePhone(chk.current.wa_id)}`)}else{console.log("Sin sonido: la actividad no fue del cliente; reinicia contador sin alarma",{conversation:chk.conversation.id,direction:dir,reason:chk.reason})}}previousConversationState=nowMap;firstConversationLoad=false;if(notifications.length)firePanelNotification(notifications[0])}
-async function loadConversations(showErrors=true){try{const data=await apiGet("/admin/conversations?limit=100");if(!data.ok){if(showErrors)alert(data.error||"Error cargando conversaciones");return}conversations=data.items||[];const visible=visibleConversations();await evaluateConversationNotifications(visible);renderConversations()}catch(e){if(showErrors)alert("No pude conectar con el backend.");console.error(e)}}
+function tone(gain,start,freq,duration,type="sine"){const osc=audioCtx.createOscillator();osc.type=type;osc.frequency.setValueAtTime(freq,start);osc.connect(gain);osc.start(start);osc.stop(start+duration)}function playNotifySound(force=false){try{if(!soundUnlocked&&!force)return;if(!audioCtx)unlockSound();if(!audioCtx)return;const now=audioCtx.currentTime,gain=audioCtx.createGain(),kind=getSoundType();gain.connect(audioCtx.destination);gain.gain.setValueAtTime(0.0001,now);if(kind==="campana"){gain.gain.exponentialRampToValueAtTime(0.75,now+0.03);tone(gain,now,1046,0.42,"sine");tone(gain,now+0.18,784,0.55,"sine");gain.gain.exponentialRampToValueAtTime(0.0001,now+0.9)}else if(kind==="triple"){gain.gain.exponentialRampToValueAtTime(0.9,now+0.02);[880,660,990,740].forEach((f,i)=>tone(gain,now+i*0.16,f,0.13,"square"));gain.gain.exponentialRampToValueAtTime(0.0001,now+0.82)}else{gain.gain.exponentialRampToValueAtTime(0.95,now+0.02);[740,980,740,980,740,980].forEach((f,i)=>tone(gain,now+i*0.18,f,0.16,"square"));tone(gain,now+1.16,880,0.45,"sine");gain.gain.exponentialRampToValueAtTime(0.0001,now+1.75)}}catch(e){console.warn("No pude reproducir sonido",e)}}
+function startTitleAlert(){if(!document.hidden||titleAlertTimer)return;let on=false;titleAlertTimer=setInterval(()=>{on=!on;document.title=on?"🔔 Atención humana - Pia":originalTitle},900)}function clearTitleAlert(){if(titleAlertTimer)clearInterval(titleAlertTimer);titleAlertTimer=null;document.title=originalTitle}function showToast(text,ms=4500){const t=document.getElementById("toast");t.textContent=text;t.style.display="block";clearTimeout(showToast._timer);showToast._timer=setTimeout(()=>{t.style.display="none"},ms)}function firePanelNotification(text){playNotifySound();try{if(navigator.vibrate)navigator.vibrate([220,80,220])}catch(e){}startTitleAlert();showToast(text||"Nueva actividad para atención humana")}
+async function evaluateConversationNotifications(items){const nowMap=conversationStateMap(items),notifications=[],checks=[];if(!firstConversationLoad){(items||[]).forEach(c=>{const key=conversationKey(c),current=conversationState(c),prev=previousConversationState.get(key);if(!prev)return;const becameHuman=current.status==="HUMAN"&&prev.status!=="HUMAN",lastChanged=current.last&&current.last!==prev.last,prevMs=parseTimeMs(prev.last),currMs=parseTimeMs(current.last),inactiveByList=prevMs&&currMs&&(currMs-prevMs>=INACTIVITY_ALERT_MS);if(lastChanged&&(becameHuman||current.status==="HUMAN"))checks.push({conversation:c,current,reason:becameHuman?"became_human":(inactiveByList?"reactivated_after_inactivity":"human_activity")})})}for(const chk of checks){try{const info=await latestConversationActivity(chk.conversation.id),latest=info.latest;if(!latest||!isInboundDirection(latest.direction))continue;const key=messageKey(latest);if(notifiedInboundMessages.has(key))continue;const gapOk=chk.reason==="became_human"||info.gapMs>=INACTIVITY_ALERT_MS;if(!gapOk)continue;notifiedInboundMessages.add(key);if(notifiedInboundMessages.size>300)notifiedInboundMessages.clear();const who=chk.current.name||normalizePhone(chk.current.wa_id);notifications.push(chk.reason==="became_human"?`Derivado a humano: ${who}`:`Cliente volvió a escribir tras más de 15 minutos: ${who}`)}catch(e){console.warn("No pude evaluar sonido con mensajes reales",e)}}previousConversationState=nowMap;firstConversationLoad=false;if(notifications.length)firePanelNotification(notifications[0])}
+async function loadConversations(showErrors=true,withNotifications=true){try{const data=await apiGet("/admin/conversations?limit=100");if(!data.ok){if(showErrors)alert(data.error||"Error cargando conversaciones");return}conversations=data.items||[];const visible=visibleConversations();if(withNotifications)await evaluateConversationNotifications(visible);else{previousConversationState=conversationStateMap(visible);firstConversationLoad=false}renderConversations()}catch(e){if(showErrors)alert("No pude conectar con el backend.");console.error(e)}}
 function renderConversations(){const list=document.getElementById("conversationList");list.innerHTML="";const visible=visibleConversations();if(!visible.length){list.innerHTML=`<div class="small" style="padding:14px">No hay conversaciones.</div>`;return}visible.forEach(c=>{const div=document.createElement("div"),status=String(c.status||"").toUpperCase();div.className="conv"+(currentConversation&&currentConversation.id===c.id?" active":"")+(status==="HUMAN"?" status-human":"");div.onclick=()=>selectConversation(c);const title=c.customer_name||normalizePhone(c.wa_id)||"Sin nombre",assigned=c.assigned_to?` · ${c.assigned_to}`:"",phoneLine=`${normalizePhone(c.wa_id)}${assigned}`;div.innerHTML=`<div class="conv-line"><div class="waid">${escapeHtml(title)}</div><span class="status ${escapeHtml(status)}">${escapeHtml(status)}</span></div><div class="conv-line"><div class="phone-line">${escapeHtml(phoneLine)}</div><div class="time-line">${fmtShortTime(c.last_message_at)}</div></div>`;list.appendChild(div)})}
-function selectConversation(c){clearTitleAlert();currentConversation=c;renderConversations();document.getElementById("chatTitle").innerText=`${c.customer_name||normalizePhone(c.wa_id)} · ${c.status}`;loadMessages(c.id,true)}
+function selectConversation(c){clearTitleAlert();currentConversation=c;lastRenderedSignature="";renderConversations();document.getElementById("chatTitle").innerText=`${c.customer_name||normalizePhone(c.wa_id)} · ${c.status}`;loadMessages(c.id,true,true)}
 async function loadMessages(conversationId,showErrors=true,forceBottom=false){try{const data=await apiGet(`/admin/messages/${encodeURIComponent(conversationId)}?limit=500`);if(!data.ok){if(showErrors)alert(data.error||"Error cargando mensajes");return}if(data.conversation){currentConversation=data.conversation;document.getElementById("chatTitle").innerText=`${currentConversation.customer_name||normalizePhone(currentConversation.wa_id)} · ${currentConversation.status}`}renderMessages(data.items||[],forceBottom)}catch(e){if(showErrors)alert("No pude cargar mensajes.");console.error(e)}}
-function renderMessages(items,forceBottom=false){
-  // Orden blindado en frontend también: sólo mensajes reales del chat.
-  // Las correcciones/enseñanzas viven en ai_learning_events y NO se renderizan acá.
-  items=(items||[]).slice().sort((a,b)=>{
-    const ta=parseTimeMs(a.created_at),tb=parseTimeMs(b.created_at);
-    if(ta!==tb)return ta-tb;
-    return String(a.id||"").localeCompare(String(b.id||""));
-  });
-  lastMessages=items;
-  const box=document.getElementById("messages");
-
-  const distanceFromBottom=box.scrollHeight-box.scrollTop-box.clientHeight;
-  const wasNearBottom=distanceFromBottom<80;
-  const previousScrollTop=box.scrollTop;
-
-  box.innerHTML="";
-  if(!items.length){box.innerHTML=`<div id="empty">Sin mensajes.</div>`;return;}
-
-  items.forEach((m,idx)=>{
-    const bubble=document.createElement("div");
-    bubble.className=`msg ${m.direction}`;
-
-    const text=document.createElement("div");
-    text.className="msg-text";
-    text.innerHTML=linkify(escapeHtml(m.body||""));
-    bubble.appendChild(text);
-
-    const payload=m.payload||{};
-    const pType=String(payload.type||"").toLowerCase();
-    const hasMedia=payload.media_id&&(pType==="image"||pType==="audio");
-    if(hasMedia&&m.id){
-      const mediaBox=document.createElement("div");
-      mediaBox.style.marginTop="6px";
-      if(pType==="image"){
-        const img=document.createElement("img");
-        img.src=mediaUrl(m.id);
-        img.alt="Imagen enviada por el cliente";
-        img.style.maxWidth="260px";
-        img.style.maxHeight="260px";
-        img.style.borderRadius="8px";
-        img.style.display="block";
-        img.style.cursor="pointer";
-        img.onclick=()=>window.open(mediaUrl(m.id),"_blank");
-        mediaBox.appendChild(img);
-        const open=document.createElement("a");
-        open.href=mediaUrl(m.id);open.target="_blank";open.textContent="Ver imagen";open.style.display="inline-block";open.style.marginTop="4px";
-        mediaBox.appendChild(open);
-      }else if(pType==="audio"){
-        const audio=document.createElement("audio");
-        audio.controls=true;
-        audio.preload="none";
-        audio.src=mediaUrl(m.id);
-        audio.style.width="260px";
-        mediaBox.appendChild(audio);
-      }
-      bubble.appendChild(mediaBox);
-    }
-
-    const meta=document.createElement("div");
-    meta.className="meta";
-    meta.textContent=`${m.direction} · ${fmtDate(m.created_at)}`;
-    bubble.appendChild(meta);
-
-    if(String(m.direction||"").toUpperCase()==="BOT"){
-      const actions=document.createElement("div");
-      actions.className="msgActions";
-      const btn=document.createElement("button");
-      btn.type="button";
-      btn.className="teachMsgBtn";
-      btn.textContent="✏️ Corregir";
-      btn.title="Guardar corrección sobre esta respuesta puntual";
-      btn.onclick=(ev)=>{ev.stopPropagation();openTeachBox(idx)};
-      actions.appendChild(btn);
-      bubble.appendChild(actions);
-    }
-    box.appendChild(bubble);
-  });
-
-  if(forceBottom||wasNearBottom)box.scrollTop=box.scrollHeight;
-  else box.scrollTop=previousScrollTop;
-}
-async function takeover(){if(!currentConversation)return alert("Elegí una conversación.");const data=await apiPost("/admin/takeover",{wa_id:currentConversation.wa_id,operator:"Gonzalo",note:"Tomado desde panel"});if(!data.ok)return alert(data.error||"Error");await loadConversations(false);await loadMessages(currentConversation.id,true)}async function releaseBot(){if(!currentConversation)return alert("Elegí una conversación.");const data=await apiPost("/admin/release",{wa_id:currentConversation.wa_id,operator:"Gonzalo",note:"Liberado desde panel"});if(!data.ok)return alert(data.error||"Error");await loadConversations(false);await loadMessages(currentConversation.id,true)}async function closeConversation(){if(!currentConversation)return alert("Elegí una conversación.");if(!confirm("¿Cerrar conversación?"))return;const data=await apiPost("/admin/close",{wa_id:currentConversation.wa_id,operator:"Gonzalo",note:"Cerrado desde panel"});if(!data.ok)return alert(data.error||"Error");await loadConversations(false);await loadMessages(currentConversation.id,true)}async function sendHuman(){if(!currentConversation)return alert("Elegí una conversación.");const input=document.getElementById("messageInput"),body=input.value.trim();if(!body)return;input.value="";const data=await apiPost("/admin/send",{wa_id:currentConversation.wa_id,body,operator:"Gonzalo"});if(!data.ok)alert(data.error||"El mensaje quedó registrado, pero puede no haberse enviado.");await loadConversations(false);await loadMessages(currentConversation.id,true)}
-
-function previousInboundBefore(index){for(let i=index-1;i>=0;i--){if(String(lastMessages[i].direction||"").toUpperCase()==="IN")return lastMessages[i]}return null}
-function openTeachBox(index){
-  if(!currentConversation)return alert("Elegí una conversación.");
-  const botMsg=lastMessages[index];
-  if(!botMsg||String(botMsg.direction||"").toUpperCase()!=="BOT")return alert("No encuentro esa respuesta de Pia.");
-  const prevIn=previousInboundBefore(index);
-  teachDraft={botMsg,prevIn};
-  document.getElementById("teachQuestion").textContent=prevIn?(prevIn.body||""):"(No encontré la pregunta anterior)";
-  document.getElementById("teachAnswer").textContent=botMsg.body||"";
-  const ta=document.getElementById("teachComment");
-  ta.value="";
-  document.getElementById("teachOverlay").classList.add("open");
-  setTimeout(()=>ta.focus(),30);
-}
-function closeTeachBox(){document.getElementById("teachOverlay").classList.remove("open")}
-function handleTeachKey(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();submitTeachFeedback()}}
-async function submitTeachFeedback(){
-  if(!teachDraft||!currentConversation)return;
-  const comment=document.getElementById("teachComment").value.trim();
-  if(!comment)return;
-  const botMsg=teachDraft.botMsg,prevIn=teachDraft.prevIn;
-  const payload={source:"placia_whatsapp",channel:"WHATSAPP",conversation_id:String(currentConversation.id||""),external_id:String(currentConversation.wa_id||""),message_id:String(botMsg.id||botMsg.message_id||""),parent_message_id:prevIn?String(prevIn.id||prevIn.message_id||""):null,question_text:prevIn?prevIn.body||null:null,customer_message:prevIn?prevIn.body||null:null,ai_answer:botMsg.body||null,human_answer:null,gonzalo_comment:comment,status:"pending"};
-  const data=await apiPost("/admin/ai/learning_events",payload);
-  if(!data.ok)return alert(data.error||"No pude guardar el feedback.");
-  closeTeachBox();
-  teachDraft=null;
-  showToast("Feedback recibido",2000);
-}
-function latestByDirection(dir){const d=String(dir||"").toUpperCase();for(let i=lastMessages.length-1;i>=0;i--){if(String(lastMessages[i].direction||"").toUpperCase()===d)return lastMessages[i]}return null}
-function handleComposerKey(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendHuman()}}function escapeHtml(text){return String(text).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}function linkify(text){return text.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank">$1</a>')}init();
+function findScrollAnchor(box){const top=box.scrollTop+1;const nodes=Array.from(box.querySelectorAll(".msg[data-key]"));for(const el of nodes){if(el.offsetTop+el.offsetHeight>=top)return{key:el.dataset.key,delta:el.offsetTop-box.scrollTop}}return null}function restoreAnchor(box,anchor,fallbackTop){if(!anchor){box.scrollTop=fallbackTop;return}const el=Array.from(box.querySelectorAll(".msg[data-key]")).find(n=>n.dataset.key===anchor.key);box.scrollTop=el?el.offsetTop-anchor.delta:fallbackTop}function keepScrollAfterMedia(box,anchor,fallbackTop,stickToBottom){const fix=()=>requestAnimationFrame(()=>{if(stickToBottom)box.scrollTop=box.scrollHeight;else restoreAnchor(box,anchor,fallbackTop)});box.querySelectorAll("img").forEach(img=>{if(!img.complete)img.addEventListener("load",fix,{once:true})})}
+function renderMessages(items,forceBottom=false){items=sortMessages(items);lastMessages=items;const signature=messageSignature(items);if(signature===lastRenderedSignature&&!forceBottom)return;lastRenderedSignature=signature;const box=document.getElementById("messages"),distanceFromBottom=box.scrollHeight-box.scrollTop-box.clientHeight,wasNearBottom=distanceFromBottom<80,previousScrollTop=box.scrollTop,anchor=findScrollAnchor(box);box.innerHTML="";if(!items.length){box.innerHTML=`<div id="empty">Sin mensajes.</div>`;return}items.forEach((m,idx)=>{const bubble=document.createElement("div");bubble.className=`msg ${escapeHtml(normalizeDirection(m.direction)||"SYSTEM")}`;bubble.dataset.key=messageKey(m);const text=document.createElement("div");text.className="msg-text";text.innerHTML=linkify(escapeHtml(m.body||""));bubble.appendChild(text);const payload=m.payload||{},pType=String(payload.type||"").toLowerCase(),hasMedia=payload.media_id&&(pType==="image"||pType==="audio");if(hasMedia&&m.id){const mediaBox=document.createElement("div");mediaBox.style.marginTop="6px";if(pType==="image"){const img=document.createElement("img");img.src=mediaUrl(m.id);img.alt="Imagen enviada por el cliente";img.style.maxWidth="260px";img.style.maxHeight="260px";img.style.borderRadius="8px";img.style.display="block";img.style.cursor="pointer";img.onclick=()=>window.open(mediaUrl(m.id),"_blank");mediaBox.appendChild(img);const open=document.createElement("a");open.href=mediaUrl(m.id);open.target="_blank";open.textContent="Ver imagen";open.style.display="inline-block";open.style.marginTop="4px";mediaBox.appendChild(open)}else if(pType==="audio"){const audio=document.createElement("audio");audio.controls=true;audio.preload="none";audio.src=mediaUrl(m.id);audio.style.width="260px";mediaBox.appendChild(audio)}bubble.appendChild(mediaBox)}const meta=document.createElement("div");meta.className="meta";meta.textContent=`${m.direction} · ${fmtDate(m.created_at)}`;bubble.appendChild(meta);if(normalizeDirection(m.direction)==="BOT"){const actions=document.createElement("div");actions.className="msgActions";const btn=document.createElement("button");btn.type="button";btn.className="teachMsgBtn";btn.textContent="✏️ Corregir";btn.title="Guardar corrección sobre esta respuesta puntual";btn.onclick=(ev)=>{ev.stopPropagation();openTeachBox(idx)};actions.appendChild(btn);bubble.appendChild(actions)}box.appendChild(bubble)});const stickToBottom=forceBottom||wasNearBottom;if(stickToBottom)box.scrollTop=box.scrollHeight;else restoreAnchor(box,anchor,previousScrollTop);keepScrollAfterMedia(box,anchor,previousScrollTop,stickToBottom)}
+async function takeover(){if(!currentConversation)return alert("Elegí una conversación.");const data=await apiPost("/admin/takeover",{wa_id:currentConversation.wa_id,operator:"Gonzalo",note:"Tomado desde panel"});if(!data.ok)return alert(data.error||"Error");await loadConversations(false,false);await loadMessages(currentConversation.id,true,true)}async function releaseBot(){if(!currentConversation)return alert("Elegí una conversación.");const data=await apiPost("/admin/release",{wa_id:currentConversation.wa_id,operator:"Gonzalo",note:"Liberado desde panel"});if(!data.ok)return alert(data.error||"Error");await loadConversations(false,false);await loadMessages(currentConversation.id,true,true)}async function closeConversation(){if(!currentConversation)return alert("Elegí una conversación.");if(!confirm("¿Cerrar conversación?"))return;const data=await apiPost("/admin/close",{wa_id:currentConversation.wa_id,operator:"Gonzalo",note:"Cerrado desde panel"});if(!data.ok)return alert(data.error||"Error");await loadConversations(false,false);await loadMessages(currentConversation.id,true,true)}async function sendHuman(){if(!currentConversation)return alert("Elegí una conversación.");const input=document.getElementById("messageInput"),body=input.value.trim();if(!body)return;input.value="";const data=await apiPost("/admin/send",{wa_id:currentConversation.wa_id,body,operator:"Gonzalo"});if(!data.ok)alert(data.error||"El mensaje quedó registrado, pero puede no haberse enviado.");await loadMessages(currentConversation.id,true,true);await loadConversations(false,false)}
+function previousInboundBefore(index){for(let i=index-1;i>=0;i--){if(isInboundDirection(lastMessages[i].direction))return lastMessages[i]}return null}function openTeachBox(index){if(!currentConversation)return alert("Elegí una conversación.");const botMsg=lastMessages[index];if(!botMsg||normalizeDirection(botMsg.direction)!=="BOT")return alert("No encuentro esa respuesta de Pia.");const prevIn=previousInboundBefore(index);teachDraft={botMsg,prevIn};document.getElementById("teachQuestion").textContent=prevIn?(prevIn.body||""):"(No encontré la pregunta anterior)";document.getElementById("teachAnswer").textContent=botMsg.body||"";const ta=document.getElementById("teachComment");ta.value="";document.getElementById("teachOverlay").classList.add("open");setTimeout(()=>ta.focus(),30)}function closeTeachBox(){document.getElementById("teachOverlay").classList.remove("open")}function handleTeachKey(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();submitTeachFeedback()}}
+async function submitTeachFeedback(){if(!teachDraft||!currentConversation)return;const comment=document.getElementById("teachComment").value.trim();if(!comment)return;const botMsg=teachDraft.botMsg,prevIn=teachDraft.prevIn;const payload={source:"placia_whatsapp",channel:"WHATSAPP",conversation_id:String(currentConversation.id||""),external_id:String(currentConversation.wa_id||""),message_id:String(botMsg.id||botMsg.message_id||""),parent_message_id:prevIn?String(prevIn.id||prevIn.message_id||""):null,question_text:prevIn?prevIn.body||null:null,customer_message:prevIn?prevIn.body||null:null,ai_answer:botMsg.body||null,human_answer:null,gonzalo_comment:comment,status:"pending"};const data=await apiPost("/admin/ai/learning_events",payload);if(!data.ok)return alert(data.error||"No pude guardar el feedback.");closeTeachBox();teachDraft=null;showToast("Feedback recibido",2000)}
+function latestByDirection(dir){const d=normalizeDirection(dir);for(let i=lastMessages.length-1;i>=0;i--){if(normalizeDirection(lastMessages[i].direction)===d)return lastMessages[i]}return null}function handleComposerKey(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendHuman()}}function escapeHtml(text){return String(text).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}function linkify(text){return text.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank">$1</a>')}init();
 </script>
 </body>
 </html>
