@@ -30,8 +30,8 @@
       <article class="card mcp-card">
         <div class="mcp-head"><div><div class="eyebrow">01 · Servidor MCP</div><h2>Mis manos seguras sobre XelerIA</h2><div class="raw">Conecta ChatGPT/Codex con herramientas administrativas acotadas.</div></div><span id="mcpState" class="mcp-state">VERIFICANDO</span></div>
         <div class="mcp-grid">
-          <div class="mcp-box"><b>ENDPOINT STREAMABLE HTTP</b><div class="mcp-endpoint"><code id="mcpEndpoint">https://tablero-api.xeleria.com.ar/mcp/</code><button id="copyMcp" class="copy" type="button">Copiar</button></div><div id="mcpTools" class="tool-list"></div></div>
-          <div class="mcp-box"><b>AUTENTICACION</b><span id="mcpAuth">Bearer token independiente</span><div class="notice">La clave MCP vive solamente en Render y en tu gestor de contraseñas.</div></div>
+          <div class="mcp-box"><b>ENDPOINT STREAMABLE HTTP</b><div class="mcp-endpoint"><code id="mcpEndpoint">https://tablero-api.xeleria.com.ar/mcp</code><button id="copyMcp" class="copy" type="button">Copiar</button></div><div id="mcpTools" class="tool-list"></div></div>
+          <div class="mcp-box"><b>AUTENTICACION</b><span id="mcpAuth">OAuth 2.1 + PKCE</span><div class="notice">ChatGPT pide autorización una vez; la misma clave privada del tablero valida la conexión en Render.</div></div>
         </div>
         <div id="mcpError" class="error"></div>
       </article>
