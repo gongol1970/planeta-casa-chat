@@ -38,7 +38,7 @@
     <div class="foot">La clave y las credenciales AWS nunca se incluyen en esta página.</div>
   </main>
   <script>
-    const $=id=>document.getElementById(id);let timer=null,busy=false;const api='https://planeta-casa-erp.onrender.com/api/tc';
+    const $=id=>document.getElementById(id);let timer=null,busy=false;const api='https://tablero-api.xeleria.com.ar/api/tc';
     const key=()=>sessionStorage.getItem('tc_key')||'';
     async function call(path,options={}){const headers={...(options.headers||{}),'Authorization':`Bearer ${key()}`};if(options.body)headers['Content-Type']='application/json';const r=await fetch(api+path,{...options,headers});let data={};try{data=await r.json()}catch{}if(!r.ok)throw new Error(typeof data.detail==='string'?data.detail:`Error ${r.status}`);return data}
     function error(id,msg){const el=$(id);el.textContent=msg||'';el.style.display=msg?'block':'none'}
